@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReyonGames ForgeWars Wiki</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0c0f14;
+      --surface: #13181f;
+      --border:  #222a35;
+      --accent:  #3a8fff;
+      --accent2: #70b8ff;
+      --green:   #3ecf5e;
+      --red:     #ff5555;
+      --yellow:  #f0c040;
+      --text:    #d5dae4;
+      --muted:   #7a8899;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+      font-size: 15px;
+    }
+
+    header {
+      background: linear-gradient(160deg, #050c1c 0%, #0a1830 60%, #050c1c 100%);
+      border-bottom: 2px solid #1a3a6a;
+      padding: 3rem 1.5rem 2.5rem;
+      text-align: center;
+    }
+    header h1 {
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      color: #5599ff;
+      text-shadow: 0 0 30px #3377ff55;
+      letter-spacing: .06em;
+    }
+    header h1 span {
+      color: #88aacc;
+      font-size: .58em;
+      display: block;
+      margin-top: .3rem;
+    }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: #0c0f14ee;
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      display: flex; flex-wrap: wrap;
+      justify-content: center;
+      gap: .4rem .8rem;
+      padding: .65rem 1.5rem;
+    }
+    nav a {
+      color: #4488cc;
+      text-decoration: none;
+      font-size: .82rem;
+      padding: .2rem .5rem;
+      border-radius: 3px;
+      transition: background .15s, color .15s;
+    }
+    nav a:hover { background: #0a1828; color: #88bbff; }
+
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1.2rem;
+      display: flex; flex-direction: column; gap: 1.4rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.6rem 1.8rem;
+    }
+    .card h2 {
+      font-size: 1.15rem;
+      color: var(--accent2);
+      border-left: 3px solid var(--accent);
+      padding-left: .75rem;
+      margin-bottom: 1.1rem;
+    }
+    .card h3 {
+      font-size: .95rem;
+      color: var(--yellow);
+      margin: 1.2rem 0 .5rem;
+    }
+    p { color: var(--text); }
+    ul, ol { padding-left: 1.4rem; }
+    li { margin-bottom: .35rem; color: var(--text); }
+
+    /* Teams */
+    .teams {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .team {
+      border-radius: 8px;
+      padding: 1.1rem 1.2rem;
+    }
+    .team.blue { background: #08101e; border: 1px solid #1a4a8a; }
+    .team.red  { background: #1e0808; border: 1px solid #8a1a1a; }
+    .team h3 { margin: 0 0 .4rem; font-size: 1rem; }
+    .team.blue h3 { color: #5599ff; }
+    .team.red  h3 { color: #ff5555; }
+
+    /* Steps */
+    .steps { list-style: none; padding: 0; counter-reset: s; }
+    .steps li {
+      counter-increment: s;
+      position: relative;
+      padding: .55rem 0 .55rem 3rem;
+      border-left: 2px solid #152030;
+      margin-left: 1rem;
+    }
+    .steps li::before {
+      content: counter(s);
+      position: absolute;
+      left: -1.05rem; top: .45rem;
+      width: 1.9rem; height: 1.9rem;
+      border-radius: 50%;
+      background: #0d3060;
+      color: #fff;
+      font-size: .78rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .steps li:last-child { border-left-color: transparent; }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; margin-top: .7rem; font-size: .88rem; }
+    th {
+      background: #141c28;
+      color: #88bbff;
+      padding: .5rem .8rem;
+      text-align: left;
+      border-bottom: 1px solid #253550;
+    }
+    td { padding: .5rem .8rem; border-bottom: 1px solid #181f2c; }
+    tr:last-child td { border-bottom: none; }
+
+    /* Tags */
+    .tag {
+      display: inline-block;
+      padding: .1rem .5rem;
+      border-radius: 3px;
+      font-size: .75rem; font-weight: 700;
+    }
+    .tb { background: #081428; color: #5599ff; border: 1px solid #1a4a8a; }
+    .tr { background: #200d0d; color: #ff6060; border: 1px solid #5a2020; }
+    .tg { background: #0e2010; color: var(--green); border: 1px solid #235a28; }
+    .ty { background: #271e00; color: var(--yellow); border: 1px solid #5a4400; }
+    .tp { background: #1a0a28; color: #cc88ff; border: 1px solid #4a2070; }
+
+    /* Alert */
+    .alert {
+      background: #0a1428;
+      border: 1px solid #1a3a6a;
+      border-left: 4px solid var(--accent);
+      border-radius: 5px;
+      padding: .9rem 1.1rem;
+      margin-top: .9rem;
+      font-size: .88rem;
+    }
+    .alert strong { color: #70b8ff; }
+
+    /* Kit grid */
+    .kgrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: .65rem;
+      margin-top: .8rem;
+    }
+    .kcard {
+      background: #101828;
+      border: 1px solid #1e3050;
+      border-radius: 6px;
+      padding: .7rem .6rem;
+      text-align: center;
+    }
+    .kcard .kname { color: #88bbff; font-weight: 700; font-size: .9rem; }
+    .kcard .ktype { font-size: .75rem; margin-top: .25rem; color: var(--muted); }
+
+    /* Status effects */
+    .sfx {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: .6rem;
+      margin-top: .7rem;
+    }
+    .sfx-item {
+      background: #0d1520;
+      border: 1px solid #253040;
+      border-radius: 5px;
+      padding: .5rem .8rem;
+      font-size: .85rem;
+    }
+    .sfx-item .sname { font-weight: 700; color: #aaccff; }
+    .sfx-item .sdesc { color: var(--muted); font-size: .8rem; margin-top: .15rem; }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--muted);
+      font-size: .8rem;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 540px) {
+      .teams { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🔥 ForgeWars
+    <span>ReyonGames — 初心者向けゲームガイド</span>
+  </h1>
+</header>
+
+<nav>
+  <a href="#overview">概要</a>
+  <a href="#flow">流れ</a>
+  <a href="#kitpick">キットピック</a>
+  <a href="#kits">キット一覧</a>
+  <a href="#forge">フォージ</a>
+  <a href="#status">状態異常</a>
+  <a href="#maps">マップ</a>
+</nav>
+
+<div class="container">
+
+  <!-- 概要 -->
+  <div class="card" id="overview">
+    <h2>🎮 ゲーム概要</h2>
+    <p>ForgeWars は <strong>青チーム</strong> と <strong>赤チーム</strong> に分かれて戦う 5v5 の対戦ゲームです。<br>
+    各自がキット（職業）を選び、チームの <strong>フォージ（砲台）</strong> を守りながら敵のフォージを破壊するのが目標です。</p>
+
+    <div class="teams">
+      <div class="team blue">
+        <h3>🔵 青チーム</h3>
+        <p>自チームのフォージを守りつつ、赤チームのフォージを破壊せよ。</p>
+      </div>
+      <div class="team red">
+        <h3>🔴 赤チーム</h3>
+        <p>自チームのフォージを守りつつ、青チームのフォージを破壊せよ。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ゲームの流れ -->
+  <div class="card" id="flow">
+    <h2>⏱ ゲームの流れ</h2>
+    <ol class="steps">
+      <li>ロビーでチームに参加（管理者がランダム振り分けも可能）。</li>
+      <li>管理者が <strong>キットピック開始</strong> を押すと、順番にキット選択フェーズへ移行する（ドラフト形式・1人15秒）。</li>
+      <li>全員のキットが決まると <strong>7秒のカウントダウン</strong> 後にゲームスタート。</li>
+      <li>マップ上で敵チームと戦いながら <strong>敵のフォージを破壊</strong> する。</li>
+      <li>先に敵のフォージを破壊したチームの勝利。</li>
+    </ol>
+  </div>
+
+  <!-- キットピック -->
+  <div class="card" id="kitpick">
+    <h2>🎴 キットピック（ドラフト）</h2>
+    <p>キットはドラフト形式で <strong>1人ずつ順番</strong> に選びます。同じキットは選べません。</p>
+    <ul style="margin-top:.7rem;">
+      <li>選択時間は <strong>1人15秒</strong>。時間切れになるとランダムで自動割り当て。</li>
+      <li>選択画面でキットのアイコンをクリックしてプレビュー、<strong>Shift+クリックまたは確定ボタン</strong> で決定。</li>
+      <li>「ランダムキット」ボタンで即座にランダム選択もできる。</li>
+    </ul>
+
+    <div class="alert">
+      <strong>💡 迷ったら…</strong>
+      キット選択中は武器・アビリティ・エンチャントがインベントリに表示されます。確認してから決定しましょう。
+    </div>
+  </div>
+
+  <!-- キット一覧 -->
+  <div class="card" id="kits">
+    <h2>⚔ キット一覧（全 10 種）</h2>
+    <p>各キットは <strong>武器</strong>・<strong>アビリティ 3 つ</strong>・<strong>エンチャント</strong> を持ちます。</p>
+    <div class="kgrid">
+      <div class="kcard"><div class="kname">ガーディアン</div><div class="ktype"><span class="tag tg">タンク</span></div></div>
+      <div class="kcard"><div class="kname">リジッド</div>  <div class="ktype"><span class="tag tg">タンク</span></div></div>
+      <div class="kcard"><div class="kname">グリード</div>  <div class="ktype"><span class="tag tb">ファイター</span></div></div>
+      <div class="kcard"><div class="kname">スウィフト</div><div class="ktype"><span class="tag tb">ファイター</span></div></div>
+      <div class="kcard"><div class="kname">デストロイヤー</div><div class="ktype"><span class="tag tr">ファイター</span></div></div>
+      <div class="kcard"><div class="kname">カルティスト</div><div class="ktype"><span class="tag tp">サポート</span></div></div>
+      <div class="kcard"><div class="kname">ゲイザー</div>  <div class="ktype"><span class="tag tp">サポート</span></div></div>
+      <div class="kcard"><div class="kname">プラトー</div>  <div class="ktype"><span class="tag tp">サポート</span></div></div>
+      <div class="kcard"><div class="kname">レビン</div>    <div class="ktype"><span class="tag tb">ファイター</span></div></div>
+      <div class="kcard"><div class="kname">ヘイル</div>    <div class="ktype"><span class="tag tp">サポート</span></div></div>
+    </div>
+
+    <div class="alert" style="margin-top:1rem;">
+      <strong>💡 ロール別の役割</strong><br>
+      <span class="tag tg">タンク</span> 前線で耐えてチームを守る　
+      <span class="tag tb">ファイター</span> 高火力で敵を倒す　
+      <span class="tag tp">サポート</span> 味方を支援・回復する
+    </div>
+  </div>
+
+  <!-- フォージ -->
+  <div class="card" id="forge">
+    <h2>🏭 フォージ（勝利条件）</h2>
+    <p>フォージは各チームの本拠地に設置された <strong>砲台構造物</strong> です。</p>
+    <ul style="margin-top:.7rem;">
+      <li>敵チームのフォージを先に <strong>破壊したチームが勝利</strong>。</li>
+      <li>フォージを破壊されてもゲームは継続するが、チームはその拠点を失う。</li>
+      <li>フォージ付近は <strong>自陣スポーン地点</strong> として機能し、一定の回復効果もある。</li>
+    </ul>
+
+    <h3>経験値（XP）とレベル</h3>
+    <p>戦闘や活動で XP を獲得し、チームがレベルアップするとエンチャントが強化されます。
+    スコアボードでチームの現在レベルを確認できます。</p>
+  </div>
+
+  <!-- 状態異常 -->
+  <div class="card" id="status">
+    <h2>⚡ 主な状態異常</h2>
+    <p>アビリティや攻撃によって様々な状態異常が発生します。</p>
+    <div class="sfx">
+      <div class="sfx-item">
+        <div class="sname">🔒 スタン</div>
+        <div class="sdesc">一定時間、移動・行動が完全に停止する</div>
+      </div>
+      <div class="sfx-item">
+        <div class="sname">⛓ ルート</div>
+        <div class="sdesc">移動のみ停止。攻撃やスキルは使用可能</div>
+      </div>
+      <div class="sfx-item">
+        <div class="sname">🔇 サイレンス</div>
+        <div class="sdesc">アビリティが使用不能になる</div>
+      </div>
+      <div class="sfx-item">
+        <div class="sname">🛡 アンストッパブル</div>
+        <div class="sdesc">状態異常を無効化する</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- マップ -->
+  <div class="card" id="maps">
+    <h2>🗺 マップ（全 2 種）</h2>
+    <table>
+      <tr><th>マップ名</th><th>特徴</th></tr>
+      <tr><td>💣 クレイジーキャノン</td><td>砲台が飛び交うダイナミックなマップ。スペースの使い方が重要。</td></tr>
+      <tr><td>🏚 ルインドコロニー</td><td>廃墟の集落。複数の建物を利用した立体的な戦いが展開する。</td></tr>
+    </table>
+    <p style="margin-top:.7rem; color:var(--muted);">マップはゲーム前に管理者が選択するか、ランダムで決定されます。</p>
+  </div>
+
+</div>
+
+<footer>
+  ReyonGames ForgeWars Wiki — ゲームコードを元に作成
+</footer>
+
+</body>
+</html>
