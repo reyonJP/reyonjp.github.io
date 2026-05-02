@@ -232,7 +232,6 @@
 <nav>
   <a href="#overview">概要</a>
   <a href="#flow">流れ</a>
-  <a href="#kitpick">キットピック</a>
   <a href="#kits">キット一覧</a>
   <a href="#forge">フォージ</a>
   <a href="#status">状態異常</a>
@@ -263,46 +262,15 @@
   <div class="card" id="flow">
     <h2>⏱ ゲームの流れ</h2>
     <ol class="steps">
-      <li>ロビーでチームに参加（管理者がランダム振り分けも可能）。</li>
-      <li>管理者が <strong>キットピック開始</strong> を押すと、順番にキット選択フェーズへ移行する（ドラフト形式・1人15秒）。</li>
-      <li>全員のキットが決まると <strong>7秒のカウントダウン</strong> 後にゲームスタート。</li>
       <li>マップ上で敵チームと戦いながら <strong>敵のフォージを破壊</strong> する。</li>
       <li>先に敵のフォージを破壊したチームの勝利。</li>
     </ol>
   </div>
 
-  <!-- キットピック -->
-  <div class="card" id="kitpick">
-    <h2>🎴 キットピック（ドラフト）</h2>
-    <p>キットはドラフト形式で <strong>1人ずつ順番</strong> に選びます。同じキットは選べません。</p>
-    <ul style="margin-top:.7rem;">
-      <li>選択時間は <strong>1人15秒</strong>。時間切れになるとランダムで自動割り当て。</li>
-      <li>選択画面でキットのアイコンをクリックしてプレビュー、<strong>Shift+クリックまたは確定ボタン</strong> で決定。</li>
-      <li>「ランダムキット」ボタンで即座にランダム選択もできる。</li>
-    </ul>
-
-    <div class="alert">
-      <strong>💡 迷ったら…</strong>
-      キット選択中は武器・アビリティ・エンチャントがインベントリに表示されます。確認してから決定しましょう。
-    </div>
-  </div>
-
   <!-- キット一覧 -->
   <div class="card" id="kits">
-    <h2>⚔ キット一覧（全 10 種）</h2>
-    <p>各キットは <strong>武器</strong>・<strong>アビリティ 3 つ</strong>・<strong>エンチャント</strong> を持ちます。</p>
-    <div class="kgrid">
-      <div class="kcard"><div class="kname">ガーディアン</div><div class="ktype"><span class="tag tg">タンク</span></div></div>
-      <div class="kcard"><div class="kname">リジッド</div>  <div class="ktype"><span class="tag tg">タンク</span></div></div>
-      <div class="kcard"><div class="kname">グリード</div>  <div class="ktype"><span class="tag tb">ファイター</span></div></div>
-      <div class="kcard"><div class="kname">スウィフト</div><div class="ktype"><span class="tag tb">ファイター</span></div></div>
-      <div class="kcard"><div class="kname">デストロイヤー</div><div class="ktype"><span class="tag tr">ファイター</span></div></div>
-      <div class="kcard"><div class="kname">カルティスト</div><div class="ktype"><span class="tag tp">サポート</span></div></div>
-      <div class="kcard"><div class="kname">ゲイザー</div>  <div class="ktype"><span class="tag tp">サポート</span></div></div>
-      <div class="kcard"><div class="kname">プラトー</div>  <div class="ktype"><span class="tag tp">サポート</span></div></div>
-      <div class="kcard"><div class="kname">レビン</div>    <div class="ktype"><span class="tag tb">ファイター</span></div></div>
-      <div class="kcard"><div class="kname">ヘイル</div>    <div class="ktype"><span class="tag tp">サポート</span></div></div>
-    </div>
+    <h2>⚔ キット</h2>
+    <p><a href="kit.html">詳しくはこちら</a></p>
 
     <div class="alert" style="margin-top:1rem;">
       <strong>💡 ロール別の役割</strong><br>
@@ -318,7 +286,6 @@
     <p>フォージは各チームの本拠地に設置された <strong>砲台構造物</strong> です。</p>
     <ul style="margin-top:.7rem;">
       <li>敵チームのフォージを先に <strong>破壊したチームが勝利</strong>。</li>
-      <li>フォージを破壊されてもゲームは継続するが、チームはその拠点を失う。</li>
       <li>フォージ付近は <strong>自陣スポーン地点</strong> として機能し、一定の回復効果もある。</li>
     </ul>
 
@@ -344,10 +311,6 @@
         <div class="sname">🔇 サイレンス</div>
         <div class="sdesc">アビリティが使用不能になる</div>
       </div>
-      <div class="sfx-item">
-        <div class="sname">🛡 アンストッパブル</div>
-        <div class="sdesc">状態異常を無効化する</div>
-      </div>
     </div>
   </div>
 
@@ -359,7 +322,6 @@
       <tr><td>💣 クレイジーキャノン</td><td>砲台が飛び交うダイナミックなマップ。スペースの使い方が重要。</td></tr>
       <tr><td>🏚 ルインドコロニー</td><td>廃墟の集落。複数の建物を利用した立体的な戦いが展開する。</td></tr>
     </table>
-    <p style="margin-top:.7rem; color:var(--muted);">マップはゲーム前に管理者が選択するか、ランダムで決定されます。</p>
   </div>
 
 </div>
