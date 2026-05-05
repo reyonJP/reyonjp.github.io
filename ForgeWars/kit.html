@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ForgeWars キット一覧</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0c0f14;
+      --surface: #13181f;
+      --surface2: #191f28;
+      --border:  #222a35;
+      --blue:    #4a9eff;
+      --blue2:   #80c0ff;
+      --yellow:  #f0c040;
+      --green:   #50d070;
+      --red:     #ff6060;
+      --purple:  #cc88ff;
+      --cyan:    #40d0e0;
+      --orange:  #ff9944;
+      --text:    #d0d8e4;
+      --muted:   #6a7a8a;
+      --ult:     #ffcc44;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(160deg, #050d1c, #0a1830, #050d1c);
+      border-bottom: 2px solid #1a3a6a;
+      padding: 2.5rem 1.5rem 2rem;
+      text-align: center;
+    }
+    header h1 { font-size: clamp(1.6rem,4vw,2.4rem); color: #5599ff; text-shadow: 0 0 25px #3366ff44; letter-spacing:.06em; }
+    header p  { color: var(--muted); margin-top:.4rem; font-size:.88rem; }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top:0; z-index:100;
+      background: #0c0f14ee; backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap:.3rem .6rem; padding:.6rem 1.2rem;
+    }
+    nav a {
+      color: #5588bb; text-decoration:none; font-size:.78rem;
+      padding:.18rem .5rem; border-radius:3px;
+      transition: background .15s, color .15s;
+    }
+    nav a:hover { background:#0a1828; color:#88bbff; }
+
+    /* ── Grid ── */
+    .container { max-width:1100px; margin:2rem auto; padding:0 1rem; }
+
+    .kit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.2rem;
+    }
+
+    /* ── Kit Card ── */
+    .kit-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .kit-header {
+      display: flex;
+      align-items: center;
+      gap: .9rem;
+      padding: 1rem 1.2rem .8rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .kit-icon {
+      width: 2.8rem; height: 2.8rem;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    .kit-title { flex: 1; }
+    .kit-name { font-size: 1.1rem; font-weight: 700; color: var(--blue2); }
+    .kit-weapon { font-size: .78rem; color: var(--muted); margin-top:.1rem; }
+    .kit-stats {
+      display: flex; gap: .5rem; align-items: center;
+      margin-top: .35rem;
+      font-size: .78rem;
+    }
+    .stat { padding:.1rem .45rem; border-radius:3px; font-weight:700; }
+    .stat-hp  { background:#0a2010; border:1px solid #1a5020; color:var(--green); }
+    .stat-atk { background:#200a0a; border:1px solid #501a1a; color:var(--red); }
+
+    /* ── Abilities ── */
+    .abilities { padding: .7rem 1rem 1rem; display:flex; flex-direction:column; gap:.65rem; }
+
+    .ability {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .6rem .85rem;
+    }
+    .ability.ult {
+      background: #1a1600;
+      border-color: #4a3800;
+    }
+
+    .ability-header { display:flex; align-items:center; gap:.55rem; margin-bottom:.3rem; }
+
+    .slot-badge {
+      font-size: .7rem; font-weight: 900; letter-spacing:.02em;
+      padding: .1rem .4rem; border-radius: 3px;
+      flex-shrink: 0;
+    }
+    .slot-q { background:#0e2035; color:#5599ff; border:1px solid #1a3a6a; }
+    .slot-w { background:#0e200e; color:#50c060; border:1px solid #1a4a1a; }
+    .slot-r { background:#201500; color:var(--ult); border:1px solid #5a3a00; }
+
+    .ability-name { font-weight:700; font-size:.92rem; }
+    .q-name { color: #88bbff; }
+    .w-name { color: #70cc70; }
+    .r-name { color: var(--ult); }
+
+    .ability-desc {
+      font-size: .82rem;
+      color: #b0bac8;
+      line-height: 1.6;
+    }
+    .ability-desc .hi { color: #ff9988; font-weight: 600; }
+
+    footer {
+      text-align:center; padding:2rem 1rem;
+      color:var(--muted); font-size:.78rem;
+      border-top:1px solid var(--border); margin-top:2rem;
+    }
+
+    @media(max-width:500px){
+      .kit-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>⚔ ForgeWars キット一覧</h1>
+  <p>全10キットのスキル解説</p>
+</header>
+
+<nav>
+  <a href="#guardian">ガーディアン</a>
+  <a href="#rigid">リジッド</a>
+  <a href="#greed">グリード</a>
+  <a href="#swift">スウィフト</a>
+  <a href="#destroyer">デストロイヤー</a>
+  <a href="#cultist">カルティスト</a>
+  <a href="#geyser">ガイザー</a>
+  <a href="#plateau">プラトー</a>
+  <a href="#levin">レヴィン</a>
+  <a href="#hail">ヘイル</a>
+</nav>
+
+<div class="container">
+<div class="kit-grid">
+
+<!-- ガーディアン -->
+<div class="kit-card" id="guardian">
+  <div class="kit-header">
+    <div class="kit-icon" style="background:#0a1e28;border:1px solid #1a4a60;">🛡</div>
+    <div class="kit-title">
+      <div class="kit-name">ガーディアン</div>
+      <div class="kit-weapon">武器: ガーディアンメイス</div>
+      <div class="kit-stats">
+        <span class="stat stat-hp">HP 300</span>
+        <span class="stat stat-atk">攻撃 17</span>
+      </div>
+    </div>
+  </div>
+  <div class="abilities">
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-q">Q</span>
+        <span class="ability-name q-name">チャージバッシュ</span>
+      </div>
+      <div class="ability-desc">
+        少し前進した後 扇状に前方に攻撃する<br>
+        当たった敵プレイヤーに<span class="hi">1秒間20%のスロー</span>を与え<br>
+        <span class="hi">当たった数×5HP</span>回復する
+      </div>
+    </div>
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-w">W</span>
+        <span class="ability-name w-name">ヘビースマッシュ</span>
+      </div>
+      <div class="ability-desc">
+        次のプレイヤーに対する通常攻撃は<br>
+        <span class="hi">1秒間30%スロー</span>を与え<br>
+        <span class="hi">3秒間30パワー</span>減少させる
+      </div>
+    </div>
+    <div class="ability ult">
+      <div class="ability-header">
+        <span class="slot-badge slot-r">R</span>
+        <span class="ability-name r-name">守護領域</span>
+      </div>
+      <div class="ability-desc">
+        半径<span class="hi">9ブロック</span>のエリアを<span class="hi">8秒間</span>展開し<br>
+        エリア内の敵プレイヤーを自身の方向に引き寄せる<br>
+        エリア内では自身は<span class="hi">35アーマー</span><br>
+        味方プレイヤーは<span class="hi">25アーマー</span><br>
+        敵プレイヤーは<span class="hi">10%のスロー</span>を受ける
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- リジッド -->
+<div class="kit-card" id="rigid">
+  <div class="kit-header">
+    <div class="kit-icon" style="background:#1a1a10;border:1px solid #4a4a20;">🪨</div>
+    <div class="kit-title">
+      <div class="kit-name">リジッド</div>
+      <div class="kit-weapon">武器: リジッドフィスト</div>
+      <div class="kit-stats">
+        <span class="stat stat-hp">HP 275</span>
+        <span class="stat stat-atk">攻撃 17</span>
+      </div>
+    </div>
+  </div>
+  <div class="abilities">
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-q">Q</span>
+        <span class="ability-name q-name">ハードクラッシュ</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">0.75秒後</span>前方に攻撃し<br>
+        当たった敵を<span class="hi">1秒間ルート</span>状態にする
+      </div>
+    </div>
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-w">W</span>
+        <span class="ability-name w-name">ロアリング</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">2.5秒間</span>自身から<span class="hi">5ブロック</span>以内の敵に<br>
+        <span class="hi">20%のスロー</span>を与える<br>
+        発動中は自身も<span class="hi">10%のスロー</span>を受けるが<br>
+        <span class="hi">20アーマー</span>を得る
+      </div>
+    </div>
+    <div class="ability ult">
+      <div class="ability-header">
+        <span class="slot-badge slot-r">R</span>
+        <span class="ability-name r-name">アイアングリップ</span>
+      </div>
+      <div class="ability-desc">
+        指定した敵を<span class="hi">2秒間スタン</span>状態にし運ぶことができる<br>
+        発動中自身は通常攻撃が出来ない
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- グリード -->
+<div class="kit-card" id="greed">
+  <div class="kit-header">
+    <div class="kit-icon" style="background:#1e1500;border:1px solid #604000;">🪓</div>
+    <div class="kit-title">
+      <div class="kit-name">グリード</div>
+      <div class="kit-weapon">武器: グリードハンマー</div>
+      <div class="kit-stats">
+        <span class="stat stat-hp">HP 275</span>
+        <span class="stat stat-atk">攻撃 18</span>
+      </div>
+    </div>
+  </div>
+  <div class="abilities">
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-q">Q</span>
+        <span class="ability-name q-name">オブセッション</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">2秒間25スピード</span>を得る<br>
+        この間に行った敵プレイヤーに対する1度目の通常攻撃は<br>
+        相手を<span class="hi">1秒間ルート</span>状態にする
+      </div>
+    </div>
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-w">W</span>
+        <span class="ability-name w-name">エンレイジ</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">1秒</span>以内に初めて敵からスキル効果を受けた時<br>
+        それを無効化し<span class="hi">2秒間25スピード</span>を得る
+      </div>
+    </div>
+    <div class="ability ult">
+      <div class="ability-header">
+        <span class="slot-badge slot-r">R</span>
+        <span class="ability-name r-name">サンダリング</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">12ブロック</span>以内の指定地点に斧を投げる<br>
+        着地点から<span class="hi">6ブロック</span>以内の最も近い敵プレイヤーは<br>
+        <span class="hi">10ダメージ</span>と<span class="hi">1.5秒間60スピード減少</span>を受ける<br>
+        その他の範囲内の敵プレイヤーは着地点を中心に大きくノックバックする
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- スウィフト -->
+<div class="kit-card" id="swift">
+  <div class="kit-header">
+    <div class="kit-icon" style="background:#0e1820;border:1px solid #205060;">⚡</div>
+    <div class="kit-title">
+      <div class="kit-name">スウィフト</div>
+      <div class="kit-weapon">武器: スウィフトソード</div>
+      <div class="kit-stats">
+        <span class="stat stat-hp">HP 250</span>
+        <span class="stat stat-atk">攻撃 19</span>
+      </div>
+    </div>
+  </div>
+  <div class="abilities">
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-q">Q</span>
+        <span class="ability-name q-name">オーバードライブ</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">7秒間</span>持続する半径<span class="hi">7ブロック</span>のエリアを召喚する<br>
+        エリア内では自身のスピードが<span class="hi">20上昇</span>する<br>
+        エリア内で最大チャージの通常攻撃をするごとに自身のパワーが<span class="hi">5上昇</span>する
+      </div>
+    </div>
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-w">W</span>
+        <span class="ability-name w-name">アクセル</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">4秒間</span>スピードが<span class="hi">30上昇</span>する<br>
+        再発動するか効果終了時に発動前の場所に戻る
+      </div>
+    </div>
+    <div class="ability ult">
+      <div class="ability-header">
+        <span class="slot-badge slot-r">R</span>
+        <span class="ability-name r-name">ネイルチャージ</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">0.75秒</span>のチャージ後 前方に駆け抜け<br>
+        <span class="hi">2.5ブロック</span>以内の敵に<span class="hi">1秒間スタン</span>と<span class="hi">40ダメージ</span>を与える<br>
+        チャージを開始してからは方向を変えられない
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- デストロイヤー -->
+<div class="kit-card" id="destroyer">
+  <div class="kit-header">
+    <div class="kit-icon" style="background:#1e0e00;border:1px solid #603010;">💣</div>
+    <div class="kit-title">
+      <div class="kit-name">デストロイヤー</div>
+      <div class="kit-weapon">武器: デストロイヤーピッケル</div>
+      <div class="kit-stats">
+        <span class="stat stat-hp">HP 250</span>
+        <span class="stat stat-atk">攻撃 18</span>
+      </div>
+    </div>
+  </div>
+  <div class="abilities">
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-q">Q</span>
+        <span class="ability-name q-name">デトネーション</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">15ブロック以内</span>の指定したブロックを中心に攻撃する<br>
+        <span class="hi">4ブロック</span>以内にいた敵プレイヤーに<br>
+        <span class="hi">10ダメージ</span>を与え発動地点を中心にノックバックさせる
+      </div>
+    </div>
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-w">W</span>
+        <span class="ability-name w-name">ハイマイス</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">1.2秒後4.5ブロック</span>以内の敵プレイヤーに<br>
+        <span class="hi">15ダメージ</span>を与え<span class="hi">当たった数×25HP</span>回復する
+      </div>
+    </div>
+    <div class="ability ult">
+      <div class="ability-header">
+        <span class="slot-badge slot-r">R</span>
+        <span class="ability-name r-name">ホットバースト</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">1.25秒後</span>に爆発するTNTを投げる<br>
+        爆発は<span class="hi">5ブロック</span>以内の敵プレイヤーに<br>
+        <span class="hi">(10 + 減少体力の25%)</span>のダメージを与える<br>
+        爆発が敵プレイヤーにヒットする度に<span class="hi">+2</span><br>
+        敵プレイヤーをキルする度に追加で<span class="hi">+4</span><br>
+        固定ダメージが永続的に増加する
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- カルティスト -->
+<div class="kit-card" id="cultist">
+  <div class="kit-header">
+    <div class="kit-icon" style="background:#100820;border:1px solid #302050;">💀</div>
+    <div class="kit-title">
+      <div class="kit-name">カルティスト</div>
+      <div class="kit-weapon">武器: カルティストソード</div>
+      <div class="kit-stats">
+        <span class="stat stat-hp">HP 250</span>
+        <span class="stat stat-atk">攻撃 18</span>
+      </div>
+    </div>
+  </div>
+  <div class="abilities">
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-q">Q</span>
+        <span class="ability-name q-name">スケアリーヘッド</span>
+      </div>
+      <div class="ability-desc">
+        ウィザーの頭を発射し<br>
+        着弾地点から<span class="hi">2.5ブロック</span>以内の敵に<br>
+        <span class="hi">30ダメージ</span>と<span class="hi">1.5秒間10%スロー</span>を与える
+      </div>
+    </div>
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-w">W</span>
+        <span class="ability-name w-name">ダークパクト</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">10ブロック以内</span>の指定したブロックを中心に攻撃する<br>
+        <span class="hi">1.25秒後4ブロック</span>以内にいた敵に<br>
+        <span class="hi">4秒間毎秒10</span>の継続ダメージを与える
+      </div>
+    </div>
+    <div class="ability ult">
+      <div class="ability-header">
+        <span class="slot-badge slot-r">R</span>
+        <span class="ability-name r-name">テラーワラント</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">6秒間</span>ウィザーを召喚する<br>
+        ウィザーは<span class="hi">30ブロック</span>以内の敵プレイヤーに<br>
+        <span class="hi">15ダメージ</span>のウィザーの頭で<span class="hi">1秒</span>毎に攻撃する
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ガイザー -->
+<div class="kit-card" id="geyser">
+  <div class="kit-header">
+    <div class="kit-icon" style="background:#001828;border:1px solid #005060;">🔱</div>
+    <div class="kit-title">
+      <div class="kit-name">ガイザー</div>
+      <div class="kit-weapon">武器: ガイザーシャード</div>
+      <div class="kit-stats">
+        <span class="stat stat-hp">HP 250</span>
+        <span class="stat stat-atk">攻撃 18</span>
+      </div>
+    </div>
+  </div>
+  <div class="abilities">
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-q">Q</span>
+        <span class="ability-name q-name">波乗り</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">1.25秒間</span>向いている方向に前進する<br>
+        発動中は<span class="hi">3ブロック</span>以内の敵に<span class="hi">20%スロー</span>を与える<br>
+        再発動で中断できる
+      </div>
+    </div>
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-w">W</span>
+        <span class="ability-name w-name">ハイドロインパクト</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">1.5秒後4ブロック</span>以内の敵プレイヤーに<br>
+        <span class="hi">10ダメージ</span>を与え<span class="hi">0.5秒間ルート</span>状態にする
+      </div>
+    </div>
+    <div class="ability ult">
+      <div class="ability-header">
+        <span class="slot-badge slot-r">R</span>
+        <span class="ability-name r-name">ポセイドン・トライデント</span>
+      </div>
+      <div class="ability-desc">
+        トライデントを投げて発動する<br>
+        当たった敵に<span class="hi">35ダメージ</span>を与える<br>
+        敵の体力が<span class="hi">50%以下</span>の場合ダメージが<span class="hi">3倍</span>になる
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- プラトー -->
+<div class="kit-card" id="plateau">
+  <div class="kit-header">
+    <div class="kit-icon" style="background:#0e1e0a;border:1px solid #285018;">🌿</div>
+    <div class="kit-title">
+      <div class="kit-name">プラトー</div>
+      <div class="kit-weapon">武器: プラトーナイフ</div>
+      <div class="kit-stats">
+        <span class="stat stat-hp">HP 250</span>
+        <span class="stat stat-atk">攻撃 18</span>
+      </div>
+    </div>
+  </div>
+  <div class="abilities">
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-q">Q</span>
+        <span class="ability-name q-name">キャンプファイア</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">6ブロック</span>以内の味方プレイヤーを強化する焚火を<span class="hi">8秒間</span>設置する<br>
+        範囲内にいると<span class="hi">2秒かけて30パワー</span>まで徐々に増加し<br>
+        最大パワーになった時1度だけ<span class="hi">40HP</span>回復する<br>
+        範囲外にいるとパワーは徐々に減少する
+      </div>
+    </div>
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-w">W</span>
+        <span class="ability-name w-name">レッドギフト</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">10ブロック以内</span>の指定したブロックに<span class="hi">0.75秒後</span>毒キノコを投げる<br>
+        毒キノコは<span class="hi">3秒間</span>持続し<span class="hi">毎秒10</span>のダメージを与える
+      </div>
+    </div>
+    <div class="ability ult">
+      <div class="ability-header">
+        <span class="slot-badge slot-r">R</span>
+        <span class="ability-name r-name">シエラ</span>
+      </div>
+      <div class="ability-desc">
+        愛馬の「シエラ」を召喚し<span class="hi">8秒間</span>乗る<br>
+        再発動で前方に突進し 当たった敵に<br>
+        <span class="hi">15ダメージ</span>と<span class="hi">0.75秒間スタン</span>を与える<br>
+        突進には<span class="hi">2秒</span>のクールダウンがある
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- レヴィン -->
+<div class="kit-card" id="levin">
+  <div class="kit-header">
+    <div class="kit-icon" style="background:#181208;border:1px solid #504010;">⚡</div>
+    <div class="kit-title">
+      <div class="kit-name">レヴィン</div>
+      <div class="kit-weapon">武器: レヴィンソード</div>
+      <div class="kit-stats">
+        <span class="stat stat-hp">HP 250</span>
+        <span class="stat stat-atk">攻撃 18</span>
+      </div>
+    </div>
+  </div>
+  <div class="abilities">
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-q">Q</span>
+        <span class="ability-name q-name">スタティックフィールド</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">0.5秒</span>ごとに<span class="hi">4回</span>攻撃し<br>
+        <span class="hi">4.5ブロック</span>以内の敵に<span class="hi">5ダメージ</span>を与える<br>
+        最後の攻撃は追加で<span class="hi">1秒間スタン</span>を与える<br>
+        発動中はスピードが<span class="hi">15低下</span>する
+      </div>
+    </div>
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-w">W</span>
+        <span class="ability-name w-name">エレキウェブ</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">30%スロー</span>を与えるエレキウェブを放つ<br>
+        敵プレイヤーに当たった場合<span class="hi">1.25秒後</span>に爆発し<br>
+        その敵プレイヤーから<span class="hi">3.5ブロック</span>以内の敵に<span class="hi">10ダメージ</span>と<br>
+        <span class="hi">2秒間サイレンス</span>を与える
+      </div>
+    </div>
+    <div class="ability ult">
+      <div class="ability-header">
+        <span class="slot-badge slot-r">R</span>
+        <span class="ability-name r-name">パルスインダクション</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">1.25秒後6ブロック</span>以内の敵プレイヤーのパワーを<br>
+        <span class="hi">3秒間30</span>低下させる
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ヘイル -->
+<div class="kit-card" id="hail">
+  <div class="kit-header">
+    <div class="kit-icon" style="background:#081828;border:1px solid #104860;">❄</div>
+    <div class="kit-title">
+      <div class="kit-name">ヘイル</div>
+      <div class="kit-weapon">武器: ヘイルサイス</div>
+      <div class="kit-stats">
+        <span class="stat stat-hp">HP 250</span>
+        <span class="stat stat-atk">攻撃 18</span>
+      </div>
+    </div>
+  </div>
+  <div class="abilities">
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-q">Q</span>
+        <span class="ability-name q-name">アイスレーザー</span>
+      </div>
+      <div class="ability-desc">
+        射程<span class="hi">12ブロック</span>の即着弾レーザーを放ち<br>
+        最初に当たった敵に<span class="hi">10ダメージ</span>と<span class="hi">1.5秒間35%スロー</span>を与える
+      </div>
+    </div>
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-w">W</span>
+        <span class="ability-name w-name">シャープボール</span>
+      </div>
+      <div class="ability-desc">
+        着弾時に<span class="hi">3.5ブロック</span>以内の敵に<span class="hi">5ダメージ</span>と<br>
+        <span class="hi">4秒間10アーマー低下</span>を与える雪玉を放つ
+      </div>
+    </div>
+    <div class="ability ult">
+      <div class="ability-header">
+        <span class="slot-badge slot-r">R</span>
+        <span class="ability-name r-name">フロストノヴァ</span>
+      </div>
+      <div class="ability-desc">
+        <span class="hi">0.5秒</span>のチャージ後<br>
+        <span class="hi">25ブロック</span>まで前進する<span class="hi">幅13ブロック</span>の冷気を発生させる<br>
+        チャージを開始してからは方向を変えられない<br>
+        当たった敵プレイヤーは<span class="hi">2.5秒間40%スロー</span>状態になる<br>
+        中心で当たると最初の<span class="hi">1.25秒間ルート</span>状態になる
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /kit-grid -->
+</div><!-- /container -->
+
+<footer>ReyonGames ForgeWars Kit Wiki — ゲームコードを元に作成</footer>
+
+</body>
+</html>
