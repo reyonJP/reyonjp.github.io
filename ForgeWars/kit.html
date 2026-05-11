@@ -35,7 +35,6 @@
       line-height: 1.65;
     }
 
-    /* ── Header ── */
     header {
       background: linear-gradient(160deg, #050d1c, #0a1830, #050d1c);
       border-bottom: 2px solid #1a3a6a;
@@ -45,7 +44,6 @@
     header h1 { font-size: clamp(1.6rem,4vw,2.4rem); color: #5599ff; text-shadow: 0 0 25px #3366ff44; letter-spacing:.06em; }
     header p  { color: var(--muted); margin-top:.4rem; font-size:.88rem; }
 
-    /* ── Nav ── */
     nav {
       position: sticky; top:0; z-index:100;
       background: #0c0f14ee; backdrop-filter: blur(8px);
@@ -59,8 +57,12 @@
       transition: background .15s, color .15s;
     }
     nav a:hover { background:#0a1828; color:#88bbff; }
+    nav a.back-link {
+      background:#0d2040; color:#70b8ff;
+      border:1px solid #1a4a8a; font-weight:700;
+    }
+    nav a.back-link:hover { background:#112850; color:#aad4ff; }
 
-    /* ── Grid ── */
     .container { max-width:1100px; margin:2rem auto; padding:0 1rem; }
 
     .kit-grid {
@@ -69,7 +71,6 @@
       gap: 1.2rem;
     }
 
-    /* ── Kit Card ── */
     .kit-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -93,7 +94,6 @@
     }
     .kit-title { flex: 1; }
     .kit-name { font-size: 1.1rem; font-weight: 700; color: var(--blue2); }
-    .kit-weapon { font-size: .78rem; color: var(--muted); margin-top:.1rem; }
     .kit-stats {
       display: flex; gap: .5rem; align-items: center;
       margin-top: .35rem;
@@ -103,7 +103,6 @@
     .stat-hp  { background:#0a2010; border:1px solid #1a5020; color:var(--green); }
     .stat-atk { background:#200a0a; border:1px solid #501a1a; color:var(--red); }
 
-    /* ── Abilities ── */
     .abilities { padding: .7rem 1rem 1rem; display:flex; flex-direction:column; gap:.65rem; }
 
     .ability {
@@ -120,18 +119,18 @@
     .ability-header { display:flex; align-items:center; gap:.55rem; margin-bottom:.3rem; }
 
     .slot-badge {
-      font-size: .7rem; font-weight: 900; letter-spacing:.02em;
-      padding: .1rem .4rem; border-radius: 3px;
-      flex-shrink: 0;
+      font-size: .68rem; font-weight: 800; letter-spacing:.01em;
+      padding: .15rem .5rem; border-radius: 3px;
+      flex-shrink: 0; white-space: nowrap;
     }
-    .slot-q { background:#0e2035; color:#5599ff; border:1px solid #1a3a6a; }
-    .slot-w { background:#0e200e; color:#50c060; border:1px solid #1a4a1a; }
-    .slot-r { background:#201500; color:var(--ult); border:1px solid #5a3a00; }
+    .slot-1   { background:#0e2035; color:#5599ff; border:1px solid #1a3a6a; }
+    .slot-2   { background:#0e200e; color:#50c060; border:1px solid #1a4a1a; }
+    .slot-ult { background:#201500; color:var(--ult); border:1px solid #5a3a00; }
 
     .ability-name { font-weight:700; font-size:.92rem; }
-    .q-name { color: #88bbff; }
-    .w-name { color: #70cc70; }
-    .r-name { color: var(--ult); }
+    .s1-name  { color: #88bbff; }
+    .s2-name  { color: #70cc70; }
+    .ult-name { color: var(--ult); }
 
     .ability-desc {
       font-size: .82rem;
@@ -159,6 +158,7 @@
 </header>
 
 <nav>
+  <a href="main.html" class="back-link">← ゲーム説明に戻る</a>
   <a href="#guardian">ガーディアン</a>
   <a href="#rigid">リジッド</a>
   <a href="#greed">グリード</a>
@@ -180,7 +180,6 @@
     <div class="kit-icon" style="background:#0a1e28;border:1px solid #1a4a60;">🛡</div>
     <div class="kit-title">
       <div class="kit-name">ガーディアン</div>
-      <div class="kit-weapon">武器: ガーディアンメイス</div>
       <div class="kit-stats">
         <span class="stat stat-hp">HP 300</span>
         <span class="stat stat-atk">攻撃 17</span>
@@ -190,8 +189,8 @@
   <div class="abilities">
     <div class="ability">
       <div class="ability-header">
-        <span class="slot-badge slot-q">Q</span>
-        <span class="ability-name q-name">チャージバッシュ</span>
+        <span class="slot-badge slot-1">スキル1</span>
+        <span class="ability-name s1-name">チャージバッシュ</span>
       </div>
       <div class="ability-desc">
         少し前進した後 扇状に前方に攻撃する<br>
@@ -201,8 +200,8 @@
     </div>
     <div class="ability">
       <div class="ability-header">
-        <span class="slot-badge slot-w">W</span>
-        <span class="ability-name w-name">ヘビースマッシュ</span>
+        <span class="slot-badge slot-2">スキル2</span>
+        <span class="ability-name s2-name">ヘビースマッシュ</span>
       </div>
       <div class="ability-desc">
         次のプレイヤーに対する通常攻撃は<br>
@@ -212,8 +211,8 @@
     </div>
     <div class="ability ult">
       <div class="ability-header">
-        <span class="slot-badge slot-r">R</span>
-        <span class="ability-name r-name">守護領域</span>
+        <span class="slot-badge slot-ult">アルティメット</span>
+        <span class="ability-name ult-name">守護領域</span>
       </div>
       <div class="ability-desc">
         半径<span class="hi">9ブロック</span>のエリアを<span class="hi">8秒間</span>展開し<br>
@@ -232,7 +231,6 @@
     <div class="kit-icon" style="background:#1a1a10;border:1px solid #4a4a20;">🪨</div>
     <div class="kit-title">
       <div class="kit-name">リジッド</div>
-      <div class="kit-weapon">武器: リジッドフィスト</div>
       <div class="kit-stats">
         <span class="stat stat-hp">HP 275</span>
         <span class="stat stat-atk">攻撃 17</span>
@@ -242,8 +240,8 @@
   <div class="abilities">
     <div class="ability">
       <div class="ability-header">
-        <span class="slot-badge slot-q">Q</span>
-        <span class="ability-name q-name">ハードクラッシュ</span>
+        <span class="slot-badge slot-1">スキル1</span>
+        <span class="ability-name s1-name">ハードクラッシュ</span>
       </div>
       <div class="ability-desc">
         <span class="hi">0.75秒後</span>前方に攻撃し<br>
@@ -252,8 +250,8 @@
     </div>
     <div class="ability">
       <div class="ability-header">
-        <span class="slot-badge slot-w">W</span>
-        <span class="ability-name w-name">ロアリング</span>
+        <span class="slot-badge slot-2">スキル2</span>
+        <span class="ability-name s2-name">ロアリング</span>
       </div>
       <div class="ability-desc">
         <span class="hi">2.5秒間</span>自身から<span class="hi">5ブロック</span>以内の敵に<br>
@@ -264,8 +262,8 @@
     </div>
     <div class="ability ult">
       <div class="ability-header">
-        <span class="slot-badge slot-r">R</span>
-        <span class="ability-name r-name">アイアングリップ</span>
+        <span class="slot-badge slot-ult">アルティメット</span>
+        <span class="ability-name ult-name">アイアングリップ</span>
       </div>
       <div class="ability-desc">
         指定した敵を<span class="hi">2秒間スタン</span>状態にし運ぶことができる<br>
@@ -281,7 +279,6 @@
     <div class="kit-icon" style="background:#1e1500;border:1px solid #604000;">🪓</div>
     <div class="kit-title">
       <div class="kit-name">グリード</div>
-      <div class="kit-weapon">武器: グリードハンマー</div>
       <div class="kit-stats">
         <span class="stat stat-hp">HP 275</span>
         <span class="stat stat-atk">攻撃 18</span>
@@ -291,8 +288,8 @@
   <div class="abilities">
     <div class="ability">
       <div class="ability-header">
-        <span class="slot-badge slot-q">Q</span>
-        <span class="ability-name q-name">オブセッション</span>
+        <span class="slot-badge slot-1">スキル1</span>
+        <span class="ability-name s1-name">オブセッション</span>
       </div>
       <div class="ability-desc">
         <span class="hi">2秒間25スピード</span>を得る<br>
@@ -302,8 +299,8 @@
     </div>
     <div class="ability">
       <div class="ability-header">
-        <span class="slot-badge slot-w">W</span>
-        <span class="ability-name w-name">エンレイジ</span>
+        <span class="slot-badge slot-2">スキル2</span>
+        <span class="ability-name s2-name">エンレイジ</span>
       </div>
       <div class="ability-desc">
         <span class="hi">1秒</span>以内に初めて敵からスキル効果を受けた時<br>
@@ -312,8 +309,8 @@
     </div>
     <div class="ability ult">
       <div class="ability-header">
-        <span class="slot-badge slot-r">R</span>
-        <span class="ability-name r-name">サンダリング</span>
+        <span class="slot-badge slot-ult">アルティメット</span>
+        <span class="ability-name ult-name">サンダリング</span>
       </div>
       <div class="ability-desc">
         <span class="hi">12ブロック</span>以内の指定地点に斧を投げる<br>
@@ -331,7 +328,6 @@
     <div class="kit-icon" style="background:#0e1820;border:1px solid #205060;">⚡</div>
     <div class="kit-title">
       <div class="kit-name">スウィフト</div>
-      <div class="kit-weapon">武器: スウィフトソード</div>
       <div class="kit-stats">
         <span class="stat stat-hp">HP 250</span>
         <span class="stat stat-atk">攻撃 19</span>
@@ -341,8 +337,8 @@
   <div class="abilities">
     <div class="ability">
       <div class="ability-header">
-        <span class="slot-badge slot-q">Q</span>
-        <span class="ability-name q-name">オーバードライブ</span>
+        <span class="slot-badge slot-1">スキル1</span>
+        <span class="ability-name s1-name">オーバードライブ</span>
       </div>
       <div class="ability-desc">
         <span class="hi">7秒間</span>持続する半径<span class="hi">7ブロック</span>のエリアを召喚する<br>
@@ -352,8 +348,8 @@
     </div>
     <div class="ability">
       <div class="ability-header">
-        <span class="slot-badge slot-w">W</span>
-        <span class="ability-name w-name">アクセル</span>
+        <span class="slot-badge slot-2">スキル2</span>
+        <span class="ability-name s2-name">アクセル</span>
       </div>
       <div class="ability-desc">
         <span class="hi">4秒間</span>スピードが<span class="hi">30上昇</span>する<br>
@@ -362,8 +358,8 @@
     </div>
     <div class="ability ult">
       <div class="ability-header">
-        <span class="slot-badge slot-r">R</span>
-        <span class="ability-name r-name">ネイルチャージ</span>
+        <span class="slot-badge slot-ult">アルティメット</span>
+        <span class="ability-name ult-name">ネイルチャージ</span>
       </div>
       <div class="ability-desc">
         <span class="hi">0.75秒</span>のチャージ後 前方に駆け抜け<br>
@@ -380,7 +376,6 @@
     <div class="kit-icon" style="background:#1e0e00;border:1px solid #603010;">💣</div>
     <div class="kit-title">
       <div class="kit-name">デストロイヤー</div>
-      <div class="kit-weapon">武器: デストロイヤーピッケル</div>
       <div class="kit-stats">
         <span class="stat stat-hp">HP 250</span>
         <span class="stat stat-atk">攻撃 18</span>
@@ -390,8 +385,8 @@
   <div class="abilities">
     <div class="ability">
       <div class="ability-header">
-        <span class="slot-badge slot-q">Q</span>
-        <span class="ability-name q-name">デトネーション</span>
+        <span class="slot-badge slot-1">スキル1</span>
+        <span class="ability-name s1-name">デトネーション</span>
       </div>
       <div class="ability-desc">
         <span class="hi">15ブロック以内</span>の指定したブロックを中心に攻撃する<br>
@@ -401,8 +396,8 @@
     </div>
     <div class="ability">
       <div class="ability-header">
-        <span class="slot-badge slot-w">W</span>
-        <span class="ability-name w-name">ハイマイス</span>
+        <span class="slot-badge slot-2">スキル2</span>
+        <span class="ability-name s2-name">ハイマイス</span>
       </div>
       <div class="ability-desc">
         <span class="hi">1.2秒後4.5ブロック</span>以内の敵プレイヤーに<br>
@@ -411,8 +406,8 @@
     </div>
     <div class="ability ult">
       <div class="ability-header">
-        <span class="slot-badge slot-r">R</span>
-        <span class="ability-name r-name">ホットバースト</span>
+        <span class="slot-badge slot-ult">アルティメット</span>
+        <span class="ability-name ult-name">ホットバースト</span>
       </div>
       <div class="ability-desc">
         <span class="hi">1.25秒後</span>に爆発するTNTを投げる<br>
@@ -432,7 +427,6 @@
     <div class="kit-icon" style="background:#100820;border:1px solid #302050;">💀</div>
     <div class="kit-title">
       <div class="kit-name">カルティスト</div>
-      <div class="kit-weapon">武器: カルティストソード</div>
       <div class="kit-stats">
         <span class="stat stat-hp">HP 250</span>
         <span class="stat stat-atk">攻撃 18</span>
@@ -442,8 +436,8 @@
   <div class="abilities">
     <div class="ability">
       <div class="ability-header">
-        <span class="slot-badge slot-q">Q</span>
-        <span class="ability-name q-name">スケアリーヘッド</span>
+        <span class="slot-badge slot-1">スキル1</span>
+        <span class="ability-name s1-name">スケアリーヘッド</span>
       </div>
       <div class="ability-desc">
         ウィザーの頭を発射し<br>
@@ -453,8 +447,8 @@
     </div>
     <div class="ability">
       <div class="ability-header">
-        <span class="slot-badge slot-w">W</span>
-        <span class="ability-name w-name">ダークパクト</span>
+        <span class="slot-badge slot-2">スキル2</span>
+        <span class="ability-name s2-name">ダークパクト</span>
       </div>
       <div class="ability-desc">
         <span class="hi">10ブロック以内</span>の指定したブロックを中心に攻撃する<br>
@@ -464,8 +458,8 @@
     </div>
     <div class="ability ult">
       <div class="ability-header">
-        <span class="slot-badge slot-r">R</span>
-        <span class="ability-name r-name">テラーワラント</span>
+        <span class="slot-badge slot-ult">アルティメット</span>
+        <span class="ability-name ult-name">テラーワラント</span>
       </div>
       <div class="ability-desc">
         <span class="hi">6秒間</span>ウィザーを召喚する<br>
@@ -482,7 +476,6 @@
     <div class="kit-icon" style="background:#001828;border:1px solid #005060;">🔱</div>
     <div class="kit-title">
       <div class="kit-name">ガイザー</div>
-      <div class="kit-weapon">武器: ガイザーシャード</div>
       <div class="kit-stats">
         <span class="stat stat-hp">HP 250</span>
         <span class="stat stat-atk">攻撃 18</span>
@@ -492,8 +485,8 @@
   <div class="abilities">
     <div class="ability">
       <div class="ability-header">
-        <span class="slot-badge slot-q">Q</span>
-        <span class="ability-name q-name">波乗り</span>
+        <span class="slot-badge slot-1">スキル1</span>
+        <span class="ability-name s1-name">波乗り</span>
       </div>
       <div class="ability-desc">
         <span class="hi">1.25秒間</span>向いている方向に前進する<br>
@@ -503,8 +496,8 @@
     </div>
     <div class="ability">
       <div class="ability-header">
-        <span class="slot-badge slot-w">W</span>
-        <span class="ability-name w-name">ハイドロインパクト</span>
+        <span class="slot-badge slot-2">スキル2</span>
+        <span class="ability-name s2-name">ハイドロインパクト</span>
       </div>
       <div class="ability-desc">
         <span class="hi">1.5秒後4ブロック</span>以内の敵プレイヤーに<br>
@@ -513,8 +506,8 @@
     </div>
     <div class="ability ult">
       <div class="ability-header">
-        <span class="slot-badge slot-r">R</span>
-        <span class="ability-name r-name">ポセイドン・トライデント</span>
+        <span class="slot-badge slot-ult">アルティメット</span>
+        <span class="ability-name ult-name">ポセイドン・トライデント</span>
       </div>
       <div class="ability-desc">
         トライデントを投げて発動する<br>
@@ -531,7 +524,6 @@
     <div class="kit-icon" style="background:#0e1e0a;border:1px solid #285018;">🌿</div>
     <div class="kit-title">
       <div class="kit-name">プラトー</div>
-      <div class="kit-weapon">武器: プラトーナイフ</div>
       <div class="kit-stats">
         <span class="stat stat-hp">HP 250</span>
         <span class="stat stat-atk">攻撃 18</span>
@@ -541,8 +533,8 @@
   <div class="abilities">
     <div class="ability">
       <div class="ability-header">
-        <span class="slot-badge slot-q">Q</span>
-        <span class="ability-name q-name">キャンプファイア</span>
+        <span class="slot-badge slot-1">スキル1</span>
+        <span class="ability-name s1-name">キャンプファイア</span>
       </div>
       <div class="ability-desc">
         <span class="hi">6ブロック</span>以内の味方プレイヤーを強化する焚火を<span class="hi">8秒間</span>設置する<br>
@@ -553,8 +545,8 @@
     </div>
     <div class="ability">
       <div class="ability-header">
-        <span class="slot-badge slot-w">W</span>
-        <span class="ability-name w-name">レッドギフト</span>
+        <span class="slot-badge slot-2">スキル2</span>
+        <span class="ability-name s2-name">レッドギフト</span>
       </div>
       <div class="ability-desc">
         <span class="hi">10ブロック以内</span>の指定したブロックに<span class="hi">0.75秒後</span>毒キノコを投げる<br>
@@ -563,8 +555,8 @@
     </div>
     <div class="ability ult">
       <div class="ability-header">
-        <span class="slot-badge slot-r">R</span>
-        <span class="ability-name r-name">シエラ</span>
+        <span class="slot-badge slot-ult">アルティメット</span>
+        <span class="ability-name ult-name">シエラ</span>
       </div>
       <div class="ability-desc">
         愛馬の「シエラ」を召喚し<span class="hi">8秒間</span>乗る<br>
@@ -582,7 +574,6 @@
     <div class="kit-icon" style="background:#181208;border:1px solid #504010;">⚡</div>
     <div class="kit-title">
       <div class="kit-name">レヴィン</div>
-      <div class="kit-weapon">武器: レヴィンソード</div>
       <div class="kit-stats">
         <span class="stat stat-hp">HP 250</span>
         <span class="stat stat-atk">攻撃 18</span>
@@ -592,8 +583,8 @@
   <div class="abilities">
     <div class="ability">
       <div class="ability-header">
-        <span class="slot-badge slot-q">Q</span>
-        <span class="ability-name q-name">スタティックフィールド</span>
+        <span class="slot-badge slot-1">スキル1</span>
+        <span class="ability-name s1-name">スタティックフィールド</span>
       </div>
       <div class="ability-desc">
         <span class="hi">0.5秒</span>ごとに<span class="hi">4回</span>攻撃し<br>
@@ -604,8 +595,8 @@
     </div>
     <div class="ability">
       <div class="ability-header">
-        <span class="slot-badge slot-w">W</span>
-        <span class="ability-name w-name">エレキウェブ</span>
+        <span class="slot-badge slot-2">スキル2</span>
+        <span class="ability-name s2-name">エレキウェブ</span>
       </div>
       <div class="ability-desc">
         <span class="hi">30%スロー</span>を与えるエレキウェブを放つ<br>
@@ -616,8 +607,8 @@
     </div>
     <div class="ability ult">
       <div class="ability-header">
-        <span class="slot-badge slot-r">R</span>
-        <span class="ability-name r-name">パルスインダクション</span>
+        <span class="slot-badge slot-ult">アルティメット</span>
+        <span class="ability-name ult-name">パルスインダクション</span>
       </div>
       <div class="ability-desc">
         <span class="hi">1.25秒後6ブロック</span>以内の敵プレイヤーのパワーを<br>
@@ -633,7 +624,6 @@
     <div class="kit-icon" style="background:#081828;border:1px solid #104860;">❄</div>
     <div class="kit-title">
       <div class="kit-name">ヘイル</div>
-      <div class="kit-weapon">武器: ヘイルサイス</div>
       <div class="kit-stats">
         <span class="stat stat-hp">HP 250</span>
         <span class="stat stat-atk">攻撃 18</span>
@@ -643,8 +633,8 @@
   <div class="abilities">
     <div class="ability">
       <div class="ability-header">
-        <span class="slot-badge slot-q">Q</span>
-        <span class="ability-name q-name">アイスレーザー</span>
+        <span class="slot-badge slot-1">スキル1</span>
+        <span class="ability-name s1-name">アイスレーザー</span>
       </div>
       <div class="ability-desc">
         射程<span class="hi">12ブロック</span>の即着弾レーザーを放ち<br>
@@ -653,8 +643,8 @@
     </div>
     <div class="ability">
       <div class="ability-header">
-        <span class="slot-badge slot-w">W</span>
-        <span class="ability-name w-name">シャープボール</span>
+        <span class="slot-badge slot-2">スキル2</span>
+        <span class="ability-name s2-name">シャープボール</span>
       </div>
       <div class="ability-desc">
         着弾時に<span class="hi">3.5ブロック</span>以内の敵に<span class="hi">5ダメージ</span>と<br>
@@ -663,8 +653,8 @@
     </div>
     <div class="ability ult">
       <div class="ability-header">
-        <span class="slot-badge slot-r">R</span>
-        <span class="ability-name r-name">フロストノヴァ</span>
+        <span class="slot-badge slot-ult">アルティメット</span>
+        <span class="ability-name ult-name">フロストノヴァ</span>
       </div>
       <div class="ability-desc">
         <span class="hi">0.5秒</span>のチャージ後<br>
@@ -680,7 +670,7 @@
 </div><!-- /kit-grid -->
 </div><!-- /container -->
 
-<footer>ReyonGames ForgeWars Kit Wiki — ゲームコードを元に作成</footer>
+<footer>ReyonGames ForgeWars Wiki</footer>
 
 </body>
 </html>

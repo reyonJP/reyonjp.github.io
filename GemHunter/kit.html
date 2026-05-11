@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GemHunter キット一覧</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0c0f14;
+      --surface: #13181f;
+      --surface2: #191f28;
+      --border:  #222a35;
+      --purple:  #cc66ff;
+      --purple2: #dd99ff;
+      --yellow:  #f0c040;
+      --green:   #50d070;
+      --red:     #ff6060;
+      --cyan:    #40d0e0;
+      --orange:  #ff9944;
+      --text:    #d0d8e4;
+      --muted:   #6a7a8a;
+      --ult:     #ffcc44;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    header {
+      background: linear-gradient(160deg, #0d0514, #180a28, #0d0514);
+      border-bottom: 2px solid #4a1a7a;
+      padding: 2.5rem 1.5rem 2rem;
+      text-align: center;
+    }
+    header h1 { font-size: clamp(1.6rem,4vw,2.4rem); color: #cc66ff; text-shadow: 0 0 25px #8822cc44; letter-spacing:.06em; }
+    header p  { color: var(--muted); margin-top:.4rem; font-size:.88rem; }
+
+    nav {
+      position: sticky; top:0; z-index:100;
+      background: #0c0f14ee; backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap:.3rem .6rem; padding:.6rem 1.2rem;
+    }
+    nav a {
+      color: #aa55dd; text-decoration:none; font-size:.78rem;
+      padding:.18rem .5rem; border-radius:3px;
+      transition: background .15s, color .15s;
+    }
+    nav a:hover { background:#150820; color:#cc88ff; }
+    nav a.back-link {
+      background:#180d28; color:#dd88ff;
+      border:1px solid #4a1a7a; font-weight:700;
+    }
+    nav a.back-link:hover { background:#200f30; color:#eeb8ff; }
+
+    .container { max-width:1100px; margin:2rem auto; padding:0 1rem; }
+
+    .kit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.2rem;
+    }
+
+    .kit-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .kit-header {
+      display: flex;
+      align-items: center;
+      gap: .9rem;
+      padding: 1rem 1.2rem .8rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .kit-icon {
+      width: 2.8rem; height: 2.8rem;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    .kit-title { flex: 1; }
+    .kit-name { font-size: 1.1rem; font-weight: 700; color: var(--purple2); }
+    .kit-stats {
+      display: flex; gap: .5rem; align-items: center;
+      margin-top: .35rem;
+      font-size: .78rem;
+    }
+    .stat { padding:.1rem .45rem; border-radius:3px; font-weight:700; }
+    .stat-hp  { background:#0a2010; border:1px solid #1a5020; color:var(--green); }
+    .stat-atk { background:#200a0a; border:1px solid #501a1a; color:var(--red); }
+
+    .abilities { padding: .7rem 1rem 1rem; display:flex; flex-direction:column; gap:.65rem; }
+
+    .ability {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .6rem .85rem;
+    }
+    .ability.ult {
+      background: #1a1600;
+      border-color: #4a3800;
+    }
+
+    .ability-header { display:flex; align-items:center; gap:.55rem; margin-bottom:.3rem; }
+
+    .slot-badge {
+      font-size: .68rem; font-weight: 800; letter-spacing:.01em;
+      padding: .15rem .5rem; border-radius: 3px;
+      flex-shrink: 0; white-space: nowrap;
+    }
+    .slot-1   { background:#180828; color:#cc66ff; border:1px solid #4a1a7a; }
+    .slot-2   { background:#0e200e; color:#50c060; border:1px solid #1a4a1a; }
+    .slot-ult { background:#201500; color:var(--ult); border:1px solid #5a3a00; }
+
+    .ability-name { font-weight:700; font-size:.92rem; }
+    .s1-name  { color: #cc88ff; }
+    .s2-name  { color: #70cc70; }
+    .ult-name { color: var(--ult); }
+
+    .ability-desc {
+      font-size: .82rem;
+      color: #b0bac8;
+      line-height: 1.6;
+    }
+    .ability-desc .hi { color: #ff9988; font-weight: 600; }
+
+    .tbd {
+      font-size: .82rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    footer {
+      text-align:center; padding:2rem 1rem;
+      color:var(--muted); font-size:.78rem;
+      border-top:1px solid var(--border); margin-top:2rem;
+    }
+
+    @media(max-width:500px){
+      .kit-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>💎 GemHunter キット一覧</h1>
+  <p>全7キットのスキル解説</p>
+</header>
+
+<nav>
+  <a href="main.html" class="back-link">← ゲーム説明に戻る</a>
+  <a href="#mist">ミスト</a>
+  <a href="#void">ヴォイド</a>
+  <a href="#blast">ブラスト</a>
+  <a href="#plant">プラント</a>
+  <a href="#lost">ロスト</a>
+  <a href="#lepton">レプトン</a>
+  <a href="#dread">ドレッド</a>
+</nav>
+
+<div class="container">
+<div class="kit-grid">
+
+<!-- ミスト -->
+<div class="kit-card" id="mist">
+  <div class="kit-header">
+    <div class="kit-icon" style="background:#0a1828;border:1px solid #1a3a6a;">🌫</div>
+    <div class="kit-title">
+      <div class="kit-name">ミスト</div>
+    </div>
+  </div>
+  <div class="abilities">
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-1">スキル1</span>
+        <span class="ability-name s1-name">クリスタルシェル</span>
+      </div>
+      <div class="ability-desc">
+        自身に水晶の殻を纏い、一定ダメージを無効化する<span class="hi">シールド</span>を張る
+      </div>
+    </div>
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-2">スキル2</span>
+        <span class="ability-name s2-name">ディリューション</span>
+      </div>
+      <div class="ability-desc">
+        周囲に霧を散布し、範囲内の敵に<span class="hi">スロー</span>を与える
+      </div>
+    </div>
+    <div class="ability ult">
+      <div class="ability-header">
+        <span class="slot-badge slot-ult">アルティメット</span>
+        <span class="ability-name ult-name">ミスト</span>
+      </div>
+      <div class="ability-desc">
+        広範囲に<span class="hi">濃霧</span>を展開する
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ヴォイド -->
+<div class="kit-card" id="void">
+  <div class="kit-header">
+    <div class="kit-icon" style="background:#0a0014;border:1px solid #2a0050;">🌀</div>
+    <div class="kit-title">
+      <div class="kit-name">ヴォイド</div>
+    </div>
+  </div>
+  <div class="abilities">
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-1">スキル1</span>
+        <span class="ability-name s1-name">アンノウントラベル</span>
+      </div>
+      <div class="ability-desc">
+        虚空を通り、指定した場所へ<span class="hi">瞬間移動</span>する
+      </div>
+    </div>
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-2">スキル2</span>
+        <span class="ability-name s2-name">—</span>
+      </div>
+      <div class="ability-desc tbd">詳細準備中</div>
+    </div>
+    <div class="ability ult">
+      <div class="ability-header">
+        <span class="slot-badge slot-ult">アルティメット</span>
+        <span class="ability-name ult-name">ヴォイド</span>
+      </div>
+      <div class="ability-desc">
+        虚空の力で範囲内の敵を<span class="hi">引き込む</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ブラスト -->
+<div class="kit-card" id="blast">
+  <div class="kit-header">
+    <div class="kit-icon" style="background:#1e0a00;border:1px solid #602000;">💥</div>
+    <div class="kit-title">
+      <div class="kit-name">ブラスト</div>
+    </div>
+  </div>
+  <div class="abilities">
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-1">スキル1</span>
+        <span class="ability-name s1-name">ブレイクイン</span>
+      </div>
+      <div class="ability-desc">
+        前方に<span class="hi">突入</span>し、当たった敵にダメージとノックバックを与える
+      </div>
+    </div>
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-2">スキル2</span>
+        <span class="ability-name s2-name">—</span>
+      </div>
+      <div class="ability-desc tbd">詳細準備中</div>
+    </div>
+    <div class="ability ult">
+      <div class="ability-header">
+        <span class="slot-badge slot-ult">アルティメット</span>
+        <span class="ability-name ult-name">ブラスト</span>
+      </div>
+      <div class="ability-desc">
+        強力な<span class="hi">爆発</span>を発生させ、周囲の敵にダメージを与える
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- プラント -->
+<div class="kit-card" id="plant">
+  <div class="kit-header">
+    <div class="kit-icon" style="background:#0a1e08;border:1px solid #1a5010;">🌱</div>
+    <div class="kit-title">
+      <div class="kit-name">プラント</div>
+    </div>
+  </div>
+  <div class="abilities">
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-1">スキル1</span>
+        <span class="ability-name s1-name">カルティベーション</span>
+      </div>
+      <div class="ability-desc">
+        植物を育て、範囲内の<span class="hi">味方を回復</span>する
+      </div>
+    </div>
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-2">スキル2</span>
+        <span class="ability-name s2-name">—</span>
+      </div>
+      <div class="ability-desc tbd">詳細準備中</div>
+    </div>
+    <div class="ability ult">
+      <div class="ability-header">
+        <span class="slot-badge slot-ult">アルティメット</span>
+        <span class="ability-name ult-name">プラント</span>
+      </div>
+      <div class="ability-desc">
+        大型の植物を召喚し、周囲の敵を<span class="hi">攻撃</span>させる
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ロスト -->
+<div class="kit-card" id="lost">
+  <div class="kit-header">
+    <div class="kit-icon" style="background:#120010;border:1px solid #400030;">💔</div>
+    <div class="kit-title">
+      <div class="kit-name">ロスト</div>
+    </div>
+  </div>
+  <div class="abilities">
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-1">スキル1</span>
+        <span class="ability-name s1-name">サクリファイスリング</span>
+      </div>
+      <div class="ability-desc">
+        自身のHPを消費して周囲の敵にダメージを与える<span class="hi">犠牲の輪</span>を設置する
+      </div>
+    </div>
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-2">スキル2</span>
+        <span class="ability-name s2-name">—</span>
+      </div>
+      <div class="ability-desc tbd">詳細準備中</div>
+    </div>
+    <div class="ability ult">
+      <div class="ability-header">
+        <span class="slot-badge slot-ult">アルティメット</span>
+        <span class="ability-name ult-name">ロスト</span>
+      </div>
+      <div class="ability-desc tbd">詳細準備中</div>
+    </div>
+  </div>
+</div>
+
+<!-- レプトン -->
+<div class="kit-card" id="lepton">
+  <div class="kit-header">
+    <div class="kit-icon" style="background:#001828;border:1px solid #005060;">⚛</div>
+    <div class="kit-title">
+      <div class="kit-name">レプトン</div>
+    </div>
+  </div>
+  <div class="abilities">
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-1">スキル1</span>
+        <span class="ability-name s1-name">サイクロトロン</span>
+      </div>
+      <div class="ability-desc">
+        円形の力場を展開し、範囲内の敵に<span class="hi">継続ダメージ</span>を与える
+      </div>
+    </div>
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-2">スキル2</span>
+        <span class="ability-name s2-name">ヒッグスエフェクト</span>
+      </div>
+      <div class="ability-desc">
+        対象に重力場を展開し、<span class="hi">移動速度を低下</span>させる
+      </div>
+    </div>
+    <div class="ability ult">
+      <div class="ability-header">
+        <span class="slot-badge slot-ult">アルティメット</span>
+        <span class="ability-name ult-name">レプトン</span>
+      </div>
+      <div class="ability-desc">
+        素粒子の力を全解放し、範囲内の敵を<span class="hi">吹き飛ばす</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ドレッド -->
+<div class="kit-card" id="dread">
+  <div class="kit-header">
+    <div class="kit-icon" style="background:#100820;border:1px solid #302050;">💀</div>
+    <div class="kit-title">
+      <div class="kit-name">ドレッド</div>
+    </div>
+  </div>
+  <div class="abilities">
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-1">スキル1</span>
+        <span class="ability-name s1-name">テラーアンビット</span>
+      </div>
+      <div class="ability-desc">
+        恐怖の領域を展開し、範囲内の敵に<span class="hi">デバフ</span>を与える
+      </div>
+    </div>
+    <div class="ability">
+      <div class="ability-header">
+        <span class="slot-badge slot-2">スキル2</span>
+        <span class="ability-name s2-name">サモンスケアリーヘッド</span>
+      </div>
+      <div class="ability-desc">
+        ウィザーの頭を投擲し、当たった敵に<span class="hi">ダメージと状態異常</span>を与える
+      </div>
+    </div>
+    <div class="ability ult">
+      <div class="ability-header">
+        <span class="slot-badge slot-ult">アルティメット</span>
+        <span class="ability-name ult-name">ドレッド</span>
+      </div>
+      <div class="ability-desc tbd">詳細準備中</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /kit-grid -->
+</div><!-- /container -->
+
+<footer>ReyonGames GemHunter Wiki</footer>
+
+</body>
+</html>
