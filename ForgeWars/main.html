@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ReyonGames ForgeWars Wiki</title>
+  <title>ForgeWars — ReyonGames Wiki</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -16,6 +16,7 @@
       --green:   #3ecf5e;
       --red:     #ff5555;
       --yellow:  #f0c040;
+      --orange:  #ff8c42;
       --text:    #d5dae4;
       --muted:   #7a8899;
     }
@@ -30,6 +31,7 @@
       font-size: 15px;
     }
 
+    /* ===== HEADER ===== */
     header {
       background: linear-gradient(160deg, #050c1c 0%, #0a1830 60%, #050c1c 100%);
       border-bottom: 2px solid #1a3a6a;
@@ -37,18 +39,20 @@
       text-align: center;
     }
     header h1 {
-      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-size: clamp(2rem, 6vw, 3.2rem);
       color: #5599ff;
-      text-shadow: 0 0 30px #3377ff55;
+      text-shadow: 0 0 40px #3377ff66;
       letter-spacing: .06em;
     }
     header h1 span {
       color: #88aacc;
-      font-size: .58em;
+      font-size: .5em;
       display: block;
-      margin-top: .3rem;
+      margin-top: .4rem;
+      letter-spacing: .04em;
     }
 
+    /* ===== NAV ===== */
     nav {
       position: sticky; top: 0; z-index: 100;
       background: #0c0f14ee;
@@ -63,12 +67,20 @@
       color: #4488cc;
       text-decoration: none;
       font-size: .82rem;
-      padding: .2rem .5rem;
-      border-radius: 3px;
+      padding: .25rem .6rem;
+      border-radius: 4px;
       transition: background .15s, color .15s;
     }
     nav a:hover { background: #0a1828; color: #88bbff; }
+    nav a.kit-link {
+      background: #0d2040;
+      color: #70b8ff;
+      border: 1px solid #1a4a8a;
+      font-weight: 700;
+    }
+    nav a.kit-link:hover { background: #112850; color: #aad4ff; }
 
+    /* ===== CONTAINER ===== */
     .container {
       max-width: 900px;
       margin: 2rem auto;
@@ -76,6 +88,7 @@
       display: flex; flex-direction: column; gap: 1.4rem;
     }
 
+    /* ===== CARD ===== */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -89,120 +102,170 @@
       padding-left: .75rem;
       margin-bottom: 1.1rem;
     }
-    .card h3 {
-      font-size: .95rem;
-      color: var(--yellow);
-      margin: 1.2rem 0 .5rem;
-    }
     p { color: var(--text); }
     ul, ol { padding-left: 1.4rem; }
-    li { margin-bottom: .35rem; color: var(--text); }
+    li { margin-bottom: .4rem; color: var(--text); }
 
-    /* Teams */
-    .teams {
+    /* ===== RULE CARD ===== */
+    .rule-card {
+      background: #0d1a2e;
+      border: 1px solid #1a3a6a;
+      border-radius: 10px;
+      padding: 1.6rem 1.8rem;
+    }
+    .rule-card h2 {
+      font-size: 1.15rem;
+      color: var(--accent2);
+      border-left: 3px solid var(--accent);
+      padding-left: .75rem;
+      margin-bottom: 1.2rem;
+    }
+    .rule-list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: .55rem;
+      margin-bottom: 1.3rem;
+    }
+    .rule-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: .55rem;
+      color: var(--text);
+      font-size: .93rem;
+      padding: .5rem .7rem;
+      background: #0a1428;
+      border: 1px solid #1a3050;
+      border-radius: 6px;
+    }
+    .rule-list li .icon {
+      flex-shrink: 0;
+      font-size: 1rem;
+      margin-top: .1rem;
+    }
+
+    /* ===== WARNING BOX ===== */
+    .warn-box {
+      background: #1a0d00;
+      border: 1px solid #6a3000;
+      border-left: 4px solid var(--orange);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+    }
+    .warn-box .warn-title {
+      color: var(--orange);
+      font-weight: 700;
+      font-size: .95rem;
+      margin-bottom: .65rem;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+    }
+    .warn-list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+    .warn-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: .5rem;
+      font-size: .88rem;
+      color: #ddb890;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+    .warn-list li .wi {
+      color: var(--orange);
+      flex-shrink: 0;
+      margin-top: .1rem;
+    }
+
+    /* ===== KIT BANNER ===== */
+    .kit-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      background: linear-gradient(100deg, #081428 0%, #0d1f3a 100%);
+      border: 1px solid #1a4070;
+      border-radius: 10px;
+      padding: 1.4rem 1.8rem;
+      flex-wrap: wrap;
+    }
+    .kit-banner-text h2 {
+      font-size: 1.1rem;
+      color: var(--accent2);
+      border-left: 3px solid var(--accent);
+      padding-left: .75rem;
+      margin-bottom: .4rem;
+    }
+    .kit-banner-text p {
+      color: var(--muted);
+      font-size: .88rem;
+      padding-left: .75rem;
+    }
+    .kit-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      background: linear-gradient(135deg, #1a4a9a 0%, #0d2a60 100%);
+      color: #aad4ff;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: .93rem;
+      padding: .7rem 1.4rem;
+      border-radius: 7px;
+      border: 1px solid #2a5aaa;
+      transition: background .15s, transform .1s, box-shadow .15s;
+      white-space: nowrap;
+    }
+    .kit-btn:hover {
+      background: linear-gradient(135deg, #225aaa 0%, #113070 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px #1a4a8a44;
+    }
+
+    /* ===== MAPS ===== */
+    .map-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
-      margin-top: 1rem;
-    }
-    .team {
-      border-radius: 8px;
-      padding: 1.1rem 1.2rem;
-    }
-    .team.blue { background: #08101e; border: 1px solid #1a4a8a; }
-    .team.red  { background: #1e0808; border: 1px solid #8a1a1a; }
-    .team h3 { margin: 0 0 .4rem; font-size: 1rem; }
-    .team.blue h3 { color: #5599ff; }
-    .team.red  h3 { color: #ff5555; }
-
-    /* Steps */
-    .steps { list-style: none; padding: 0; counter-reset: s; }
-    .steps li {
-      counter-increment: s;
-      position: relative;
-      padding: .55rem 0 .55rem 3rem;
-      border-left: 2px solid #152030;
-      margin-left: 1rem;
-    }
-    .steps li::before {
-      content: counter(s);
-      position: absolute;
-      left: -1.05rem; top: .45rem;
-      width: 1.9rem; height: 1.9rem;
-      border-radius: 50%;
-      background: #0d3060;
-      color: #fff;
-      font-size: .78rem; font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .steps li:last-child { border-left-color: transparent; }
-
-    /* Table */
-    table { width: 100%; border-collapse: collapse; margin-top: .7rem; font-size: .88rem; }
-    th {
-      background: #141c28;
-      color: #88bbff;
-      padding: .5rem .8rem;
-      text-align: left;
-      border-bottom: 1px solid #253550;
-    }
-    td { padding: .5rem .8rem; border-bottom: 1px solid #181f2c; }
-    tr:last-child td { border-bottom: none; }
-
-    /* Tags */
-    .tag {
-      display: inline-block;
-      padding: .1rem .5rem;
-      border-radius: 3px;
-      font-size: .75rem; font-weight: 700;
-    }
-    .tb { background: #081428; color: #5599ff; border: 1px solid #1a4a8a; }
-    .tr { background: #200d0d; color: #ff6060; border: 1px solid #5a2020; }
-    .tg { background: #0e2010; color: var(--green); border: 1px solid #235a28; }
-    .ty { background: #271e00; color: var(--yellow); border: 1px solid #5a4400; }
-    .tp { background: #1a0a28; color: #cc88ff; border: 1px solid #4a2070; }
-
-    /* Alert */
-    .alert {
-      background: #0a1428;
-      border: 1px solid #1a3a6a;
-      border-left: 4px solid var(--accent);
-      border-radius: 5px;
-      padding: .9rem 1.1rem;
-      margin-top: .9rem;
-      font-size: .88rem;
-    }
-    .alert strong { color: #70b8ff; }
-
-    /* Kit grid */
-    .kgrid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      gap: .65rem;
       margin-top: .8rem;
     }
-    .kcard {
-      background: #101828;
+    .map-card {
+      background: #0d1520;
       border: 1px solid #1e3050;
-      border-radius: 6px;
-      padding: .7rem .6rem;
-      text-align: center;
+      border-radius: 8px;
+      padding: 1rem 1.1rem;
     }
-    .kcard .kname { color: #88bbff; font-weight: 700; font-size: .9rem; }
-    .kcard .ktype { font-size: .75rem; margin-top: .25rem; color: var(--muted); }
+    .map-card .map-name {
+      font-weight: 700;
+      color: #88bbff;
+      font-size: .95rem;
+      margin-bottom: .4rem;
+    }
+    .map-card .map-desc {
+      font-size: .85rem;
+      color: var(--muted);
+    }
 
-    /* Status effects */
+    /* ===== STATUS EFFECTS ===== */
     .sfx {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
       gap: .6rem;
-      margin-top: .7rem;
+      margin-top: .8rem;
     }
     .sfx-item {
       background: #0d1520;
       border: 1px solid #253040;
       border-radius: 5px;
-      padding: .5rem .8rem;
+      padding: .55rem .8rem;
       font-size: .85rem;
     }
     .sfx-item .sname { font-weight: 700; color: #aaccff; }
@@ -216,8 +279,9 @@
       border-top: 1px solid var(--border);
     }
 
-    @media (max-width: 540px) {
-      .teams { grid-template-columns: 1fr; }
+    @media (max-width: 560px) {
+      .map-grid { grid-template-columns: 1fr; }
+      .kit-banner { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
@@ -225,73 +289,79 @@
 
 <header>
   <h1>🔥 ForgeWars
-    <span>ReyonGames — 初心者向けゲームガイド</span>
+    <span>ReyonGames Wiki</span>
   </h1>
 </header>
 
 <nav>
-  <a href="#overview">概要</a>
-  <a href="#flow">流れ</a>
-  <a href="#kits">キット一覧</a>
-  <a href="#forge">フォージ</a>
-  <a href="#status">状態異常</a>
+  <a href="#rules">ルール</a>
   <a href="#maps">マップ</a>
+  <a href="#status">状態異常</a>
+  <a href="kit.html" class="kit-link">⚔ キット一覧</a>
 </nav>
 
 <div class="container">
 
-  <!-- 概要 -->
-  <div class="card" id="overview">
-    <h2>🎮 ゲーム概要</h2>
-    <p>ForgeWars は <strong>青チーム</strong> と <strong>赤チーム</strong> に分かれて戦う 5v5 の対戦ゲームです。<br>
-    各自がキット（職業）を選び、チームの <strong>フォージ（砲台）</strong> を守りながら敵のフォージを破壊するのが目標です。</p>
+  <!-- ルール説明 -->
+  <div class="rule-card" id="rules">
+    <h2>📋 一言ルール説明</h2>
 
-    <div class="teams">
-      <div class="team blue">
-        <h3>🔵 青チーム</h3>
-        <p>自チームのフォージを守りつつ、赤チームのフォージを破壊せよ。</p>
-      </div>
-      <div class="team red">
-        <h3>🔴 赤チーム</h3>
-        <p>自チームのフォージを守りつつ、青チームのフォージを破壊せよ。</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ゲームの流れ -->
-  <div class="card" id="flow">
-    <h2>⏱ ゲームの流れ</h2>
-    <ol class="steps">
-      <li>マップ上で敵チームと戦いながら <strong>敵のフォージを破壊</strong> する。</li>
-      <li>先に敵のフォージを破壊したチームの勝利。</li>
-    </ol>
-  </div>
-
-  <!-- キット一覧 -->
-  <div class="card" id="kits">
-    <h2>⚔ キット</h2>
-    <p><a href="kit.html">詳しくはこちら</a></p>
-
-    <div class="alert" style="margin-top:1rem;">
-      <strong>💡 ロール別の役割</strong><br>
-      <span class="tag tg">タンク</span> 前線で耐えてチームを守る　
-      <span class="tag tb">ファイター</span> 高火力で敵を倒す　
-      <span class="tag tp">サポート</span> 味方を支援・回復する
-    </div>
-  </div>
-
-  <!-- フォージ -->
-  <div class="card" id="forge">
-    <h2>🏭 フォージ（勝利条件）</h2>
-    <p>フォージは各チームの本拠地に設置された <strong>砲台構造物</strong> です。</p>
-    <ul style="margin-top:.7rem;">
-      <li>敵チームのフォージを先に <strong>破壊したチームが勝利</strong>。</li>
-      <li>フォージ付近は <strong>自陣スポーン地点</strong> として機能し、一定の回復効果もある。</li>
+    <ul class="rule-list">
+      <li>
+        <span class="icon">⚔</span>
+        <span>2チームに分かれてスキルPvP</span>
+      </li>
+      <li>
+        <span class="icon">🏭</span>
+        <span>敵陣の<strong>フォージ（かまど）の体力を0</strong>にしたチームの勝ち</span>
+      </li>
+      <li>
+        <span class="icon">⬆</span>
+        <span>敵プレイヤーや中立モブ（ゾンビ）を倒して<strong>レベルを上げる</strong>と新しいスキルが解放される</span>
+      </li>
+      <li>
+        <span class="icon">🗺</span>
+        <span>マップごとに異なる<strong>イベント</strong>が発生</span>
+      </li>
     </ul>
 
-    <h3>経験値（XP）とレベル</h3>
-    <p>戦闘や活動で XP を獲得し、チームがレベルアップするとエンチャントが強化されます。
-    スコアボードでチームの現在レベルを確認できます。</p>
+    <div class="warn-box">
+      <div class="warn-title">⚠ 注意点</div>
+      <ul class="warn-list">
+        <li>
+          <span class="wi">▶</span>
+          <span>敵陣のフォージに近づくと<strong>大ダメージ</strong>を受けます。序盤はフォージに近づかないようにしましょう。</span>
+        </li>
+        <li>
+          <span class="wi">▶</span>
+          <span>敵と大きく<strong>レベル差</strong>が付くと戦いに勝つのは難しくなります。レベル差が付いた場合は無理に戦わず、中立モブやマップイベントでレベル差を埋めましょう。</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- キット一覧へ -->
+  <div class="kit-banner" id="kits">
+    <div class="kit-banner-text">
+      <h2>⚔ キット一覧</h2>
+      <p>使用できるキットのスキルや特徴を確認できます</p>
+    </div>
+    <a href="kit.html" class="kit-btn">キット一覧を見る →</a>
+  </div>
+
+  <!-- マップ -->
+  <div class="card" id="maps">
+    <h2>🗺 マップ（全 2 種）</h2>
+    <div class="map-grid">
+      <div class="map-card">
+        <div class="map-name">💣 クレイジーキャノン</div>
+        <div class="map-desc">砲台が飛び交うダイナミックなマップ。スペースの使い方が重要。</div>
+      </div>
+      <div class="map-card">
+        <div class="map-name">🏚 ルインドコロニー</div>
+        <div class="map-desc">廃墟の集落。複数の建物を利用した立体的な戦いが展開する。</div>
+      </div>
+    </div>
   </div>
 
   <!-- 状態異常 -->
@@ -314,20 +384,10 @@
     </div>
   </div>
 
-  <!-- マップ -->
-  <div class="card" id="maps">
-    <h2>🗺 マップ（全 2 種）</h2>
-    <table>
-      <tr><th>マップ名</th><th>特徴</th></tr>
-      <tr><td>💣 クレイジーキャノン</td><td>砲台が飛び交うダイナミックなマップ。スペースの使い方が重要。</td></tr>
-      <tr><td>🏚 ルインドコロニー</td><td>廃墟の集落。複数の建物を利用した立体的な戦いが展開する。</td></tr>
-    </table>
-  </div>
-
 </div>
 
 <footer>
-  ReyonGames ForgeWars Wiki — ゲームコードを元に作成
+  ReyonGames ForgeWars Wiki
 </footer>
 
 </body>
