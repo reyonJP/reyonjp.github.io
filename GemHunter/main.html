@@ -66,13 +66,20 @@
       transition: background .15s, color .15s;
     }
     nav a:hover { background: #150820; color: #cc88ff; }
-    nav a.home-link {
+    nav a.kit-link {
       background: #180d28;
       color: #dd88ff;
       border: 1px solid #4a1a7a;
       font-weight: 700;
     }
-    nav a.home-link:hover { background: #200f30; color: #eeb8ff; }
+    nav a.kit-link:hover { background: #200f30; color: #eeb8ff; }
+    nav a.home-link {
+      background: #1a1010;
+      color: #aaaaaa;
+      border: 1px solid #3a2a3a;
+      font-weight: 700;
+    }
+    nav a.home-link:hover { background: #221818; color: #cccccc; }
 
     .container {
       max-width: 900px;
@@ -162,6 +169,50 @@
       margin-bottom: 1rem;
     }
 
+    .kit-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      background: linear-gradient(100deg, #0f0818 0%, #1a0d30 100%);
+      border: 1px solid #4a1a7a;
+      border-radius: 10px;
+      padding: 1.4rem 1.8rem;
+      flex-wrap: wrap;
+    }
+    .kit-banner-text h2 {
+      font-size: 1.1rem;
+      color: var(--accent2);
+      border-left: 3px solid var(--accent);
+      padding-left: .75rem;
+      margin-bottom: .4rem;
+    }
+    .kit-banner-text p {
+      color: var(--muted);
+      font-size: .88rem;
+      padding-left: .75rem;
+    }
+    .kit-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      background: linear-gradient(135deg, #3a1a6a 0%, #200a40 100%);
+      color: #ddaaff;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: .93rem;
+      padding: .7rem 1.4rem;
+      border-radius: 7px;
+      border: 1px solid #5a2a9a;
+      transition: background .15s, transform .1s, box-shadow .15s;
+      white-space: nowrap;
+    }
+    .kit-btn:hover {
+      background: linear-gradient(135deg, #4a2a7a 0%, #2a1050 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px #4a1a8a44;
+    }
+
     footer {
       text-align: center;
       padding: 2rem 1rem;
@@ -181,6 +232,7 @@
 
 <nav>
   <a href="#rules">ルール</a>
+  <a href="kit.html" class="kit-link">⚔ キット一覧</a>
   <a href="../index.html" class="home-link">← トップに戻る</a>
 </nav>
 
@@ -223,6 +275,15 @@
         </li>
       </ul>
     </div>
+  </div>
+
+  <!-- キット一覧バナー -->
+  <div class="kit-banner">
+    <div class="kit-banner-text">
+      <h2>⚔ キット一覧</h2>
+      <p>使用できるキットのスキルや特徴を確認できます</p>
+    </div>
+    <a href="kit.html" class="kit-btn">キット一覧を見る →</a>
   </div>
 
 </div>
