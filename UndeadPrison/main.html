@@ -1,11 +1,222 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UndeadPrison — ReyonGames Wiki</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0c0f14;
+      --surface: #13181f;
+      --border:  #222a35;
+      --accent:  #3ecf5e;
+      --accent2: #7ae896;
+      --red:     #ff5555;
+      --yellow:  #f0c040;
+      --orange:  #ff8c42;
+      --text:    #d5dae4;
+      --muted:   #7a8899;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+      font-size: 15px;
+    }
+
+    header {
+      background: linear-gradient(160deg, #050f08 0%, #091a0d 60%, #050f08 100%);
+      border-bottom: 2px solid #1a5a2a;
+      padding: 3rem 1.5rem 2.5rem;
+      text-align: center;
+    }
+    header h1 {
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      color: #4ecf6e;
+      text-shadow: 0 0 40px #2a8f4466;
+      letter-spacing: .06em;
+    }
+    header h1 span {
+      color: #88aa99;
+      font-size: .5em;
+      display: block;
+      margin-top: .4rem;
+    }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: #0c0f14ee;
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      display: flex; flex-wrap: wrap;
+      justify-content: center;
+      gap: .4rem .8rem;
+      padding: .65rem 1.5rem;
+    }
+    nav a {
+      color: #44aa66;
+      text-decoration: none;
+      font-size: .82rem;
+      padding: .25rem .6rem;
+      border-radius: 4px;
+      transition: background .15s, color .15s;
+    }
+    nav a:hover { background: #0a180e; color: #88ddaa; }
+    nav a.home-link {
+      background: #0d2018;
+      color: #7ae896;
+      border: 1px solid #1a5a2a;
+      font-weight: 700;
+    }
+    nav a.home-link:hover { background: #112818; color: #aaeecc; }
+
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1.2rem;
+      display: flex; flex-direction: column; gap: 1.4rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.6rem 1.8rem;
+    }
+    .card h2 {
+      font-size: 1.15rem;
+      color: var(--accent2);
+      border-left: 3px solid var(--accent);
+      padding-left: .75rem;
+      margin-bottom: 1.1rem;
+    }
+    p { color: var(--text); }
+    ul { padding-left: 1.4rem; }
+    li { margin-bottom: .4rem; color: var(--text); }
+
+    .rule-card {
+      background: #0a1a0e;
+      border: 1px solid #1a5a2a;
+      border-radius: 10px;
+      padding: 1.6rem 1.8rem;
+    }
+    .rule-card h2 {
+      font-size: 1.15rem;
+      color: var(--accent2);
+      border-left: 3px solid var(--accent);
+      padding-left: .75rem;
+      margin-bottom: 1.2rem;
+    }
+    .rule-list {
+      list-style: none;
+      padding: 0;
+      display: flex; flex-direction: column; gap: .55rem;
+      margin-bottom: 1.3rem;
+    }
+    .rule-list li {
+      display: flex; align-items: flex-start; gap: .55rem;
+      color: var(--text);
+      font-size: .93rem;
+      padding: .5rem .7rem;
+      background: #081408;
+      border: 1px solid #1a4020;
+      border-radius: 6px;
+    }
+    .rule-list li .icon { flex-shrink: 0; font-size: 1rem; margin-top: .1rem; }
+
+    .warn-box {
+      background: #1a0d00;
+      border: 1px solid #6a3000;
+      border-left: 4px solid var(--orange);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+    }
+    .warn-box .warn-title {
+      color: var(--orange);
+      font-weight: 700;
+      font-size: .95rem;
+      margin-bottom: .65rem;
+      display: flex; align-items: center; gap: .4rem;
+    }
+    .warn-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: .5rem; }
+    .warn-list li {
+      display: flex; align-items: flex-start; gap: .5rem;
+      font-size: .88rem; color: #ddb890;
+      background: none; border: none; padding: 0;
+    }
+    .warn-list li .wi { color: var(--orange); flex-shrink: 0; margin-top: .1rem; }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--muted);
+      font-size: .8rem;
+      border-top: 1px solid var(--border);
+    }
+  </style>
 </head>
 <body>
-    アンデッドプリズン
+
+<header>
+  <h1>🧟 UndeadPrison
+    <span>ReyonGames Wiki</span>
+  </h1>
+</header>
+
+<nav>
+  <a href="#rules">ルール</a>
+  <a href="../index.html" class="home-link">← トップに戻る</a>
+</nav>
+
+<div class="container">
+
+  <div class="rule-card" id="rules">
+    <h2>📋 一言ルール説明</h2>
+
+    <ul class="rule-list">
+      <li>
+        <span class="icon">🤝</span>
+        <span>全員で協力してひたすら<strong>耐え続ける</strong> PvEゲーム</span>
+      </li>
+      <li>
+        <span class="icon">🧟</span>
+        <span>次々と押し寄せる<strong>アンデッド（ゾンビ等）</strong>の波を生き延びる</span>
+      </li>
+      <li>
+        <span class="icon">⬆</span>
+        <span>モブを倒して経験値を稼ぎ、装備やスキルを強化しながら戦い続ける</span>
+      </li>
+      <li>
+        <span class="icon">💀</span>
+        <span>プレイヤー全員が倒されるとゲームオーバー</span>
+      </li>
+    </ul>
+
+    <div class="warn-box">
+      <div class="warn-title">⚠ 注意点</div>
+      <ul class="warn-list">
+        <li>
+          <span class="wi">▶</span>
+          <span>単独行動は危険です。なるべく仲間と固まって戦いましょう。</span>
+        </li>
+        <li>
+          <span class="wi">▶</span>
+          <span>倒れた仲間を放置せず、できる限り<strong>蘇生</strong>を優先してください。</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  ReyonGames Wiki
+</footer>
+
 </body>
 </html>

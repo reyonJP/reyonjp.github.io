@@ -1,11 +1,244 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>マイクラDbD — ReyonGames Wiki</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0c0f14;
+      --surface: #13181f;
+      --border:  #222a35;
+      --accent:  #cc2222;
+      --accent2: #ff6666;
+      --orange:  #ff8c42;
+      --text:    #d5dae4;
+      --muted:   #7a8899;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+      font-size: 15px;
+    }
+
+    header {
+      background: linear-gradient(160deg, #0f0505 0%, #1a0808 60%, #0f0505 100%);
+      border-bottom: 2px solid #6a1a1a;
+      padding: 3rem 1.5rem 2.5rem;
+      text-align: center;
+    }
+    header h1 {
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      color: #cc3333;
+      text-shadow: 0 0 40px #aa111166;
+      letter-spacing: .06em;
+    }
+    header h1 span {
+      color: #aa8888;
+      font-size: .5em;
+      display: block;
+      margin-top: .4rem;
+    }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: #0c0f14ee;
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      display: flex; flex-wrap: wrap;
+      justify-content: center;
+      gap: .4rem .8rem;
+      padding: .65rem 1.5rem;
+    }
+    nav a {
+      color: #cc4444;
+      text-decoration: none;
+      font-size: .82rem;
+      padding: .25rem .6rem;
+      border-radius: 4px;
+      transition: background .15s, color .15s;
+    }
+    nav a:hover { background: #1a0808; color: #ff8888; }
+    nav a.home-link {
+      background: #200808;
+      color: #ff6666;
+      border: 1px solid #6a1a1a;
+      font-weight: 700;
+    }
+    nav a.home-link:hover { background: #281010; color: #ff9999; }
+
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1.2rem;
+      display: flex; flex-direction: column; gap: 1.4rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.6rem 1.8rem;
+    }
+    .card h2 {
+      font-size: 1.15rem;
+      color: var(--accent2);
+      border-left: 3px solid var(--accent);
+      padding-left: .75rem;
+      margin-bottom: 1.1rem;
+    }
+    p { color: var(--text); }
+    ul { padding-left: 1.4rem; }
+    li { margin-bottom: .4rem; color: var(--text); }
+
+    .rule-card {
+      background: #150505;
+      border: 1px solid #6a1a1a;
+      border-radius: 10px;
+      padding: 1.6rem 1.8rem;
+    }
+    .rule-card h2 {
+      font-size: 1.15rem;
+      color: var(--accent2);
+      border-left: 3px solid var(--accent);
+      padding-left: .75rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .roles-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.3rem;
+    }
+    .role-box {
+      border-radius: 8px;
+      padding: 1rem 1.1rem;
+    }
+    .role-box.killer {
+      background: #200808;
+      border: 1px solid #6a1a1a;
+    }
+    .role-box.survivor {
+      background: #081428;
+      border: 1px solid #1a4a8a;
+    }
+    .role-box .role-name {
+      font-weight: 700;
+      font-size: .95rem;
+      margin-bottom: .6rem;
+    }
+    .role-box.killer .role-name { color: #ff6666; }
+    .role-box.survivor .role-name { color: #5599ff; }
+    .role-box ul {
+      list-style: none;
+      padding: 0;
+    }
+    .role-box ul li {
+      display: flex; align-items: flex-start; gap: .4rem;
+      font-size: .87rem;
+      margin-bottom: .35rem;
+    }
+    .role-box.killer ul li { color: #dda0a0; }
+    .role-box.survivor ul li { color: #a0b8dd; }
+    .ri { flex-shrink: 0; }
+
+    .warn-box {
+      background: #1a0d00;
+      border: 1px solid #6a3000;
+      border-left: 4px solid var(--orange);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+    }
+    .warn-box .warn-title {
+      color: var(--orange);
+      font-weight: 700;
+      font-size: .95rem;
+      margin-bottom: .65rem;
+      display: flex; align-items: center; gap: .4rem;
+    }
+    .warn-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: .5rem; }
+    .warn-list li {
+      display: flex; align-items: flex-start; gap: .5rem;
+      font-size: .88rem; color: #ddb890;
+      background: none; border: none; padding: 0;
+    }
+    .warn-list li .wi { color: var(--orange); flex-shrink: 0; margin-top: .1rem; }
+
+    @media (max-width: 520px) {
+      .roles-grid { grid-template-columns: 1fr; }
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--muted);
+      font-size: .8rem;
+      border-top: 1px solid var(--border);
+    }
+  </style>
 </head>
 <body>
-    DbD
+
+<header>
+  <h1>🔪 マイクラDbD
+    <span>ReyonGames Wiki</span>
+  </h1>
+</header>
+
+<nav>
+  <a href="#rules">ルール</a>
+  <a href="../index.html" class="home-link">← トップに戻る</a>
+</nav>
+
+<div class="container">
+
+  <div class="rule-card" id="rules">
+    <h2>📋 一言ルール説明</h2>
+
+    <div class="roles-grid">
+      <div class="role-box killer">
+        <div class="role-name">🔪 鬼（キラー）× 1人</div>
+        <ul>
+          <li><span class="ri">▶</span>生存者全員を捕まえればキラーの勝利</li>
+          <li><span class="ri">▶</span>マップを巡回して生存者を追いかける</li>
+        </ul>
+      </div>
+      <div class="role-box survivor">
+        <div class="role-name">🏃 生存者（サバイバー）× 複数</div>
+        <ul>
+          <li><span class="ri">▶</span>鬼から逃げながら<strong>資源を採掘</strong></li>
+          <li><span class="ri">▶</span>脱出条件を満たして<strong>全員脱出</strong>すれば勝利</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="warn-box">
+      <div class="warn-title">⚠ 注意点</div>
+      <ul class="warn-list">
+        <li>
+          <span class="wi">▶</span>
+          <span>採掘に夢中になって鬼の接近に気づかないことが多いです。<strong>周囲の音と動きに常に注意</strong>してください。</span>
+        </li>
+        <li>
+          <span class="wi">▶</span>
+          <span>捕まった仲間を見捨てず、鬼が離れたタイミングで<strong>蘇生</strong>しましょう。ただし無理な蘇生は共倒れになる危険があります。</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  ReyonGames Wiki
+</footer>
+
 </body>
 </html>
