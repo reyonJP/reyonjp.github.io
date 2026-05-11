@@ -1,50 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>れよんサーバー Wiki</title>
     <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="wiki.css">
 </head>
 
 <body>
     <h1>れよんサーバー Wiki</h1>
-    <div>
-        <div>
-            <div><a href="ForgeWars/main.html">フォージウォーズ</a></div>
-            <div>
-                <p>2チームに分かれてMOBA風スキルPvP</p>
-                <p>スキルとマップ固有のイベントを活かして敵陣の「フォージ」を破壊しよう!</p>
-            </div>
-        </div>
-        <div>
-            <div><a href="UndeadPrison/main.html">アンデッドプリズン</a></div>
-            <div>
-                <p>PvE</p>
-                <p>全員で協力してひたすら耐え続けろ!</p>
-            </div>
-        </div>
-        <div>
-            <div><a href="SurvivalDomination/main.html">サバイバルドミネーション</a></div>
-            <div>
-                <p>サバイバルで集めたアイテムでチームPvP</p>
-            </div>
-        </div>
-        <div>
-            <div><a href="GemHunter/main.html">ジェムハンター</a></div>
-            <div>
-                <p>2チームに分かれて陣取りスキルPvP</p>
-                <p>1ラウンド50秒のハイスピードバトル!</p>
-            </div>
-        </div>
-        <div>
-            <div><a href="DbD/main.html">マイクラDbD</a></div>
-            <div>
-                <p>Dead by Daylight風の鬼ごっこ</p>
-                <p>鬼から逃げながら資源を採掘して脱出しよう!</p>
-            </div>
-        </div>
+    <div id="game_grid">
+        <a class="game_card" href="ForgeWars/main.html">
+            <img src="img_forge.png" alt="フォージウォーズ">
+            <h2>フォージウォーズ</h2>
+            <p>2チームに分かれてMOBA風スキルPvP</p>
+            <p>スキルとマップ固有のイベントを活かして敵陣の「フォージ」を破壊しよう!</p>
+        </a>
+        <a class="game_card" href="UndeadPrison/main.html">
+            <img src="img_undeadprison.png" alt="アンデッドプリズン">
+            <h2>アンデッドプリズン</h2>
+            <p>PvE</p>
+            <p>全員で協力してひたすら耐え続けろ!</p>
+        </a>
+        <a class="game_card" href="SurvivalDomination/main.html">
+            <img src="img_sabadomi.png" alt="サバイバルドミネーション">
+            <h2>サバイバルドミネーション</h2>
+            <p>サバイバルで集めたアイテムでチームPvP</p>
+        </a>
+        <a class="game_card" href="GemHunter/main.html">
+            <img src="img_gemhunter.png" alt="ジェムハンター">
+            <h2>ジェムハンター</h2>
+            <p>2チームに分かれて陣取りスキルPvP</p>
+            <p>1ラウンド50秒のハイスピードバトル!</p>
+        </a>
+        <a class="game_card" href="DbD/main.html">
+            <img src="img_dbd.png" alt="マイクラDbD">
+            <h2>マイクラDbD</h2>
+            <p>Dead by Daylight風の鬼ごっこ</p>
+            <p>鬼から逃げながら資源を採掘して脱出しよう!</p>
+        </a>
     </div>
 </body>
 
