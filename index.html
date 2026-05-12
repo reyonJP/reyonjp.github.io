@@ -1,47 +1,203 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>れよんサーバー Wiki</title>
-    <link rel="stylesheet" href="main.css">
-    <link rel="stylesheet" href="wiki.css">
+<meta charset="utf-8"/>
+<title>れよんサーバー Wiki</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&family=M+PLUS+Rounded+1c:wght@500;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --green:#7CC93C;--green-deep:#4F9F1F;--green-soft:#C6E4A6;
+  --green-pale:#E9F4D6;--green-light:#F4FAE7;--cream:#FFFDF6;
+  --ink:#161616;--ink2:#3a3a3a;--muted:#6a6a6a;--line:#e7eddc;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Sans JP','Hiragino Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.75;font-size:15px;}
+
+.pixel-logo{width:40px;height:40px;border-radius:7px;overflow:hidden;display:grid;grid-template:repeat(8,1fr)/repeat(8,1fr);flex-shrink:0;}
+.site-header{background:var(--green);padding:14px 36px;display:flex;align-items:center;gap:16px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:22px;color:#1a1a1a;text-decoration:none;}
+.topnav{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.nav-pill{background:#fff;border-radius:12px;padding:8px 18px;font-weight:700;font-size:14px;font-family:'Zen Maru Gothic',sans-serif;color:#1a1a1a;text-decoration:none;display:inline-block;}
+.nav-pill.active{background:var(--ink);color:#fff;}
+.nav-pill.dim{opacity:.55;cursor:default;pointer-events:none;}
+
+.hero{margin:32px 56px 0;border-radius:36px;padding:36px 48px;background:linear-gradient(135deg,#EFF7DC 0%,#B8DDA0 100%);box-shadow:0 8px 0 rgba(0,0,0,.04);}
+.hero-badge{display:inline-block;background:#fff;border-radius:999px;padding:5px 16px;font-weight:800;font-size:12px;color:var(--green-deep);letter-spacing:.14em;font-family:'M PLUS Rounded 1c',sans-serif;margin-bottom:14px;}
+.hero-title{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:40px;line-height:1.25;letter-spacing:.01em;margin:0;}
+.hero-sub{font-size:16px;line-height:1.85;color:#2a2a2a;margin-top:14px;}
+
+.section{padding:44px 56px 0;}
+.sec-title{display:flex;align-items:baseline;gap:14px;margin-bottom:20px;}
+.sec-tag{font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:12px;color:var(--green-deep);letter-spacing:.18em;}
+.sec-h{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:26px;margin:0;}
+.sec-count{margin-left:auto;font-size:13px;color:var(--muted);}
+
+.mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.mode-card{background:#fff;border:2px solid var(--line);border-radius:24px;overflow:hidden;text-decoration:none;color:inherit;display:block;transition:box-shadow .15s,transform .1s;}
+.mode-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.09);transform:translateY(-2px);}
+.mode-stripe{height:8px;width:100%;}
+.mode-inner{padding:16px 22px 20px;}
+.mode-tag{display:inline-block;color:#fff;border-radius:8px;padding:4px 10px;font-family:'M PLUS Rounded 1c',sans-serif;font-weight:900;font-size:11px;letter-spacing:.1em;}
+.mode-name{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:20px;margin:10px 0 6px;}
+.mode-blurb{font-size:13px;line-height:1.7;color:#3a3a3a;}
+.mode-link{display:inline-flex;align-items:center;gap:5px;font-weight:700;font-size:13px;color:var(--green-deep);margin-top:12px;}
+.mode-placeholder{background:var(--green-pale);border:2px dashed var(--green-soft);border-radius:24px;display:grid;place-items:center;text-align:center;min-height:172px;}
+
+.two-col{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;}
+.panel{background:#fff;border:2px solid var(--line);border-radius:24px;padding:24px 26px;}
+.panel-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;}
+.panel-h{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:20px;margin:0;}
+.panel-more{font-size:12px;color:var(--muted);}
+.news-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.news-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:var(--green-light);}
+.news-date{font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;font-size:12px;color:var(--green-deep);min-width:76px;flex-shrink:0;}
+.news-text{font-size:14px;color:#2a2a2a;}
+.join-btn{display:block;text-align:center;background:var(--green);color:#fff;font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:17px;padding:14px 18px;border-radius:16px;margin-top:14px;box-shadow:0 4px 0 var(--green-deep);text-decoration:none;}
+.social-row{display:flex;gap:8px;margin-top:10px;}
+.social-btn{flex:1;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;text-decoration:none;color:var(--ink);}
+
+.site-footer{margin-top:42px;padding:18px 56px 22px;background:var(--green);color:#0e2a04;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;font-weight:700;}
+
+@media(max-width:900px){
+  .site-header{padding:12px 20px;} .hero{margin:20px 20px 0;padding:24px 28px;} .hero-title{font-size:28px;}
+  .section{padding:32px 20px 0;} .mode-grid{grid-template-columns:repeat(2,1fr);} .two-col{grid-template-columns:1fr;}
+  .site-footer{padding:16px 20px;flex-direction:column;gap:6px;text-align:center;}
+}
+@media(max-width:560px){.mode-grid{grid-template-columns:1fr;}}
+</style>
 </head>
-
 <body>
-    <h1>れよんサーバー Wiki</h1>
-    <div id="game_grid">
-        <a class="game_card" href="ForgeWars/main.html">
-            <img src="img_forge.png" alt="フォージウォーズ">
-            <h2>フォージウォーズ</h2>
-            <p>2チームに分かれてMOBA風スキルPvP</p>
-            <p>スキルとマップ固有のイベントを活かして敵陣の「フォージ」を破壊しよう!</p>
-        </a>
-        <a class="game_card" href="UndeadPrison/main.html">
-            <img src="img_undeadprison.png" alt="アンデッドプリズン">
-            <h2>アンデッドプリズン</h2>
-            <p>PvE</p>
-            <p>全員で協力してひたすら耐え続けろ!</p>
-        </a>
-        <a class="game_card" href="SurvivalDomination/main.html">
-            <img src="img_sabadomi.png" alt="サバイバルドミネーション">
-            <h2>サバイバルドミネーション</h2>
-            <p>サバイバルで集めたアイテムでチームPvP</p>
-        </a>
-        <a class="game_card" href="GemHunter/main.html">
-            <img src="img_gemhunter.png" alt="ジェムハンター">
-            <h2>ジェムハンター</h2>
-            <p>2チームに分かれて陣取りスキルPvP</p>
-            <p>1ラウンド50秒のハイスピードバトル!</p>
-        </a>
-        <a class="game_card" href="DbD/main.html">
-            <img src="img_dbd.png" alt="マイクラDbD">
-            <h2>マイクラDbD</h2>
-            <p>Dead by Daylight風の鬼ごっこ</p>
-            <p>鬼から逃げながら資源を採掘して脱出しよう!</p>
-        </a>
-    </div>
-</body>
 
+<header class="site-header">
+  <div class="pixel-logo" id="pxl"></div>
+  <a href="index.html" class="brand">れよんサーバー Wiki</a>
+  <nav class="topnav">
+    <a href="index.html" class="nav-pill active">ホーム</a>
+    <span class="nav-pill dim">参加方法</span>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-badge">OFFICIAL WIKI</div>
+  <h1 class="hero-title">5つの自作ゲームで、<br>毎週土曜の夜を遊び尽くす。</h1>
+  <p class="hero-sub">
+    れよんサーバーへようこそ。フォージウォーズ・ジェムハンター・アンデッドプリズンなど、<br>
+    毎週アップデートされるオリジナルゲームを参加型配信で開催しています。
+  </p>
+</section>
+
+<section class="section">
+  <div class="sec-title">
+    <span class="sec-tag">GAME MODES</span>
+    <h2 class="sec-h">遊べるゲーム</h2>
+    <span class="sec-count">全5モード</span>
+  </div>
+  <div class="mode-grid">
+
+    <a class="mode-card" href="ForgeWars/main.html">
+      <div class="mode-stripe" style="background:#E64A8F"></div>
+      <div class="mode-inner">
+        <span class="mode-tag" style="background:#E64A8F">MOBA</span>
+        <h3 class="mode-name">フォージウォーズ</h3>
+        <p class="mode-blurb">2チームに分かれてスキルPvP。敵陣のフォージ（かまど）の体力を0にしたチームの勝ち。</p>
+        <span class="mode-link">詳しく見る →</span>
+      </div>
+    </a>
+
+    <a class="mode-card" href="GemHunter/main.html">
+      <div class="mode-stripe" style="background:#aa44ee"></div>
+      <div class="mode-inner">
+        <span class="mode-tag" style="background:#aa44ee">PVP</span>
+        <h3 class="mode-name">ジェムハンター</h3>
+        <p class="mode-blurb">2チームに分かれて陣取りスキルPvP。1ラウンド50秒のハイスピードバトル。</p>
+        <span class="mode-link">詳しく見る →</span>
+      </div>
+    </a>
+
+    <a class="mode-card" href="UndeadPrison/main.html">
+      <div class="mode-stripe" style="background:#3DA1FF"></div>
+      <div class="mode-inner">
+        <span class="mode-tag" style="background:#3DA1FF">CO-OP</span>
+        <h3 class="mode-name">アンデッドプリズン</h3>
+        <p class="mode-blurb">全員協力のPvEゲーム。次々と押し寄せるアンデッドの波から生き延びろ。</p>
+        <span class="mode-link">詳しく見る →</span>
+      </div>
+    </a>
+
+    <a class="mode-card" href="SurvivalDomination/main.html">
+      <div class="mode-stripe" style="background:#F5A623"></div>
+      <div class="mode-inner">
+        <span class="mode-tag" style="background:#F5A623">SURV</span>
+        <h3 class="mode-name">サバイバルドミネーション</h3>
+        <p class="mode-blurb">サバイバルフェーズで素材を集め、チーム対戦フェーズで相手を打ち負かす。</p>
+        <span class="mode-link">詳しく見る →</span>
+      </div>
+    </a>
+
+    <a class="mode-card" href="DbD/main.html">
+      <div class="mode-stripe" style="background:#cc2222"></div>
+      <div class="mode-inner">
+        <span class="mode-tag" style="background:#cc2222">HORROR</span>
+        <h3 class="mode-name">マイクラDbD</h3>
+        <p class="mode-blurb">Dead by Daylight風の鬼ごっこ。鬼から逃げながら資源を採掘して脱出しよう。</p>
+        <span class="mode-link">詳しく見る →</span>
+      </div>
+    </a>
+
+    <div class="mode-placeholder">
+      <div>
+        <div style="font-size:32px;font-family:'Zen Maru Gothic',sans-serif;font-weight:900;color:var(--green-deep)">+</div>
+        <div style="font-size:13px;color:var(--muted);font-weight:700;margin-top:4px">新ゲーム<br>製作中</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="section" style="padding-bottom:48px;">
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-top">
+        <h3 class="panel-h">📰 更新履歴</h3>
+        <span class="panel-more">すべて見る →</span>
+      </div>
+      <ul class="news-list">
+        <li class="news-row"><span class="news-date">2026/05/10</span><span class="news-text">スキルチームPvP「サポート」役にナーフ調整</span></li>
+        <li class="news-row"><span class="news-date">2026/05/03</span><span class="news-text">新マップ「雲海回廊」を陣取りゲームに追加</span></li>
+        <li class="news-row"><span class="news-date">2026/04/26</span><span class="news-text">PvE協力モード Wave12 のドロップ報酬を更新</span></li>
+        <li class="news-row"><span class="news-date">2026/04/19</span><span class="news-text">土曜21時の参加型配信、夏期は20時開始に変更</span></li>
+      </ul>
+    </div>
+    <div class="panel" style="background:linear-gradient(160deg,#EFF7DC,#FFFDF6);">
+      <h3 class="panel-h">参加してみる</h3>
+      <p style="font-size:13.5px;line-height:1.8;color:#2a2a2a;margin-top:10px;">
+        <b>毎週土曜21:00〜</b><br>
+        Discordサーバーから誰でも気軽に参加できます。入室通知はありません。
+      </p>
+      <a href="#" class="join-btn">Discord に参加する →</a>
+      <div class="social-row">
+        <a href="#" class="social-btn">▶ YouTube</a>
+        <a href="#" class="social-btn">🟣 Twitch</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <span>© れよんの部屋 / reyon.cloudfree.jp</span>
+  <span>Last updated: 2026/05/10</span>
+</footer>
+
+<script>
+(function(){
+  var el=document.getElementById('pxl');if(!el)return;
+  var p=['#7CC93C','#9DD96B','#5BAF22','#C6E4A6','#4F9F1F','#FFFDF6'];
+  for(var i=0;i<64;i++){var d=document.createElement('div');d.style.background=p[(i*7+(i%5))%p.length];el.appendChild(d);}
+})();
+</script>
+</body>
 </html>

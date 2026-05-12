@@ -1,164 +1,138 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ForgeWars キット一覧</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>フォージウォーズ キット一覧 — れよんサーバー Wiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&family=M+PLUS+Rounded+1c:wght@500;700;800;900&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:      #0c0f14;
-      --surface: #13181f;
-      --surface2: #191f28;
-      --border:  #222a35;
-      --blue:    #4a9eff;
-      --blue2:   #80c0ff;
-      --yellow:  #f0c040;
-      --green:   #50d070;
-      --red:     #ff6060;
-      --purple:  #cc88ff;
-      --cyan:    #40d0e0;
-      --orange:  #ff9944;
-      --text:    #d0d8e4;
-      --muted:   #6a7a8a;
-      --ult:     #ffcc44;
+    :root{
+      --green:#7CC93C;--green-deep:#4F9F1F;--green-soft:#C6E4A6;
+      --green-pale:#E9F4D6;--green-light:#F4FAE7;--cream:#FFFDF6;
+      --ink:#161616;--ink2:#3a3a3a;--muted:#6a6a6a;--line:#e7eddc;
+      --accent:#E64A8F;--accent-deep:#b0246a;
+      --s1-bg:#eef4ff;--s1-border:#b8d0ff;--s1-text:#2255bb;
+      --s2-bg:#efffee;--s2-border:#b0ddb0;--s2-text:#1a6a2a;
+      --ult-bg:#fffbee;--ult-border:#e0cc88;--ult-text:#7a5800;
     }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Noto Sans JP','Hiragino Sans',sans-serif;background:var(--cream);color:var(--ink);font-size:14px;line-height:1.65;}
 
-    html { scroll-behavior: smooth; }
+    .pixel-logo{width:34px;height:34px;border-radius:5px;overflow:hidden;display:grid;grid-template:repeat(8,1fr)/repeat(8,1fr);flex-shrink:0;}
+    .site-header{background:var(--green);padding:12px 28px;display:flex;align-items:center;gap:14px;}
+    .brand{display:flex;align-items:center;gap:9px;font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:18px;color:#1a1a1a;text-decoration:none;}
+    .topnav{margin-left:auto;display:flex;align-items:center;gap:8px;}
+    .nav-pill{background:#fff;border-radius:10px;padding:6px 14px;font-weight:700;font-size:12px;font-family:'Zen Maru Gothic',sans-serif;color:#1a1a1a;text-decoration:none;display:inline-block;}
+    .nav-pill.active{background:var(--ink);color:#fff;}
 
-    body {
-      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 14px;
-      line-height: 1.65;
+    .breadcrumb{padding:14px 28px 0;font-size:11px;color:var(--muted);font-family:'M PLUS Rounded 1c',sans-serif;font-weight:700;letter-spacing:.06em;}
+    .breadcrumb a{color:var(--green-deep);font-weight:800;text-decoration:none;}
+
+    .page-title{padding:20px 28px 8px;}
+    .page-title h1{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:26px;margin:0 0 4px;}
+    .page-title p{font-size:13px;color:var(--muted);}
+
+    .kit-jump-nav{
+      padding:0 28px 16px;
+      display:flex;flex-wrap:wrap;gap:6px;
     }
-
-    header {
-      background: linear-gradient(160deg, #050d1c, #0a1830, #050d1c);
-      border-bottom: 2px solid #1a3a6a;
-      padding: 2.5rem 1.5rem 2rem;
-      text-align: center;
+    .kit-jump-nav a{
+      background:#fff;border:1.5px solid var(--line);border-radius:999px;
+      padding:5px 14px;font-size:12px;font-weight:700;
+      font-family:'M PLUS Rounded 1c',sans-serif;
+      color:var(--ink2);text-decoration:none;
+      transition:border-color .1s;
     }
-    header h1 { font-size: clamp(1.6rem,4vw,2.4rem); color: #5599ff; text-shadow: 0 0 25px #3366ff44; letter-spacing:.06em; }
-    header p  { color: var(--muted); margin-top:.4rem; font-size:.88rem; }
+    .kit-jump-nav a:hover{border-color:var(--accent);}
 
-    nav {
-      position: sticky; top:0; z-index:100;
-      background: #0c0f14ee; backdrop-filter: blur(8px);
-      border-bottom: 1px solid var(--border);
-      display: flex; flex-wrap: wrap; justify-content: center;
-      gap:.3rem .6rem; padding:.6rem 1.2rem;
-    }
-    nav a {
-      color: #5588bb; text-decoration:none; font-size:.78rem;
-      padding:.18rem .5rem; border-radius:3px;
-      transition: background .15s, color .15s;
-    }
-    nav a:hover { background:#0a1828; color:#88bbff; }
-    nav a.back-link {
-      background:#0d2040; color:#70b8ff;
-      border:1px solid #1a4a8a; font-weight:700;
-    }
-    nav a.back-link:hover { background:#112850; color:#aad4ff; }
+    .container{max-width:1100px;margin:0 auto;padding:0 28px 48px;}
 
-    .container { max-width:1100px; margin:2rem auto; padding:0 1rem; }
+    .kit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px;}
 
-    .kit-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 1.2rem;
+    .kit-card{
+      background:#fff;border:1.5px solid var(--line);
+      border-radius:16px;overflow:hidden;
     }
-
-    .kit-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
+    .kit-header{
+      display:flex;align-items:center;gap:.9rem;
+      padding:.9rem 1.1rem .7rem;
+      border-bottom:1.5px solid var(--line);
+      background:var(--green-light);
     }
-
-    .kit-header {
-      display: flex;
-      align-items: center;
-      gap: .9rem;
-      padding: 1rem 1.2rem .8rem;
-      border-bottom: 1px solid var(--border);
+    .kit-icon{
+      width:2.6rem;height:2.6rem;border-radius:8px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.4rem;flex-shrink:0;
+      background:#fff;border:1.5px solid var(--line);
     }
-    .kit-icon {
-      width: 2.8rem; height: 2.8rem;
-      border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem;
-      flex-shrink: 0;
+    .kit-title{flex:1;}
+    .kit-name{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:1.05rem;color:var(--ink);}
+    .kit-stats{display:flex;gap:.5rem;align-items:center;margin-top:.3rem;font-size:.75rem;}
+    .stat{padding:.1rem .45rem;border-radius:4px;font-weight:800;font-family:'M PLUS Rounded 1c',sans-serif;}
+    .stat-hp{background:#efffee;border:1px solid #b0ddb0;color:#1a6a2a;}
+    .stat-atk{background:#fff0f0;border:1px solid #f0b0b0;color:#882222;}
+
+    .abilities{padding:.7rem .9rem .9rem;display:flex;flex-direction:column;gap:.6rem;}
+
+    .ability{
+      background:var(--green-light);border:1px solid var(--line);
+      border-radius:8px;padding:.55rem .8rem;
     }
-    .kit-title { flex: 1; }
-    .kit-name { font-size: 1.1rem; font-weight: 700; color: var(--blue2); }
-    .kit-stats {
-      display: flex; gap: .5rem; align-items: center;
-      margin-top: .35rem;
-      font-size: .78rem;
+    .ability.ult{background:var(--ult-bg);border-color:var(--ult-border);}
+
+    .ability-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;}
+
+    .slot-badge{
+      font-size:.65rem;font-weight:800;letter-spacing:.01em;
+      padding:.13rem .45rem;border-radius:4px;
+      flex-shrink:0;white-space:nowrap;
+      font-family:'M PLUS Rounded 1c',sans-serif;
     }
-    .stat { padding:.1rem .45rem; border-radius:3px; font-weight:700; }
-    .stat-hp  { background:#0a2010; border:1px solid #1a5020; color:var(--green); }
-    .stat-atk { background:#200a0a; border:1px solid #501a1a; color:var(--red); }
+    .slot-1{background:var(--s1-bg);color:var(--s1-text);border:1px solid var(--s1-border);}
+    .slot-2{background:var(--s2-bg);color:var(--s2-text);border:1px solid var(--s2-border);}
+    .slot-ult{background:var(--ult-bg);color:var(--ult-text);border:1px solid var(--ult-border);}
 
-    .abilities { padding: .7rem 1rem 1rem; display:flex; flex-direction:column; gap:.65rem; }
+    .ability-name{font-weight:700;font-size:.88rem;color:var(--ink);}
+    .s1-name{color:var(--s1-text);}
+    .s2-name{color:var(--s2-text);}
+    .ult-name{color:var(--ult-text);}
 
-    .ability {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: .6rem .85rem;
-    }
-    .ability.ult {
-      background: #1a1600;
-      border-color: #4a3800;
-    }
+    .ability-desc{font-size:.8rem;color:var(--ink2);line-height:1.65;}
+    .ability-desc .hi{color:#c04000;font-weight:700;}
 
-    .ability-header { display:flex; align-items:center; gap:.55rem; margin-bottom:.3rem; }
+    .site-footer{margin-top:0;padding:16px 28px;background:var(--green);color:#0e2a04;display:flex;align-items:center;justify-content:space-between;font-size:12px;font-family:'Zen Maru Gothic',sans-serif;font-weight:700;}
 
-    .slot-badge {
-      font-size: .68rem; font-weight: 800; letter-spacing:.01em;
-      padding: .15rem .5rem; border-radius: 3px;
-      flex-shrink: 0; white-space: nowrap;
-    }
-    .slot-1   { background:#0e2035; color:#5599ff; border:1px solid #1a3a6a; }
-    .slot-2   { background:#0e200e; color:#50c060; border:1px solid #1a4a1a; }
-    .slot-ult { background:#201500; color:var(--ult); border:1px solid #5a3a00; }
-
-    .ability-name { font-weight:700; font-size:.92rem; }
-    .s1-name  { color: #88bbff; }
-    .s2-name  { color: #70cc70; }
-    .ult-name { color: var(--ult); }
-
-    .ability-desc {
-      font-size: .82rem;
-      color: #b0bac8;
-      line-height: 1.6;
-    }
-    .ability-desc .hi { color: #ff9988; font-weight: 600; }
-
-    footer {
-      text-align:center; padding:2rem 1rem;
-      color:var(--muted); font-size:.78rem;
-      border-top:1px solid var(--border); margin-top:2rem;
-    }
-
-    @media(max-width:500px){
-      .kit-grid { grid-template-columns: 1fr; }
+    @media(max-width:600px){
+      .kit-grid{grid-template-columns:1fr;}
+      .site-header{padding:10px 16px;}
+      .breadcrumb,.page-title,.kit-jump-nav,.container{padding-left:16px;padding-right:16px;}
     }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>⚔ ForgeWars キット一覧</h1>
-  <p>全10キットのスキル解説</p>
+<header class="site-header">
+  <div class="pixel-logo" id="pxl"></div>
+  <a href="../index.html" class="brand">れよんサーバー Wiki</a>
+  <nav class="topnav">
+    <a href="main.html" class="nav-pill">ゲーム説明</a>
+    <a href="#" class="nav-pill active">キット一覧</a>
+  </nav>
 </header>
 
-<nav>
-  <a href="main.html" class="back-link">← ゲーム説明に戻る</a>
+<div class="breadcrumb">
+  <a href="../index.html">ホーム</a> ／ <a href="main.html">フォージウォーズ</a> ／ <span style="color:var(--ink);font-weight:800;">キット一覧</span>
+</div>
+
+<div class="page-title">
+  <h1>⚔ フォージウォーズ キット一覧</h1>
+  <p>全10キットのスキル解説</p>
+</div>
+
+<div class="kit-jump-nav">
   <a href="#guardian">ガーディアン</a>
   <a href="#rigid">リジッド</a>
   <a href="#greed">グリード</a>
@@ -169,7 +143,7 @@
   <a href="#plateau">プラトー</a>
   <a href="#levin">レヴィン</a>
   <a href="#hail">ヘイル</a>
-</nav>
+</div>
 
 <div class="container">
 <div class="kit-grid">
@@ -177,7 +151,7 @@
 <!-- ガーディアン -->
 <div class="kit-card" id="guardian">
   <div class="kit-header">
-    <div class="kit-icon" style="background:#0a1e28;border:1px solid #1a4a60;">🛡</div>
+    <div class="kit-icon" >🛡</div>
     <div class="kit-title">
       <div class="kit-name">ガーディアン</div>
       <div class="kit-stats">
@@ -228,7 +202,7 @@
 <!-- リジッド -->
 <div class="kit-card" id="rigid">
   <div class="kit-header">
-    <div class="kit-icon" style="background:#1a1a10;border:1px solid #4a4a20;">🪨</div>
+    <div class="kit-icon" >🪨</div>
     <div class="kit-title">
       <div class="kit-name">リジッド</div>
       <div class="kit-stats">
@@ -276,7 +250,7 @@
 <!-- グリード -->
 <div class="kit-card" id="greed">
   <div class="kit-header">
-    <div class="kit-icon" style="background:#1e1500;border:1px solid #604000;">🪓</div>
+    <div class="kit-icon" >🪓</div>
     <div class="kit-title">
       <div class="kit-name">グリード</div>
       <div class="kit-stats">
@@ -325,7 +299,7 @@
 <!-- スウィフト -->
 <div class="kit-card" id="swift">
   <div class="kit-header">
-    <div class="kit-icon" style="background:#0e1820;border:1px solid #205060;">⚡</div>
+    <div class="kit-icon" >⚡</div>
     <div class="kit-title">
       <div class="kit-name">スウィフト</div>
       <div class="kit-stats">
@@ -373,7 +347,7 @@
 <!-- デストロイヤー -->
 <div class="kit-card" id="destroyer">
   <div class="kit-header">
-    <div class="kit-icon" style="background:#1e0e00;border:1px solid #603010;">💣</div>
+    <div class="kit-icon" >💣</div>
     <div class="kit-title">
       <div class="kit-name">デストロイヤー</div>
       <div class="kit-stats">
@@ -424,7 +398,7 @@
 <!-- カルティスト -->
 <div class="kit-card" id="cultist">
   <div class="kit-header">
-    <div class="kit-icon" style="background:#100820;border:1px solid #302050;">💀</div>
+    <div class="kit-icon" >💀</div>
     <div class="kit-title">
       <div class="kit-name">カルティスト</div>
       <div class="kit-stats">
@@ -473,7 +447,7 @@
 <!-- ガイザー -->
 <div class="kit-card" id="geyser">
   <div class="kit-header">
-    <div class="kit-icon" style="background:#001828;border:1px solid #005060;">🔱</div>
+    <div class="kit-icon" >🔱</div>
     <div class="kit-title">
       <div class="kit-name">ガイザー</div>
       <div class="kit-stats">
@@ -521,7 +495,7 @@
 <!-- プラトー -->
 <div class="kit-card" id="plateau">
   <div class="kit-header">
-    <div class="kit-icon" style="background:#0e1e0a;border:1px solid #285018;">🌿</div>
+    <div class="kit-icon" >🌿</div>
     <div class="kit-title">
       <div class="kit-name">プラトー</div>
       <div class="kit-stats">
@@ -571,7 +545,7 @@
 <!-- レヴィン -->
 <div class="kit-card" id="levin">
   <div class="kit-header">
-    <div class="kit-icon" style="background:#181208;border:1px solid #504010;">⚡</div>
+    <div class="kit-icon" >⚡</div>
     <div class="kit-title">
       <div class="kit-name">レヴィン</div>
       <div class="kit-stats">
@@ -621,7 +595,7 @@
 <!-- ヘイル -->
 <div class="kit-card" id="hail">
   <div class="kit-header">
-    <div class="kit-icon" style="background:#081828;border:1px solid #104860;">❄</div>
+    <div class="kit-icon" >❄</div>
     <div class="kit-title">
       <div class="kit-name">ヘイル</div>
       <div class="kit-stats">
@@ -670,7 +644,17 @@
 </div><!-- /kit-grid -->
 </div><!-- /container -->
 
-<footer>ReyonGames ForgeWars Wiki</footer>
+<footer class="site-footer">
+  <span>© れよんの部屋 / reyon.cloudfree.jp</span>
+  <span>フォージウォーズ キット一覧 — れよんサーバー Wiki</span>
+</footer>
 
+<script>
+(function(){
+  var el=document.getElementById('pxl');if(!el)return;
+  var p=['#7CC93C','#9DD96B','#5BAF22','#C6E4A6','#4F9F1F','#FFFDF6'];
+  for(var i=0;i<64;i++){var d=document.createElement('div');d.style.background=p[(i*7+(i%5))%p.length];el.appendChild(d);}
+})();
+</script>
 </body>
 </html>
