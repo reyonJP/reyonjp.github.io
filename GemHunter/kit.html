@@ -1,169 +1,105 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GemHunter キット一覧</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ジェムハンター キット一覧 — れよんサーバー Wiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&family=M+PLUS+Rounded+1c:wght@500;700;800;900&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:      #0c0f14;
-      --surface: #13181f;
-      --surface2: #191f28;
-      --border:  #222a35;
-      --purple:  #cc66ff;
-      --purple2: #dd99ff;
-      --yellow:  #f0c040;
-      --green:   #50d070;
-      --red:     #ff6060;
-      --cyan:    #40d0e0;
-      --orange:  #ff9944;
-      --text:    #d0d8e4;
-      --muted:   #6a7a8a;
-      --ult:     #ffcc44;
+    :root{
+      --green:#7CC93C;--green-deep:#4F9F1F;--green-soft:#C6E4A6;
+      --green-pale:#E9F4D6;--green-light:#F4FAE7;--cream:#FFFDF6;
+      --ink:#161616;--ink2:#3a3a3a;--muted:#6a6a6a;--line:#e7eddc;
+      --accent:#aa44ee;--accent-deep:#7a1ab0;
+      --s1-bg:#f5eeff;--s1-border:#cc99ff;--s1-text:#6600bb;
+      --s2-bg:#efffee;--s2-border:#b0ddb0;--s2-text:#1a6a2a;
+      --ult-bg:#fffbee;--ult-border:#e0cc88;--ult-text:#7a5800;
     }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Noto Sans JP','Hiragino Sans',sans-serif;background:var(--cream);color:var(--ink);font-size:14px;line-height:1.65;}
 
-    html { scroll-behavior: smooth; }
+    .pixel-logo{width:34px;height:34px;border-radius:5px;overflow:hidden;display:grid;grid-template:repeat(8,1fr)/repeat(8,1fr);flex-shrink:0;}
+    .site-header{background:var(--green);padding:12px 28px;display:flex;align-items:center;gap:14px;}
+    .brand{display:flex;align-items:center;gap:9px;font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:18px;color:#1a1a1a;text-decoration:none;}
+    .topnav{margin-left:auto;display:flex;align-items:center;gap:8px;}
+    .nav-pill{background:#fff;border-radius:10px;padding:6px 14px;font-weight:700;font-size:12px;font-family:'Zen Maru Gothic',sans-serif;color:#1a1a1a;text-decoration:none;display:inline-block;}
+    .nav-pill.active{background:var(--ink);color:#fff;}
 
-    body {
-      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 14px;
-      line-height: 1.65;
-    }
+    .breadcrumb{padding:14px 28px 0;font-size:11px;color:var(--muted);font-family:'M PLUS Rounded 1c',sans-serif;font-weight:700;letter-spacing:.06em;}
+    .breadcrumb a{color:var(--green-deep);font-weight:800;text-decoration:none;}
 
-    header {
-      background: linear-gradient(160deg, #0d0514, #180a28, #0d0514);
-      border-bottom: 2px solid #4a1a7a;
-      padding: 2.5rem 1.5rem 2rem;
-      text-align: center;
-    }
-    header h1 { font-size: clamp(1.6rem,4vw,2.4rem); color: #cc66ff; text-shadow: 0 0 25px #8822cc44; letter-spacing:.06em; }
-    header p  { color: var(--muted); margin-top:.4rem; font-size:.88rem; }
+    .page-title{padding:20px 28px 8px;}
+    .page-title h1{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:26px;margin:0 0 4px;}
+    .page-title p{font-size:13px;color:var(--muted);}
 
-    nav {
-      position: sticky; top:0; z-index:100;
-      background: #0c0f14ee; backdrop-filter: blur(8px);
-      border-bottom: 1px solid var(--border);
-      display: flex; flex-wrap: wrap; justify-content: center;
-      gap:.3rem .6rem; padding:.6rem 1.2rem;
-    }
-    nav a {
-      color: #aa55dd; text-decoration:none; font-size:.78rem;
-      padding:.18rem .5rem; border-radius:3px;
-      transition: background .15s, color .15s;
-    }
-    nav a:hover { background:#150820; color:#cc88ff; }
-    nav a.back-link {
-      background:#180d28; color:#dd88ff;
-      border:1px solid #4a1a7a; font-weight:700;
-    }
-    nav a.back-link:hover { background:#200f30; color:#eeb8ff; }
+    .kit-jump-nav{padding:0 28px 16px;display:flex;flex-wrap:wrap;gap:6px;}
+    .kit-jump-nav a{background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:5px 14px;font-size:12px;font-weight:700;font-family:'M PLUS Rounded 1c',sans-serif;color:var(--ink2);text-decoration:none;transition:border-color .1s;}
+    .kit-jump-nav a:hover{border-color:var(--accent);}
 
-    .container { max-width:1100px; margin:2rem auto; padding:0 1rem; }
+    .container{max-width:1100px;margin:0 auto;padding:0 28px 48px;}
 
-    .kit-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 1.2rem;
-    }
+    .kit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px;}
 
-    .kit-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-    }
+    .kit-card{background:#fff;border:1.5px solid var(--line);border-radius:16px;overflow:hidden;}
+    .kit-header{display:flex;align-items:center;gap:.9rem;padding:.9rem 1.1rem .7rem;border-bottom:1.5px solid var(--line);background:var(--green-light);}
+    .kit-icon{width:2.6rem;height:2.6rem;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;background:#fff;border:1.5px solid var(--line);}
+    .kit-title{flex:1;}
+    .kit-name{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:1.05rem;color:var(--ink);}
 
-    .kit-header {
-      display: flex;
-      align-items: center;
-      gap: .9rem;
-      padding: 1rem 1.2rem .8rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .kit-icon {
-      width: 2.8rem; height: 2.8rem;
-      border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem;
-      flex-shrink: 0;
-    }
-    .kit-title { flex: 1; }
-    .kit-name { font-size: 1.1rem; font-weight: 700; color: var(--purple2); }
-    .kit-stats {
-      display: flex; gap: .5rem; align-items: center;
-      margin-top: .35rem;
-      font-size: .78rem;
-    }
-    .stat { padding:.1rem .45rem; border-radius:3px; font-weight:700; }
-    .stat-hp  { background:#0a2010; border:1px solid #1a5020; color:var(--green); }
-    .stat-atk { background:#200a0a; border:1px solid #501a1a; color:var(--red); }
+    .abilities{padding:.7rem .9rem .9rem;display:flex;flex-direction:column;gap:.6rem;}
 
-    .abilities { padding: .7rem 1rem 1rem; display:flex; flex-direction:column; gap:.65rem; }
+    .ability{background:var(--green-light);border:1px solid var(--line);border-radius:8px;padding:.55rem .8rem;}
+    .ability.ult{background:var(--ult-bg);border-color:var(--ult-border);}
 
-    .ability {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: .6rem .85rem;
-    }
-    .ability.ult {
-      background: #1a1600;
-      border-color: #4a3800;
-    }
+    .ability-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;}
 
-    .ability-header { display:flex; align-items:center; gap:.55rem; margin-bottom:.3rem; }
+    .slot-badge{font-size:.65rem;font-weight:800;letter-spacing:.01em;padding:.13rem .45rem;border-radius:4px;flex-shrink:0;white-space:nowrap;font-family:'M PLUS Rounded 1c',sans-serif;}
+    .slot-1{background:var(--s1-bg);color:var(--s1-text);border:1px solid var(--s1-border);}
+    .slot-2{background:var(--s2-bg);color:var(--s2-text);border:1px solid var(--s2-border);}
+    .slot-ult{background:var(--ult-bg);color:var(--ult-text);border:1px solid var(--ult-border);}
 
-    .slot-badge {
-      font-size: .68rem; font-weight: 800; letter-spacing:.01em;
-      padding: .15rem .5rem; border-radius: 3px;
-      flex-shrink: 0; white-space: nowrap;
-    }
-    .slot-1   { background:#180828; color:#cc66ff; border:1px solid #4a1a7a; }
-    .slot-2   { background:#0e200e; color:#50c060; border:1px solid #1a4a1a; }
-    .slot-ult { background:#201500; color:var(--ult); border:1px solid #5a3a00; }
+    .ability-name{font-weight:700;font-size:.88rem;color:var(--ink);}
+    .s1-name{color:var(--s1-text);}
+    .s2-name{color:var(--s2-text);}
+    .ult-name{color:var(--ult-text);}
 
-    .ability-name { font-weight:700; font-size:.92rem; }
-    .s1-name  { color: #cc88ff; }
-    .s2-name  { color: #70cc70; }
-    .ult-name { color: var(--ult); }
+    .ability-desc{font-size:.8rem;color:var(--ink2);line-height:1.65;}
+    .ability-desc .hi{color:#7700cc;font-weight:700;}
+    .tbd{font-size:.8rem;color:var(--muted);font-style:italic;}
 
-    .ability-desc {
-      font-size: .82rem;
-      color: #b0bac8;
-      line-height: 1.6;
-    }
-    .ability-desc .hi { color: #ff9988; font-weight: 600; }
+    .site-footer{padding:16px 28px;background:var(--green);color:#0e2a04;display:flex;align-items:center;justify-content:space-between;font-size:12px;font-family:'Zen Maru Gothic',sans-serif;font-weight:700;}
 
-    .tbd {
-      font-size: .82rem;
-      color: var(--muted);
-      font-style: italic;
-    }
-
-    footer {
-      text-align:center; padding:2rem 1rem;
-      color:var(--muted); font-size:.78rem;
-      border-top:1px solid var(--border); margin-top:2rem;
-    }
-
-    @media(max-width:500px){
-      .kit-grid { grid-template-columns: 1fr; }
+    @media(max-width:600px){
+      .kit-grid{grid-template-columns:1fr;}
+      .site-header{padding:10px 16px;}
+      .breadcrumb,.page-title,.kit-jump-nav,.container{padding-left:16px;padding-right:16px;}
     }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>💎 GemHunter キット一覧</h1>
-  <p>全7キットのスキル解説</p>
+<header class="site-header">
+  <div class="pixel-logo" id="pxl"></div>
+  <a href="../index.html" class="brand">れよんサーバー Wiki</a>
+  <nav class="topnav">
+    <a href="main.html" class="nav-pill">ゲーム説明</a>
+    <a href="#" class="nav-pill active">キット一覧</a>
+  </nav>
 </header>
 
-<nav>
-  <a href="main.html" class="back-link">← ゲーム説明に戻る</a>
+<div class="breadcrumb">
+  <a href="../index.html">ホーム</a> ／ <a href="main.html">ジェムハンター</a> ／ <span style="color:var(--ink);font-weight:800;">キット一覧</span>
+</div>
+
+<div class="page-title">
+  <h1>💎 ジェムハンター キット一覧</h1>
+  <p>全7キットのスキル解説</p>
+</div>
+
+<div class="kit-jump-nav">
   <a href="#mist">ミスト</a>
   <a href="#void">ヴォイド</a>
   <a href="#blast">ブラスト</a>
@@ -171,7 +107,7 @@
   <a href="#lost">ロスト</a>
   <a href="#lepton">レプトン</a>
   <a href="#dread">ドレッド</a>
-</nav>
+</div>
 
 <div class="container">
 <div class="kit-grid">
@@ -179,7 +115,7 @@
 <!-- ミスト -->
 <div class="kit-card" id="mist">
   <div class="kit-header">
-    <div class="kit-icon" style="background:#0a1828;border:1px solid #1a3a6a;">🌫</div>
+    <div class="kit-icon" >🌫</div>
     <div class="kit-title">
       <div class="kit-name">ミスト</div>
     </div>
@@ -218,7 +154,7 @@
 <!-- ヴォイド -->
 <div class="kit-card" id="void">
   <div class="kit-header">
-    <div class="kit-icon" style="background:#0a0014;border:1px solid #2a0050;">🌀</div>
+    <div class="kit-icon" >🌀</div>
     <div class="kit-title">
       <div class="kit-name">ヴォイド</div>
     </div>
@@ -255,7 +191,7 @@
 <!-- ブラスト -->
 <div class="kit-card" id="blast">
   <div class="kit-header">
-    <div class="kit-icon" style="background:#1e0a00;border:1px solid #602000;">💥</div>
+    <div class="kit-icon" >💥</div>
     <div class="kit-title">
       <div class="kit-name">ブラスト</div>
     </div>
@@ -292,7 +228,7 @@
 <!-- プラント -->
 <div class="kit-card" id="plant">
   <div class="kit-header">
-    <div class="kit-icon" style="background:#0a1e08;border:1px solid #1a5010;">🌱</div>
+    <div class="kit-icon" >🌱</div>
     <div class="kit-title">
       <div class="kit-name">プラント</div>
     </div>
@@ -329,7 +265,7 @@
 <!-- ロスト -->
 <div class="kit-card" id="lost">
   <div class="kit-header">
-    <div class="kit-icon" style="background:#120010;border:1px solid #400030;">💔</div>
+    <div class="kit-icon" >💔</div>
     <div class="kit-title">
       <div class="kit-name">ロスト</div>
     </div>
@@ -364,7 +300,7 @@
 <!-- レプトン -->
 <div class="kit-card" id="lepton">
   <div class="kit-header">
-    <div class="kit-icon" style="background:#001828;border:1px solid #005060;">⚛</div>
+    <div class="kit-icon" >⚛</div>
     <div class="kit-title">
       <div class="kit-name">レプトン</div>
     </div>
@@ -403,7 +339,7 @@
 <!-- ドレッド -->
 <div class="kit-card" id="dread">
   <div class="kit-header">
-    <div class="kit-icon" style="background:#100820;border:1px solid #302050;">💀</div>
+    <div class="kit-icon" >💀</div>
     <div class="kit-title">
       <div class="kit-name">ドレッド</div>
     </div>
@@ -440,7 +376,17 @@
 </div><!-- /kit-grid -->
 </div><!-- /container -->
 
-<footer>ReyonGames GemHunter Wiki</footer>
+<footer class="site-footer">
+  <span>© れよんの部屋 / reyon.cloudfree.jp</span>
+  <span>ジェムハンター キット一覧 — れよんサーバー Wiki</span>
+</footer>
 
+<script>
+(function(){
+  var el=document.getElementById('pxl');if(!el)return;
+  var p=['#7CC93C','#9DD96B','#5BAF22','#C6E4A6','#4F9F1F','#FFFDF6'];
+  for(var i=0;i<64;i++){var d=document.createElement('div');d.style.background=p[(i*7+(i%5))%p.length];el.appendChild(d);}
+})();
+</script>
 </body>
 </html>

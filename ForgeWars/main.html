@@ -1,331 +1,149 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ForgeWars — ReyonGames Wiki</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="utf-8"/>
+<title>フォージウォーズ — れよんサーバー Wiki</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&family=M+PLUS+Rounded+1c:wght@500;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --green:#7CC93C;--green-deep:#4F9F1F;--green-soft:#C6E4A6;
+  --green-pale:#E9F4D6;--green-light:#F4FAE7;--cream:#FFFDF6;
+  --ink:#161616;--ink2:#3a3a3a;--muted:#6a6a6a;--line:#e7eddc;
+  --accent:#E64A8F;--accent-deep:#b0246a;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Sans JP','Hiragino Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.75;font-size:15px;}
 
-    :root {
-      --bg:      #0c0f14;
-      --surface: #13181f;
-      --border:  #222a35;
-      --accent:  #3a8fff;
-      --accent2: #70b8ff;
-      --green:   #3ecf5e;
-      --red:     #ff5555;
-      --yellow:  #f0c040;
-      --orange:  #ff8c42;
-      --text:    #d5dae4;
-      --muted:   #7a8899;
-    }
+.pixel-logo{width:36px;height:36px;border-radius:6px;overflow:hidden;display:grid;grid-template:repeat(8,1fr)/repeat(8,1fr);flex-shrink:0;}
+.site-header{background:var(--green);padding:14px 36px;display:flex;align-items:center;gap:16px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:20px;color:#1a1a1a;text-decoration:none;}
+.topnav{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.nav-pill{background:#fff;border-radius:12px;padding:7px 16px;font-weight:700;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#1a1a1a;text-decoration:none;display:inline-block;}
+.nav-pill.active{background:var(--ink);color:#fff;}
 
-    html { scroll-behavior: smooth; }
+.breadcrumb{padding:18px 56px 0;font-size:12px;color:var(--muted);font-family:'M PLUS Rounded 1c',sans-serif;font-weight:700;letter-spacing:.06em;}
+.breadcrumb a{color:var(--green-deep);font-weight:800;text-decoration:none;}
+.breadcrumb a:hover{text-decoration:underline;}
 
-    body {
-      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', Meiryo, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.75;
-      font-size: 15px;
-    }
+.game-hero{margin:16px 56px 0;border-radius:28px;padding:28px 36px;background:linear-gradient(135deg,#fae0ed 0%,#E9F4D6 90%);border:1px solid var(--line);position:relative;overflow:hidden;}
+.hero-top{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.hero-tag{background:var(--accent);color:#fff;font-weight:900;font-size:12px;padding:5px 12px;border-radius:8px;letter-spacing:.12em;font-family:'M PLUS Rounded 1c',sans-serif;}
+.hero-en{font-family:'M PLUS Rounded 1c',sans-serif;font-weight:900;font-size:11px;color:var(--muted);letter-spacing:.22em;}
+.hero-h1{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:48px;line-height:1.1;margin:0;letter-spacing:.01em;}
+.hero-lede{font-size:17px;font-family:'Zen Maru Gothic',sans-serif;font-weight:700;color:var(--ink2);margin:12px 0 0;}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:22px;max-width:700px;}
+.stat-box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;}
+.stat-label{font-size:10px;color:var(--muted);font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;letter-spacing:.14em;}
+.stat-val{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:20px;margin-top:3px;}
 
-    /* ===== HEADER ===== */
-    header {
-      background: linear-gradient(160deg, #050c1c 0%, #0a1830 60%, #050c1c 100%);
-      border-bottom: 2px solid #1a3a6a;
-      padding: 3rem 1.5rem 2.5rem;
-      text-align: center;
-    }
-    header h1 {
-      font-size: clamp(2rem, 6vw, 3.2rem);
-      color: #5599ff;
-      text-shadow: 0 0 40px #3377ff66;
-      letter-spacing: .06em;
-    }
-    header h1 span {
-      color: #88aacc;
-      font-size: .5em;
-      display: block;
-      margin-top: .4rem;
-      letter-spacing: .04em;
-    }
+.toc-strip{margin:22px 56px 0;display:flex;gap:8px;flex-wrap:wrap;}
+.toc-item{background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:7px 16px;font-size:13px;font-weight:700;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:border-color .1s;}
+.toc-item:hover{border-color:var(--accent);}
+.toc-hash{color:var(--accent);font-family:'M PLUS Rounded 1c',sans-serif;font-weight:900;}
 
-    /* ===== NAV ===== */
-    nav {
-      position: sticky; top: 0; z-index: 100;
-      background: #0c0f14ee;
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid var(--border);
-      display: flex; flex-wrap: wrap;
-      justify-content: center;
-      gap: .4rem .8rem;
-      padding: .65rem 1.5rem;
-    }
-    nav a {
-      color: #4488cc;
-      text-decoration: none;
-      font-size: .82rem;
-      padding: .25rem .6rem;
-      border-radius: 4px;
-      transition: background .15s, color .15s;
-    }
-    nav a:hover { background: #0a1828; color: #88bbff; }
-    nav a.kit-link {
-      background: #0d2040;
-      color: #70b8ff;
-      border: 1px solid #1a4a8a;
-      font-weight: 700;
-    }
-    nav a.kit-link:hover { background: #112850; color: #aad4ff; }
+.page-sec{padding:36px 56px 0;}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:18px;}
+.sec-hash{font-family:'M PLUS Rounded 1c',sans-serif;font-weight:900;font-size:12px;color:var(--accent);letter-spacing:.22em;}
+.sec-h2{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:26px;margin:0;}
+.sec-rule{flex:1;height:2px;background:var(--line);margin-left:8px;}
 
-    /* ===== CONTAINER ===== */
-    .container {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 0 1.2rem;
-      display: flex; flex-direction: column; gap: 1.4rem;
-    }
+.white-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px 24px;}
+.card-h3{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:18px;margin:0 0 12px;}
 
-    /* ===== CARD ===== */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1.6rem 1.8rem;
-    }
-    .card h2 {
-      font-size: 1.15rem;
-      color: var(--accent2);
-      border-left: 3px solid var(--accent);
-      padding-left: .75rem;
-      margin-bottom: 1.1rem;
-    }
-    p { color: var(--text); }
-    ul, ol { padding-left: 1.4rem; }
-    li { margin-bottom: .4rem; color: var(--text); }
+.rule-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:.6rem;margin-bottom:1.3rem;}
+.rule-list li{display:flex;align-items:flex-start;gap:.6rem;font-size:.93rem;padding:.55rem .8rem;background:var(--green-light);border:1px solid var(--line);border-radius:8px;color:var(--ink2);}
+.rule-list .icon{flex-shrink:0;font-size:1rem;margin-top:.1rem;}
 
-    /* ===== RULE CARD ===== */
-    .rule-card {
-      background: #0d1a2e;
-      border: 1px solid #1a3a6a;
-      border-radius: 10px;
-      padding: 1.6rem 1.8rem;
-    }
-    .rule-card h2 {
-      font-size: 1.15rem;
-      color: var(--accent2);
-      border-left: 3px solid var(--accent);
-      padding-left: .75rem;
-      margin-bottom: 1.2rem;
-    }
-    .rule-list {
-      list-style: none;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      gap: .55rem;
-      margin-bottom: 1.3rem;
-    }
-    .rule-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: .55rem;
-      color: var(--text);
-      font-size: .93rem;
-      padding: .5rem .7rem;
-      background: #0a1428;
-      border: 1px solid #1a3050;
-      border-radius: 6px;
-    }
-    .rule-list li .icon {
-      flex-shrink: 0;
-      font-size: 1rem;
-      margin-top: .1rem;
-    }
+.warn-box{background:#fffbf0;border:1px solid #e8d08a;border-left:4px solid #F5A623;border-radius:8px;padding:1rem 1.2rem;}
+.warn-title{color:#b87820;font-weight:800;font-size:.92rem;margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem;}
+.warn-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:.5rem;}
+.warn-list li{display:flex;align-items:flex-start;gap:.5rem;font-size:.88rem;color:var(--ink2);}
+.warn-list .wi{color:#F5A623;flex-shrink:0;margin-top:.15rem;}
 
-    /* ===== WARNING BOX ===== */
-    .warn-box {
-      background: #1a0d00;
-      border: 1px solid #6a3000;
-      border-left: 4px solid var(--orange);
-      border-radius: 6px;
-      padding: 1rem 1.2rem;
-    }
-    .warn-box .warn-title {
-      color: var(--orange);
-      font-weight: 700;
-      font-size: .95rem;
-      margin-bottom: .65rem;
-      display: flex;
-      align-items: center;
-      gap: .4rem;
-    }
-    .warn-list {
-      list-style: none;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      gap: .5rem;
-    }
-    .warn-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: .5rem;
-      font-size: .88rem;
-      color: #ddb890;
-      background: none;
-      border: none;
-      padding: 0;
-    }
-    .warn-list li .wi {
-      color: var(--orange);
-      flex-shrink: 0;
-      margin-top: .1rem;
-    }
+.kit-banner{display:flex;align-items:center;justify-content:space-between;gap:1rem;background:#fff;border:1px solid var(--line);border-radius:20px;padding:1.4rem 1.8rem;flex-wrap:wrap;}
+.kit-banner-text h3{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:18px;border-left:3px solid var(--accent);padding-left:.75rem;margin-bottom:.3rem;}
+.kit-banner-text p{color:var(--muted);font-size:.88rem;padding-left:.75rem;}
+.kit-btn{display:inline-flex;align-items:center;gap:.4rem;background:var(--accent);color:#fff;text-decoration:none;font-weight:900;font-size:.93rem;padding:.75rem 1.5rem;border-radius:12px;font-family:'Zen Maru Gothic',sans-serif;box-shadow:0 4px 0 var(--accent-deep);transition:transform .1s;white-space:nowrap;}
+.kit-btn:hover{transform:translateY(-1px);}
 
-    /* ===== KIT BANNER ===== */
-    .kit-banner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      background: linear-gradient(100deg, #081428 0%, #0d1f3a 100%);
-      border: 1px solid #1a4070;
-      border-radius: 10px;
-      padding: 1.4rem 1.8rem;
-      flex-wrap: wrap;
-    }
-    .kit-banner-text h2 {
-      font-size: 1.1rem;
-      color: var(--accent2);
-      border-left: 3px solid var(--accent);
-      padding-left: .75rem;
-      margin-bottom: .4rem;
-    }
-    .kit-banner-text p {
-      color: var(--muted);
-      font-size: .88rem;
-      padding-left: .75rem;
-    }
-    .kit-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: .45rem;
-      background: linear-gradient(135deg, #1a4a9a 0%, #0d2a60 100%);
-      color: #aad4ff;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: .93rem;
-      padding: .7rem 1.4rem;
-      border-radius: 7px;
-      border: 1px solid #2a5aaa;
-      transition: background .15s, transform .1s, box-shadow .15s;
-      white-space: nowrap;
-    }
-    .kit-btn:hover {
-      background: linear-gradient(135deg, #225aaa 0%, #113070 100%);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 16px #1a4a8a44;
-    }
+.map-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px;}
+.map-card{background:var(--green-light);border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
+.map-name{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:15px;color:var(--ink);margin-bottom:5px;}
+.map-desc{font-size:.85rem;color:var(--ink2);line-height:1.6;}
 
-    /* ===== MAPS ===== */
-    .map-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-top: .8rem;
-    }
-    .map-card {
-      background: #0d1520;
-      border: 1px solid #1e3050;
-      border-radius: 8px;
-      padding: 1rem 1.1rem;
-    }
-    .map-card .map-name {
-      font-weight: 700;
-      color: #88bbff;
-      font-size: .95rem;
-      margin-bottom: .4rem;
-    }
-    .map-card .map-desc {
-      font-size: .85rem;
-      color: var(--muted);
-    }
+.sfx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:4px;}
+.sfx-item{background:#fff;border:1px solid var(--line);border-radius:10px;padding:.65rem .9rem;}
+.sfx-name{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:14px;color:var(--ink);margin-bottom:3px;}
+.sfx-desc{font-size:.8rem;color:var(--muted);line-height:1.5;}
 
-    /* ===== STATUS EFFECTS ===== */
-    .sfx {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: .6rem;
-      margin-top: .8rem;
-    }
-    .sfx-item {
-      background: #0d1520;
-      border: 1px solid #253040;
-      border-radius: 5px;
-      padding: .55rem .8rem;
-      font-size: .85rem;
-    }
-    .sfx-item .sname { font-weight: 700; color: #aaccff; }
-    .sfx-item .sdesc { color: var(--muted); font-size: .8rem; margin-top: .15rem; }
+.site-footer{margin-top:48px;padding:18px 56px 22px;background:var(--green);color:#0e2a04;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;font-weight:700;}
 
-    footer {
-      text-align: center;
-      padding: 2rem 1rem;
-      color: var(--muted);
-      font-size: .8rem;
-      border-top: 1px solid var(--border);
-    }
-
-    @media (max-width: 560px) {
-      .map-grid { grid-template-columns: 1fr; }
-      .kit-banner { flex-direction: column; align-items: flex-start; }
-    }
-  </style>
+@media(max-width:900px){
+  .site-header{padding:12px 20px;}
+  .breadcrumb,.toc-strip,.page-sec{padding-left:20px;padding-right:20px;}
+  .game-hero{margin:14px 20px 0;padding:22px 24px;}
+  .hero-h1{font-size:32px;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .map-grid{grid-template-columns:1fr;}
+  .site-footer{padding:16px 20px;flex-direction:column;gap:6px;text-align:center;}
+}
+</style>
 </head>
 <body>
 
-<header>
-  <h1>🔥 ForgeWars
-    <span>ReyonGames Wiki</span>
-  </h1>
+<header class="site-header">
+  <div class="pixel-logo" id="pxl"></div>
+  <a href="../index.html" class="brand">れよんサーバー Wiki</a>
+  <nav class="topnav">
+    <a href="../index.html" class="nav-pill">ホーム</a>
+    <a href="kit.html" class="nav-pill active">キット一覧</a>
+  </nav>
 </header>
 
-<nav>
-  <a href="#rules">ルール</a>
-  <a href="kit.html" class="kit-link">⚔ キット一覧</a>
-  <a href="#maps">マップ</a>
-  <a href="#status">状態異常</a>
-  
+<div class="breadcrumb">
+  <a href="../index.html">ホーム</a> ／ <a href="../index.html">ゲーム一覧</a> ／ <span style="color:var(--ink);font-weight:800;">フォージウォーズ</span>
+</div>
+
+<section class="game-hero">
+  <div class="hero-top">
+    <span class="hero-tag">MOBA</span>
+    <span class="hero-en">FORGE WARS</span>
+  </div>
+  <h1 class="hero-h1">🔥 フォージウォーズ</h1>
+  <p class="hero-lede">2チームに分かれてスキルPvP。敵陣のフォージを破壊せよ。</p>
+  <div class="stat-grid">
+    <div class="stat-box"><div class="stat-label">FORMAT</div><div class="stat-val">チーム戦</div></div>
+    <div class="stat-box"><div class="stat-label">TARGET</div><div class="stat-val">フォージ破壊</div></div>
+    <div class="stat-box"><div class="stat-label">MAP</div><div class="stat-val">全2種</div></div>
+    <div class="stat-box"><div class="stat-label">TYPE</div><div class="stat-val">スキルPvP</div></div>
+  </div>
+</section>
+
+<nav class="toc-strip">
+  <a href="#rules" class="toc-item"><span class="toc-hash">#01</span> ルール</a>
+  <a href="#kits" class="toc-item"><span class="toc-hash">#02</span> キット</a>
+  <a href="#maps" class="toc-item"><span class="toc-hash">#03</span> マップ</a>
+  <a href="#status" class="toc-item"><span class="toc-hash">#04</span> 状態異常</a>
 </nav>
 
-<div class="container">
-
-  <!-- ルール説明 -->
-  <div class="rule-card" id="rules">
-    <h2>📋 一言ルール説明</h2>
-
+<!-- Rules -->
+<section class="page-sec" id="rules">
+  <div class="sec-head">
+    <span class="sec-hash">#01 RULES</span>
+    <h2 class="sec-h">ゲームルール</h2>
+    <span class="sec-rule"></span>
+  </div>
+  <div class="white-card">
     <ul class="rule-list">
-      <li>
-        <span class="icon">⚔</span>
-        <span>2チームに分かれてスキルPvP</span>
-      </li>
-      <li>
-        <span class="icon">🏭</span>
-        <span>敵陣の<strong>フォージ（かまど）の体力を0</strong>にしたチームの勝ち</span>
-      </li>
-      <li>
-        <span class="icon">⬆</span>
-        <span>敵プレイヤーや中立モブ（ゾンビ）を倒して<strong>レベルを上げる</strong>と新しいスキルが解放される</span>
-      </li>
-      <li>
-        <span class="icon">🗺</span>
-        <span>マップごとに異なる<strong>イベント</strong>が発生</span>
-      </li>
+      <li><span class="icon">⚔</span><span>2チームに分かれてスキルPvP</span></li>
+      <li><span class="icon">🏭</span><span>敵陣の<strong>フォージ（かまど）の体力を0</strong>にしたチームの勝ち</span></li>
+      <li><span class="icon">⬆</span><span>敵プレイヤーや中立モブ（ゾンビ）を倒して<strong>レベルを上げる</strong>と新しいスキルが解放される</span></li>
+      <li><span class="icon">🗺</span><span>マップごとに異なる<strong>イベント</strong>が発生</span></li>
     </ul>
-
     <div class="warn-box">
       <div class="warn-title">⚠ 注意点</div>
       <ul class="warn-list">
@@ -340,56 +158,72 @@
       </ul>
     </div>
   </div>
+</section>
 
-  <!-- キット一覧へ -->
-  <div class="kit-banner" id="kits">
+<!-- Kits -->
+<section class="page-sec" id="kits">
+  <div class="sec-head">
+    <span class="sec-hash">#02 KITS</span>
+    <h2 class="sec-h">キット一覧</h2>
+    <span class="sec-rule"></span>
+  </div>
+  <div class="kit-banner">
     <div class="kit-banner-text">
-      <h2>⚔ キット一覧</h2>
+      <h3>⚔ キット一覧</h3>
       <p>使用できるキットのスキルや特徴を確認できます</p>
     </div>
     <a href="kit.html" class="kit-btn">キット一覧を見る →</a>
   </div>
+</section>
 
-  <!-- マップ -->
-  <div class="card" id="maps">
-    <h2>🗺 マップ（全 2 種）</h2>
-    <div class="map-grid">
-      <div class="map-card">
-        <div class="map-name">💣 クレイジーキャノン</div>
-        <div class="map-desc"></div>
-      </div>
-      <div class="map-card">
-        <div class="map-name">🏚 ルインドコロニー</div>
-        <div class="map-desc"></div>
-      </div>
+<!-- Maps -->
+<section class="page-sec" id="maps">
+  <div class="sec-head">
+    <span class="sec-hash">#03 MAPS</span>
+    <h2 class="sec-h">マップ（全2種）</h2>
+    <span class="sec-rule"></span>
+  </div>
+  <div class="map-grid">
+    <div class="map-card">
+      <div class="map-name">💣 クレイジーキャノン</div>
+      <div class="map-desc">砲台が飛び交うダイナミックなマップ。スペースの使い方が重要。</div>
+    </div>
+    <div class="map-card">
+      <div class="map-name">🏚 ルインドコロニー</div>
+      <div class="map-desc">廃墟の集落。複数の建物を利用した立体的な戦いが展開する。</div>
     </div>
   </div>
+</section>
 
-  <!-- 状態異常 -->
-  <div class="card" id="status">
-    <h2>⚡ 主な状態異常</h2>
-    <p>アビリティや攻撃によって様々な状態異常が発生します。</p>
-    <div class="sfx">
-      <div class="sfx-item">
-        <div class="sname">🔒 スタン</div>
-        <div class="sdesc">一定時間、移動・行動が完全に停止する</div>
-      </div>
-      <div class="sfx-item">
-        <div class="sname">⛓ ルート</div>
-        <div class="sdesc">移動のみ停止。攻撃やスキルは使用可能</div>
-      </div>
-      <div class="sfx-item">
-        <div class="sname">🔇 サイレンス</div>
-        <div class="sdesc">アビリティが使用不能になる</div>
-      </div>
-    </div>
+<!-- Status effects -->
+<section class="page-sec" id="status" style="padding-bottom:48px;">
+  <div class="sec-head">
+    <span class="sec-hash">#04 STATUS</span>
+    <h2 class="sec-h">主な状態異常</h2>
+    <span class="sec-rule"></span>
   </div>
+  <p style="font-size:14px;color:var(--ink2);margin-bottom:14px;">アビリティや攻撃によって様々な状態異常が発生します。</p>
+  <div class="sfx-grid">
+    <div class="sfx-item"><div class="sfx-name">🔒 スタン</div><div class="sfx-desc">一定時間、移動・行動が完全に停止する</div></div>
+    <div class="sfx-item"><div class="sfx-name">⛓ ルート</div><div class="sfx-desc">移動のみ停止。攻撃やスキルは使用可能</div></div>
+    <div class="sfx-item"><div class="sfx-name">🔇 サイレンス</div><div class="sfx-desc">アビリティが使用不能になる</div></div>
+    <div class="sfx-item"><div class="sfx-name">🔥 バーン</div><div class="sfx-desc">継続的にダメージを受け続ける</div></div>
+    <div class="sfx-item"><div class="sfx-name">❄ フリーズ</div><div class="sfx-desc">一定時間完全に行動不能になる</div></div>
+    <div class="sfx-item"><div class="sfx-name">💨 スロウ</div><div class="sfx-desc">移動速度が大幅に低下する</div></div>
+  </div>
+</section>
 
-</div>
-
-<footer>
-  ReyonGames ForgeWars Wiki
+<footer class="site-footer">
+  <span>© れよんの部屋 / reyon.cloudfree.jp</span>
+  <span>フォージウォーズ — れよんサーバー Wiki</span>
 </footer>
 
+<script>
+(function(){
+  var el=document.getElementById('pxl');if(!el)return;
+  var p=['#7CC93C','#9DD96B','#5BAF22','#C6E4A6','#4F9F1F','#FFFDF6'];
+  for(var i=0;i<64;i++){var d=document.createElement('div');d.style.background=p[(i*7+(i%5))%p.length];el.appendChild(d);}
+})();
+</script>
 </body>
 </html>
