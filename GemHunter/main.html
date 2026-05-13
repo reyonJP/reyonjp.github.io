@@ -70,6 +70,16 @@ body{font-family:'Noto Sans JP','Hiragino Sans',sans-serif;background:var(--crea
 .kit-btn{display:inline-flex;align-items:center;gap:.4rem;background:var(--accent);color:#fff;text-decoration:none;font-weight:900;font-size:.93rem;padding:.75rem 1.5rem;border-radius:12px;font-family:'Zen Maru Gothic',sans-serif;box-shadow:0 4px 0 var(--accent-deep);transition:transform .1s;white-space:nowrap;}
 .kit-btn:hover{transform:translateY(-1px);}
 
+.map-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px;}
+.map-card{background:var(--green-light);border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
+.map-name{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:15px;color:var(--ink);margin-bottom:5px;}
+.map-desc{font-size:.85rem;color:var(--ink2);line-height:1.6;}
+
+.sfx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:10px;margin-top:4px;}
+.sfx-item{background:#fff;border:1px solid var(--line);border-radius:10px;padding:.65rem .9rem;}
+.sfx-name{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:14px;color:var(--ink);margin-bottom:3px;}
+.sfx-desc{font-size:.8rem;color:var(--muted);line-height:1.5;}
+
 .site-footer{margin-top:48px;padding:18px 56px 22px;background:var(--green);color:#0e2a04;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;font-weight:700;}
 
 @media(max-width:900px){
@@ -125,20 +135,19 @@ body{font-family:'Noto Sans JP','Hiragino Sans',sans-serif;background:var(--crea
   <div class="white-card">
     <ul class="rule-list">
       <li><span class="icon">⚔</span><span>2チームに分かれての<strong>陣取りスキルPvP</strong></span></li>
-      <li><span class="icon">💎</span><span>マップ上のジェム（宝石）を集め、より多く獲得したチームが勝利</span></li>
-      <li><span class="icon">🗺</span><span>敵を倒すと相手のジェムを奪えるため、積極的な戦闘も重要</span></li>
-      <li><span class="icon">🏆</span><span>複数ラウンドを戦い、先に規定の<strong>勝利数</strong>を達成したチームが優勝</span></li>
+      <li><span class="icon">💎</span><span>マップの中央に出現するジェム（エメラルド）を確保し、相手陣地のゴールに運んだチームがラウンド獲得</span></li>
+      <li><span class="icon">🏆</span><span>先に<strong>5ラウンド</strong>獲得したチームが勝利</span></li>
     </ul>
     <div class="warn-box">
       <div class="warn-title">⚠ 注意点</div>
       <ul class="warn-list">
         <li>
           <span class="wi">▶</span>
-          <span>ラウンドが短いため、開幕からジェム争奪を急ぎましょう。出遅れると取り返しが難しくなります。</span>
+          <span>プレイヤーは3回ダメージを受けると脱落し、そのラウンド中はリスポーンできません。</span>
         </li>
         <li>
           <span class="wi">▶</span>
-          <span>倒された際にジェムをドロップします。重要な場面では<strong>無理な突撃を避け</strong>ジェムを守ることも大切です。</span>
+          <span>ジェムを持っている間は攻撃・スキル使用ができません。さらに攻撃されるとジェムがその場に落ちます。</span>
         </li>
       </ul>
     </div>
@@ -161,8 +170,46 @@ body{font-family:'Noto Sans JP','Hiragino Sans',sans-serif;background:var(--crea
   </div>
 </section>
 
+<!-- Maps -->
+<section class="page-sec" id="maps">
+  <div class="sec-head">
+    <span class="sec-hash">#03 MAPS</span>
+    <h2 class="sec-h">マップ</h2>
+    <span class="sec-rule"></span>
+  </div>
+  <div class="map-grid">
+    <div class="map-card">
+      <div class="map-name">オリジン</div>
+    </div>
+    <div class="map-card">
+      <div class="map-name">パルテノン</div>
+    </div>
+    <div class="map-card">
+      <div class="map-name">クレバス</div>
+    </div>
+    <div class="map-card">
+      <div class="map-name">スパイラル</div>
+    </div>
+    <div class="map-card">
+      <div class="map-name">アトランティス</div>
+    </div>
+  </div>
+</section>
+
+<!-- Status effects -->
+<section class="page-sec" id="status" style="padding-bottom:48px;">
+  <div class="sec-head">
+    <span class="sec-hash">#04 STATUS</span>
+    <h2 class="sec-h">主な状態異常</h2>
+    <span class="sec-rule"></span>
+  </div>
+  <div class="sfx-grid">
+    <div class="sfx-item"><div class="sfx-name">弱体化</div><div class="sfx-desc">通常攻撃のダメージが0になり、ノックバックのみ与える</div></div>
+  </div>
+</section>
+
 <footer class="site-footer">
-  <span>© れよんの部屋 / reyon.cloudfree.jp</span>
+  <span>れよんの部屋</span>
   <span>ジェムハンター — れよんサーバー Wiki</span>
 </footer>
 
