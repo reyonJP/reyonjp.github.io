@@ -35,28 +35,61 @@
     .page-title h1{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:26px;margin:0 0 4px;}
     .page-title p{font-size:13px;color:var(--muted);}
 
-    .kit-jump-nav{padding:0 28px 16px;display:flex;flex-wrap:wrap;gap:6px;}
-    .kit-jump-nav a{background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:5px 14px;font-size:12px;font-weight:700;font-family:'M PLUS Rounded 1c',sans-serif;color:var(--ink2);text-decoration:none;transition:border-color .1s;}
+    .kit-jump-nav{
+      padding:0 28px 16px;
+      display:flex;flex-wrap:wrap;gap:6px;
+    }
+    .kit-jump-nav a{
+      background:#fff;border:1.5px solid var(--line);border-radius:999px;
+      padding:5px 14px;font-size:12px;font-weight:700;
+      font-family:'M PLUS Rounded 1c',sans-serif;
+      color:var(--ink2);text-decoration:none;
+      transition:border-color .1s;
+    }
     .kit-jump-nav a:hover{border-color:var(--accent);}
 
-    .container{max-width:1100px;margin:0 auto;padding:0 28px 48px;}
+    .container{max-width:1300px;margin:0 auto;padding:0 28px 48px;}
 
     .kit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px;}
 
-    .kit-card{background:#fff;border:1.5px solid var(--line);border-radius:16px;overflow:hidden;}
-    .kit-header{display:flex;align-items:center;gap:.9rem;padding:.9rem 1.1rem .7rem;border-bottom:1.5px solid var(--line);background:var(--green-light);}
-    .kit-icon{width:2.6rem;height:2.6rem;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;background:#fff;border:1.5px solid var(--line);}
+    .kit-card{
+      background:#fff;border:1.5px solid var(--line);
+      border-radius:16px;overflow:hidden;
+    }
+    .kit-header{
+      display:flex;align-items:center;gap:.9rem;
+      padding:.9rem 1.1rem .7rem;
+      border-bottom:1.5px solid var(--line);
+      background:var(--green-light);
+    }
+    .kit-icon{
+      width:2.6rem;height:2.6rem;border-radius:8px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.4rem;flex-shrink:0;
+      background:#fff;border:1.5px solid var(--line);
+    }
     .kit-title{flex:1;}
     .kit-name{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:1.05rem;color:var(--ink);}
+    .kit-stats{display:flex;gap:.5rem;align-items:center;margin-top:.3rem;font-size:.75rem;}
+    .stat{padding:.1rem .45rem;border-radius:4px;font-weight:800;font-family:'M PLUS Rounded 1c',sans-serif;}
+    .stat-type{background:#f5eeff;border:1px solid #cc99ff;color:#6600bb;}
 
     .abilities{padding:.7rem .9rem .9rem;display:flex;flex-direction:column;gap:.6rem;}
 
-    .ability{background:var(--green-light);border:1px solid var(--line);border-radius:8px;padding:.55rem .8rem;}
+    .ability{
+      background:var(--green-light);border:1px solid var(--line);
+      border-radius:8px;padding:.55rem .8rem;
+    }
     .ability.ult{background:var(--ult-bg);border-color:var(--ult-border);}
 
     .ability-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;}
 
-    .slot-badge{font-size:.65rem;font-weight:800;letter-spacing:.01em;padding:.13rem .45rem;border-radius:4px;flex-shrink:0;white-space:nowrap;font-family:'M PLUS Rounded 1c',sans-serif;}
+    .slot-badge{
+      font-size:.65rem;font-weight:800;letter-spacing:.01em;
+      padding:.13rem .45rem;border-radius:4px;
+      flex-shrink:0;white-space:nowrap;
+      font-family:'M PLUS Rounded 1c',sans-serif;
+    }
     .slot-1{background:var(--s1-bg);color:var(--s1-text);border:1px solid var(--s1-border);}
     .slot-2{background:var(--s2-bg);color:var(--s2-text);border:1px solid var(--s2-border);}
     .slot-ult{background:var(--ult-bg);color:var(--ult-text);border:1px solid var(--ult-border);}
@@ -70,7 +103,7 @@
     .ability-desc .hi{color:#7700cc;font-weight:700;}
     .tbd{font-size:.8rem;color:var(--muted);font-style:italic;}
 
-    .site-footer{padding:16px 28px;background:var(--green);color:#0e2a04;display:flex;align-items:center;justify-content:space-between;font-size:12px;font-family:'Zen Maru Gothic',sans-serif;font-weight:700;}
+    .site-footer{margin-top:0;padding:16px 28px;background:var(--green);color:#0e2a04;display:flex;align-items:center;justify-content:space-between;font-size:12px;font-family:'Zen Maru Gothic',sans-serif;font-weight:700;}
 
     @media(max-width:600px){
       .kit-grid{grid-template-columns:1fr;}
@@ -115,28 +148,38 @@
 <!-- ミスト -->
 <div class="kit-card" id="mist">
   <div class="kit-header">
-    <div class="kit-icon" >🌫</div>
+    <div class="kit-icon">🌫</div>
     <div class="kit-title">
       <div class="kit-name">ミスト</div>
+      <div class="kit-stats">
+        <span class="stat stat-type">オフェンス</span>
+      </div>
     </div>
   </div>
   <div class="abilities">
     <div class="ability">
       <div class="ability-header">
         <span class="slot-badge slot-1">スキル1</span>
-        <span class="ability-name s1-name">クリスタルシェル</span>
+        <span class="ability-name s1-name">ダイリューション</span>
       </div>
       <div class="ability-desc">
-        自身に水晶の殻を纏い、一定ダメージを無効化する<span class="hi">シールド</span>を張る
+        <span class="hi">4秒間</span>霧に変身する<br>
+        変身中はジェムの取得・攻撃ができないが<span class="hi">通常攻撃を受けない</span><br>
+        移動速度が<span class="hi">30%上昇</span>し 再発動で早期終了できる<br>
+        実体化後<span class="hi">0.75秒間</span>は無防備状態になる<br>
+        クールダウン: <span class="hi">20秒</span>
       </div>
     </div>
     <div class="ability">
       <div class="ability-header">
         <span class="slot-badge slot-2">スキル2</span>
-        <span class="ability-name s2-name">ディリューション</span>
+        <span class="ability-name s2-name">クリスタル・シェル</span>
       </div>
       <div class="ability-desc">
-        周囲に霧を散布し、範囲内の敵に<span class="hi">スロー</span>を与える
+        <span class="hi">8ブロック</span>以内の指定地点に氷の壁を設置する<br>
+        壁の中心から<span class="hi">4ブロック</span>以内では<br>
+        自身の移動速度が<span class="hi">10%上昇</span>し 敵の移動速度が<span class="hi">10%低下</span>する<br>
+        <span class="hi">5秒間</span>持続 クールダウン: <span class="hi">15秒</span>
       </div>
     </div>
     <div class="ability ult">
@@ -144,9 +187,7 @@
         <span class="slot-badge slot-ult">アルティメット</span>
         <span class="ability-name ult-name">ミスト</span>
       </div>
-      <div class="ability-desc">
-        広範囲に<span class="hi">濃霧</span>を展開する
-      </div>
+      <div class="ability-desc tbd">詳細準備中</div>
     </div>
   </div>
 </div>
@@ -154,9 +195,12 @@
 <!-- ヴォイド -->
 <div class="kit-card" id="void">
   <div class="kit-header">
-    <div class="kit-icon" >🌀</div>
+    <div class="kit-icon">🌀</div>
     <div class="kit-title">
       <div class="kit-name">ヴォイド</div>
+      <div class="kit-stats">
+        <span class="stat stat-type">オフェンス</span>
+      </div>
     </div>
   </div>
   <div class="abilities">
@@ -166,15 +210,22 @@
         <span class="ability-name s1-name">アンノウントラベル</span>
       </div>
       <div class="ability-desc">
-        虚空を通り、指定した場所へ<span class="hi">瞬間移動</span>する
+        <span class="hi">20ブロック</span>以内の指定地点に瞬間移動する<br>
+        テレポート後<span class="hi">0.25秒間スタン</span>状態になる<br>
+        クールダウン: <span class="hi">5秒</span>
       </div>
     </div>
     <div class="ability">
       <div class="ability-header">
         <span class="slot-badge slot-2">スキル2</span>
-        <span class="ability-name s2-name">—</span>
+        <span class="ability-name s2-name">ブラックウェーブ</span>
       </div>
-      <div class="ability-desc tbd">詳細準備中</div>
+      <div class="ability-desc">
+        指定地点に盲目とスロー効果のある円を発生させる<br>
+        <span class="hi">0.75秒</span>かけて<span class="hi">半径5ブロック</span>まで拡大し<span class="hi">1.75秒間</span>持続する<br>
+        範囲内の敵に<span class="hi">10%のスロー</span>を与える<br>
+        クールダウン: <span class="hi">20秒</span>
+      </div>
     </div>
     <div class="ability ult">
       <div class="ability-header">
@@ -182,7 +233,7 @@
         <span class="ability-name ult-name">ヴォイド</span>
       </div>
       <div class="ability-desc">
-        虚空の力で範囲内の敵を<span class="hi">引き込む</span>
+        虚空の力で<span class="hi">範囲内の敵を引き込む</span>
       </div>
     </div>
   </div>
@@ -191,9 +242,12 @@
 <!-- ブラスト -->
 <div class="kit-card" id="blast">
   <div class="kit-header">
-    <div class="kit-icon" >💥</div>
+    <div class="kit-icon">💥</div>
     <div class="kit-title">
       <div class="kit-name">ブラスト</div>
+      <div class="kit-stats">
+        <span class="stat stat-type">オフェンス</span>
+      </div>
     </div>
   </div>
   <div class="abilities">
@@ -203,15 +257,20 @@
         <span class="ability-name s1-name">ブレイクイン</span>
       </div>
       <div class="ability-desc">
-        前方に<span class="hi">突入</span>し、当たった敵にダメージとノックバックを与える
+        前方に<span class="hi">突入</span>する<br>
+        クールダウン: <span class="hi">15秒</span>
       </div>
     </div>
     <div class="ability">
       <div class="ability-header">
         <span class="slot-badge slot-2">スキル2</span>
-        <span class="ability-name s2-name">—</span>
+        <span class="ability-name s2-name">オーバーパワー</span>
       </div>
-      <div class="ability-desc tbd">詳細準備中</div>
+      <div class="ability-desc">
+        前方<span class="hi">長さ8ブロック・幅4ブロック</span>の敵を吹き飛ばし<br>
+        <span class="hi">1秒間20%のスロー</span>を与える<br>
+        クールダウン: <span class="hi">15秒</span>
+      </div>
     </div>
     <div class="ability ult">
       <div class="ability-header">
@@ -219,7 +278,7 @@
         <span class="ability-name ult-name">ブラスト</span>
       </div>
       <div class="ability-desc">
-        強力な<span class="hi">爆発</span>を発生させ、周囲の敵にダメージを与える
+        強力な<span class="hi">爆発</span>を発生させ 周囲の敵にダメージを与える
       </div>
     </div>
   </div>
@@ -228,27 +287,37 @@
 <!-- プラント -->
 <div class="kit-card" id="plant">
   <div class="kit-header">
-    <div class="kit-icon" >🌱</div>
+    <div class="kit-icon">🌱</div>
     <div class="kit-title">
       <div class="kit-name">プラント</div>
+      <div class="kit-stats">
+        <span class="stat stat-type">キープ</span>
+      </div>
     </div>
   </div>
   <div class="abilities">
     <div class="ability">
       <div class="ability-header">
         <span class="slot-badge slot-1">スキル1</span>
-        <span class="ability-name s1-name">カルティベーション</span>
+        <span class="ability-name s1-name">レジリエンス</span>
       </div>
       <div class="ability-desc">
-        植物を育て、範囲内の<span class="hi">味方を回復</span>する
+        <span class="hi">8ブロック</span>以内の指定地点に苗木を設置する<br>
+        <span class="hi">2秒</span>で成長し 半径<span class="hi">3ブロック</span>内の味方を<br>
+        <span class="hi">1.25秒ごとに1HP</span>回復させる（最大<span class="hi">3回</span>）<br>
+        <span class="hi">10秒間</span>持続
       </div>
     </div>
     <div class="ability">
       <div class="ability-header">
         <span class="slot-badge slot-2">スキル2</span>
-        <span class="ability-name s2-name">—</span>
+        <span class="ability-name s2-name">カルティベーション</span>
       </div>
-      <div class="ability-desc tbd">詳細準備中</div>
+      <div class="ability-desc">
+        設置した苗木に向けて発動する<br>
+        <span class="hi">1秒</span>で木に成長させ 半径<span class="hi">7ブロック</span>内の敵に<br>
+        <span class="hi">40%のスロー</span>を与え<span class="hi">6秒間</span>持続する
+      </div>
     </div>
     <div class="ability ult">
       <div class="ability-header">
@@ -256,7 +325,7 @@
         <span class="ability-name ult-name">プラント</span>
       </div>
       <div class="ability-desc">
-        大型の植物を召喚し、周囲の敵を<span class="hi">攻撃</span>させる
+        大型の植物を召喚し 周囲の敵を<span class="hi">攻撃</span>させる
       </div>
     </div>
   </div>
@@ -265,27 +334,36 @@
 <!-- ロスト -->
 <div class="kit-card" id="lost">
   <div class="kit-header">
-    <div class="kit-icon" >💔</div>
+    <div class="kit-icon">💔</div>
     <div class="kit-title">
       <div class="kit-name">ロスト</div>
+      <div class="kit-stats">
+        <span class="stat stat-type">サポート</span>
+      </div>
     </div>
   </div>
   <div class="abilities">
     <div class="ability">
       <div class="ability-header">
         <span class="slot-badge slot-1">スキル1</span>
-        <span class="ability-name s1-name">サクリファイスリング</span>
+        <span class="ability-name s1-name">デバウリング・プール</span>
       </div>
       <div class="ability-desc">
-        自身のHPを消費して周囲の敵にダメージを与える<span class="hi">犠牲の輪</span>を設置する
+        <span class="hi">7秒間</span>前進し続ける円を展開する<br>
+        半径<span class="hi">5ブロック</span>の円内にいる敵に<span class="hi">30%のスロー</span>を与える<br>
+        クールダウン: <span class="hi">10秒</span>
       </div>
     </div>
     <div class="ability">
       <div class="ability-header">
         <span class="slot-badge slot-2">スキル2</span>
-        <span class="ability-name s2-name">—</span>
+        <span class="ability-name s2-name">サクリファイス・リング</span>
       </div>
-      <div class="ability-desc tbd">詳細準備中</div>
+      <div class="ability-desc">
+        指定地点に半径<span class="hi">5ブロック</span>の円を生成する<br>
+        <span class="hi">1秒後</span>に起動し 縁に触れた敵に<span class="hi">3秒間弱体化</span>を与える<br>
+        <span class="hi">4秒間</span>持続
+      </div>
     </div>
     <div class="ability ult">
       <div class="ability-header">
@@ -300,9 +378,12 @@
 <!-- レプトン -->
 <div class="kit-card" id="lepton">
   <div class="kit-header">
-    <div class="kit-icon" >⚛</div>
+    <div class="kit-icon">⚛</div>
     <div class="kit-title">
       <div class="kit-name">レプトン</div>
+      <div class="kit-stats">
+        <span class="stat stat-type">オフェンス</span>
+      </div>
     </div>
   </div>
   <div class="abilities">
@@ -312,7 +393,10 @@
         <span class="ability-name s1-name">サイクロトロン</span>
       </div>
       <div class="ability-desc">
-        円形の力場を展開し、範囲内の敵に<span class="hi">継続ダメージ</span>を与える
+        <span class="hi">2秒間</span>前方に突進しながら 通過地点に<br>
+        味方の移動速度を<span class="hi">30%上昇</span>させるブロックを配置する<br>
+        ブロックは<span class="hi">5秒間</span>持続する<br>
+        クールダウン: <span class="hi">20秒</span>
       </div>
     </div>
     <div class="ability">
@@ -321,7 +405,10 @@
         <span class="ability-name s2-name">ヒッグスエフェクト</span>
       </div>
       <div class="ability-desc">
-        対象に重力場を展開し、<span class="hi">移動速度を低下</span>させる
+        半径<span class="hi">7.5ブロック</span>内の敵に段階的なスローを与える<br>
+        <span class="hi">1秒後に10%スロー</span> <span class="hi">2秒後に30%スロー</span>に強化され<br>
+        計<span class="hi">4.5秒間</span>持続する<br>
+        クールダウン: <span class="hi">20秒</span>
       </div>
     </div>
     <div class="ability ult">
@@ -330,7 +417,7 @@
         <span class="ability-name ult-name">レプトン</span>
       </div>
       <div class="ability-desc">
-        素粒子の力を全解放し、範囲内の敵を<span class="hi">吹き飛ばす</span>
+        素粒子の力を全解放し 範囲内の敵を<span class="hi">吹き飛ばす</span>
       </div>
     </div>
   </div>
@@ -339,9 +426,12 @@
 <!-- ドレッド -->
 <div class="kit-card" id="dread">
   <div class="kit-header">
-    <div class="kit-icon" >💀</div>
+    <div class="kit-icon">💀</div>
     <div class="kit-title">
       <div class="kit-name">ドレッド</div>
+      <div class="kit-stats">
+        <span class="stat stat-type">キープ</span>
+      </div>
     </div>
   </div>
   <div class="abilities">
@@ -351,16 +441,22 @@
         <span class="ability-name s1-name">テラーアンビット</span>
       </div>
       <div class="ability-desc">
-        恐怖の領域を展開し、範囲内の敵に<span class="hi">デバフ</span>を与える
+        <span class="hi">10ブロック</span>以内の指定地点に領域を展開する<br>
+        奥行き<span class="hi">3ブロック・幅9ブロック</span>の範囲内の敵に<br>
+        <span class="hi">盲目と弱体化</span>を与える（範囲外でも<span class="hi">1.5秒</span>持続）<br>
+        エネルギーを消費して継続 クールダウン: <span class="hi">5秒</span>
       </div>
     </div>
     <div class="ability">
       <div class="ability-header">
         <span class="slot-badge slot-2">スキル2</span>
-        <span class="ability-name s2-name">サモンスケアリーヘッド</span>
+        <span class="ability-name s2-name">スケアリーヘッド</span>
       </div>
       <div class="ability-desc">
-        ウィザーの頭を投擲し、当たった敵に<span class="hi">ダメージと状態異常</span>を与える
+        ウィザーの頭を発射する<br>
+        着弾点から半径<span class="hi">5.5ブロック</span>以内の敵に<br>
+        <span class="hi">1秒間盲目</span>と<span class="hi">2秒間50%スロー</span>を与える<br>
+        クールダウン: <span class="hi">10秒</span>
       </div>
     </div>
     <div class="ability ult">
