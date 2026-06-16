@@ -1,0 +1,16 @@
+html {
+  scroll-behavior: smooth;
+}
+.totop{
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    text-align: center;
+}
+.totop a{
+    text-decoration: none;
+    color: rgb(63, 48, 0);
+}
+.totop p{
+    margin: 0;
+}

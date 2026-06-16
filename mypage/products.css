@@ -1,0 +1,143 @@
+#gametype {
+    left: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    list-style: none;
+}
+
+#gametype li {
+    margin: auto;
+    position: relative;
+    width: 24%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#gametype li:hover .gametype_img {
+  transform: scale(1.1); /* 画像を拡大 */
+}
+.gametype_img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    filter: brightness(0.8);
+    transition: transform 0.5s ease;
+}
+
+.gametype_text {
+    position: absolute;
+    width: 80%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 1;
+    color: white;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+}
+.gametype_title :hover{
+    font-size: 65px;
+}
+.gametype_title {
+    font-size: 60px;
+    font-weight: 800;
+}
+
+.gametype_description {
+    font-size: 20px;
+}
+.game_background{
+    width: 80%;
+    margin: 100px auto;
+    background-color: rgb(250, 250, 250);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+}
+.game_content_title{
+    width: 100%;
+    top: 0;
+    background-color: rgb(79, 189, 16);
+    border-radius: 12px 12px 0 0;
+}
+.game_content_title h1{
+    text-align: center;
+    color: white;
+    font-size: 30px;
+    font-weight: 600;
+    padding: 20px 0;
+    
+}
+#minecraft_grid{
+    margin: auto;
+    width: 90%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5%;
+}
+.game_card{
+    width: 100%;
+    text-align: center;
+}
+.game_card img{
+    width: 80%;
+    aspect-ratio: 2 / 1;
+    object-fit: cover;
+}
+.game_card h2{
+    font-size: 30px;
+    font-weight: 600;
+}
+#minecraft_other{
+    margin: 80px auto 0 auto;
+    width: 80%;
+    padding: 10px 0;
+}
+#premier_info{
+    text-align: center;
+}
+#premier_info img{
+    width: 640px;
+    height: 360px;
+}
+.premier_list{
+    width: 70%;
+    margin: auto;
+    padding: 20px 0;
+    display: flex;
+}
+.premier_list img{
+    width: 320px;
+    height: 180px;
+}
+.premier_detail{
+    width: 100%;
+    padding-left: 20px;
+}
+.premier_detail h2{
+    font-size: 25px;
+    font-weight: 700;
+}
+#reyogame{
+    display: flex;
+    margin: 10px auto 40px auto;
+    width: 80%;
+}
+#reyogame img{
+    width: 480px;
+    height: 270px;
+}
+#reyogame_detail{
+    padding-left: 30px;
+}
+#original_grid{
+    margin: auto;
+    width: 90%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 5%;
+}
