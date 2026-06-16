@@ -12,6 +12,7 @@ document.write(
             <ul id="textmenu">
                 <li><a href="/">ホーム</a></li>
                 <li><a href="products.html">製作物</a></li>
+                <li><a href="../wiki">Wiki</a></li>
             </ul>
             <ul id="pngmenu">
                 <li id="discord"><a href="https://discord.gg/jj4TwcW"><i class="fa-brands fa-discord"></i></a>
