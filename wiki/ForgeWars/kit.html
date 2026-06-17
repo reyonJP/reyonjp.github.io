@@ -16,34 +16,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&family=M+PLUS+Rounded+1c:wght@500;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../main.css"/>
   <style>
     :root{
-      --green:#7CC93C;--green-deep:#4F9F1F;--green-soft:#C6E4A6;
-      --green-pale:#E9F4D6;--green-light:#F4FAE7;--cream:#FFFDF6;
-      --ink:#161616;--ink2:#3a3a3a;--muted:#6a6a6a;--line:#e7eddc;
       --accent:#E64A8F;--accent-deep:#b0246a;
       --s1-bg:#eef4ff;--s1-border:#b8d0ff;--s1-text:#2255bb;
       --s2-bg:#efffee;--s2-border:#b0ddb0;--s2-text:#1a6a2a;
       --ult-bg:#fffbee;--ult-border:#e0cc88;--ult-text:#7a5800;
-    }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    html{scroll-behavior:smooth;}
-    body{font-family:'Noto Sans JP','Hiragino Sans',sans-serif;background:var(--cream);color:var(--ink);font-size:14px;line-height:1.65;}
-
-    .pixel-logo{width:34px;height:34px;border-radius:5px;overflow:hidden;display:grid;grid-template:repeat(8,1fr)/repeat(8,1fr);flex-shrink:0;}
-    .site-header{background:var(--green);padding:12px 28px;display:flex;align-items:center;gap:14px;}
-    .brand{display:flex;align-items:center;gap:9px;font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:18px;color:#1a1a1a;text-decoration:none;}
-    .topnav{margin-left:auto;display:flex;align-items:center;gap:8px;}
-    .nav-pill{background:#fff;border-radius:10px;padding:6px 14px;font-weight:700;font-size:12px;font-family:'Zen Maru Gothic',sans-serif;color:#1a1a1a;text-decoration:none;display:inline-block;}
-    .nav-pill.active{background:var(--ink);color:#fff;}
-
-    .breadcrumb{padding:14px 28px 0;font-size:11px;color:var(--muted);font-family:'M PLUS Rounded 1c',sans-serif;font-weight:700;letter-spacing:.06em;}
-    .breadcrumb a{color:var(--green-deep);font-weight:800;text-decoration:none;}
-
+}
+    body{font-size:14px;line-height:1.65;}
     .page-title{padding:20px 28px 8px;}
     .page-title h1{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:26px;margin:0 0 4px;}
     .page-title p{font-size:13px;color:var(--muted);}
-
     .kit-jump-nav{
       padding:0 28px 16px;
       display:flex;flex-wrap:wrap;gap:6px;
@@ -56,11 +40,8 @@
       transition:border-color .1s;
     }
     .kit-jump-nav a:hover{border-color:var(--accent);}
-
     .container{max-width:1300px;margin:0 auto;padding:0 28px 48px;}
-
     .kit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px;}
-
     .kit-card{
       background:#fff;border:1.5px solid var(--line);
       border-radius:16px;overflow:hidden;
@@ -83,17 +64,13 @@
     .stat{padding:.1rem .45rem;border-radius:4px;font-weight:800;font-family:'M PLUS Rounded 1c',sans-serif;}
     .stat-hp{background:#efffee;border:1px solid #b0ddb0;color:#1a6a2a;}
     .stat-atk{background:#fff0f0;border:1px solid #f0b0b0;color:#882222;}
-
     .abilities{padding:.7rem .9rem .9rem;display:flex;flex-direction:column;gap:.6rem;}
-
     .ability{
       background:var(--green-light);border:1px solid var(--line);
       border-radius:8px;padding:.55rem .8rem;
     }
     .ability.ult{background:var(--ult-bg);border-color:var(--ult-border);}
-
     .ability-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;}
-
     .slot-badge{
       font-size:.65rem;font-weight:800;letter-spacing:.01em;
       padding:.13rem .45rem;border-radius:4px;
@@ -103,17 +80,12 @@
     .slot-1{background:var(--s1-bg);color:var(--s1-text);border:1px solid var(--s1-border);}
     .slot-2{background:var(--s2-bg);color:var(--s2-text);border:1px solid var(--s2-border);}
     .slot-ult{background:var(--ult-bg);color:var(--ult-text);border:1px solid var(--ult-border);}
-
     .ability-name{font-weight:700;font-size:.88rem;color:var(--ink);}
     .s1-name{color:var(--s1-text);}
     .s2-name{color:var(--s2-text);}
     .ult-name{color:var(--ult-text);}
-
     .ability-desc{font-size:.8rem;color:var(--ink2);line-height:1.65;}
     .ability-desc .hi{color:#c04000;font-weight:700;}
-
-    .site-footer{margin-top:0;padding:16px 28px;background:var(--green);color:#0e2a04;display:flex;align-items:center;justify-content:space-between;font-size:12px;font-family:'Zen Maru Gothic',sans-serif;font-weight:700;}
-
     @media(max-width:600px){
       .kit-grid{grid-template-columns:1fr;}
       .site-header{padding:10px 16px;}
@@ -123,14 +95,9 @@
 </head>
 <body>
 
-<header class="site-header">
-  <div class="pixel-logo" id="pxl"></div>
-  <a href="../index.html" class="brand">れよんサーバー Wiki</a>
-  <nav class="topnav">
-    <a href="index.html" class="nav-pill">ゲーム説明</a>
-    <a href="#" class="nav-pill active">キット一覧</a>
-  </nav>
-</header>
+<div class="wiki-header" data-brand="../index.html"
+     data-nav='[{"label": "ゲーム説明", "href": "index.html"}, {"label": "キット一覧", "href": "#", "active": true}]'></div>
+<script src="../header.js"></script>
 
 <div class="breadcrumb">
   <a href="../index.html">ホーム</a> ／ <a href="index.html">フォージウォーズ</a> ／ <span style="color:var(--ink);font-weight:800;">キット一覧</span>
@@ -660,12 +627,5 @@
   <span>フォージウォーズ キット一覧 — れよんサーバー Wiki</span>
 </footer>
 
-<script>
-(function(){
-  var el=document.getElementById('pxl');if(!el)return;
-  var p=['#7CC93C','#9DD96B','#5BAF22','#C6E4A6','#4F9F1F','#FFFDF6'];
-  for(var i=0;i<64;i++){var d=document.createElement('div');d.style.background=p[(i*7+(i%5))%p.length];el.appendChild(d);}
-})();
-</script>
 </body>
 </html>
