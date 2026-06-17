@@ -16,82 +16,54 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&family=M+PLUS+Rounded+1c:wght@500;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../main.css"/>
 <style>
-:root{
-  --green:#7CC93C;--green-deep:#4F9F1F;--green-soft:#C6E4A6;
-  --green-pale:#E9F4D6;--green-light:#F4FAE7;--cream:#FFFDF6;
-  --ink:#161616;--ink2:#3a3a3a;--muted:#6a6a6a;--line:#e7eddc;
+    :root{
   --accent:#E64A8F;--accent-deep:#b0246a;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{font-family:'Noto Sans JP','Hiragino Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.75;font-size:15px;}
-
-.pixel-logo{width:36px;height:36px;border-radius:6px;overflow:hidden;display:grid;grid-template:repeat(8,1fr)/repeat(8,1fr);flex-shrink:0;}
-.site-header{background:var(--green);padding:14px 36px;display:flex;align-items:center;gap:16px;}
-.brand{display:flex;align-items:center;gap:10px;font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:20px;color:#1a1a1a;text-decoration:none;}
-.topnav{margin-left:auto;display:flex;align-items:center;gap:10px;}
-.nav-pill{background:#fff;border-radius:12px;padding:7px 16px;font-weight:700;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#1a1a1a;text-decoration:none;display:inline-block;}
-.nav-pill.active{background:var(--ink);color:#fff;}
-
-.breadcrumb{padding:18px 56px 0;font-size:12px;color:var(--muted);font-family:'M PLUS Rounded 1c',sans-serif;font-weight:700;letter-spacing:.06em;}
-.breadcrumb a{color:var(--green-deep);font-weight:800;text-decoration:none;}
-.breadcrumb a:hover{text-decoration:underline;}
-
-.game-hero{margin:16px 56px 0;border-radius:28px;padding:28px 36px;background:linear-gradient(135deg,#fae0ed 0%,#E9F4D6 90%);border:1px solid var(--line);position:relative;overflow:hidden;}
-.hero-top{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
-.hero-tag{background:var(--accent);color:#fff;font-weight:900;font-size:12px;padding:5px 12px;border-radius:8px;letter-spacing:.12em;font-family:'M PLUS Rounded 1c',sans-serif;}
-.hero-en{font-family:'M PLUS Rounded 1c',sans-serif;font-weight:900;font-size:11px;color:var(--muted);letter-spacing:.22em;}
-.hero-h1{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:48px;line-height:1.1;margin:0;letter-spacing:.01em;}
-.hero-lede{font-size:17px;font-family:'Zen Maru Gothic',sans-serif;font-weight:700;color:var(--ink2);margin:12px 0 0;}
-.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:22px;max-width:700px;}
-.stat-box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;}
-.stat-label{font-size:10px;color:var(--muted);font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;letter-spacing:.14em;}
-.stat-val{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:20px;margin-top:3px;}
-
-.toc-strip{margin:22px 56px 0;display:flex;gap:8px;flex-wrap:wrap;}
-.toc-item{background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:7px 16px;font-size:13px;font-weight:700;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:border-color .1s;}
-.toc-item:hover{border-color:var(--accent);}
-.toc-hash{color:var(--accent);font-family:'M PLUS Rounded 1c',sans-serif;font-weight:900;}
-
-.page-sec{padding:36px 56px 0;}
-.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:18px;}
-.sec-hash{font-family:'M PLUS Rounded 1c',sans-serif;font-weight:900;font-size:12px;color:var(--accent);letter-spacing:.22em;}
-.sec-h2{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:26px;margin:0;}
-.sec-rule{flex:1;height:2px;background:var(--line);margin-left:8px;}
-
-.white-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px 24px;}
-.card-h3{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:18px;margin:0 0 12px;}
-
-.rule-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:.6rem;margin-bottom:1.3rem;}
-.rule-list li{display:flex;align-items:flex-start;gap:.6rem;font-size:.93rem;padding:.55rem .8rem;background:var(--green-light);border:1px solid var(--line);border-radius:8px;color:var(--ink2);}
-.rule-list .icon{flex-shrink:0;font-size:1rem;margin-top:.1rem;}
-
-.warn-box{background:#fffbf0;border:1px solid #e8d08a;border-left:4px solid #F5A623;border-radius:8px;padding:1rem 1.2rem;}
-.warn-title{color:#b87820;font-weight:800;font-size:.92rem;margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem;}
-.warn-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:.5rem;}
-.warn-list li{display:flex;align-items:flex-start;gap:.5rem;font-size:.88rem;color:var(--ink2);}
-.warn-list .wi{color:#F5A623;flex-shrink:0;margin-top:.15rem;}
-
-.kit-banner{display:flex;align-items:center;justify-content:space-between;gap:1rem;background:#fff;border:1px solid var(--line);border-radius:20px;padding:1.4rem 1.8rem;flex-wrap:wrap;}
-.kit-banner-text h3{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:18px;border-left:3px solid var(--accent);padding-left:.75rem;margin-bottom:.3rem;}
-.kit-banner-text p{color:var(--muted);font-size:.88rem;padding-left:.75rem;}
-.kit-btn{display:inline-flex;align-items:center;gap:.4rem;background:var(--accent);color:#fff;text-decoration:none;font-weight:900;font-size:.93rem;padding:.75rem 1.5rem;border-radius:12px;font-family:'Zen Maru Gothic',sans-serif;box-shadow:0 4px 0 var(--accent-deep);transition:transform .1s;white-space:nowrap;}
-.kit-btn:hover{transform:translateY(-1px);}
-
-.map-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px;}
-.map-card{background:var(--green-light);border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
-.map-name{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:15px;color:var(--ink);margin-bottom:5px;}
-.map-desc{font-size:.85rem;color:var(--ink2);line-height:1.6;}
-
-.sfx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-top:4px;}
-.sfx-item{background:#fff;border:1px solid var(--line);border-radius:10px;padding:.65rem .9rem;}
-.sfx-name{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:14px;color:var(--ink);margin-bottom:3px;}
-.sfx-desc{font-size:.8rem;color:var(--muted);line-height:1.5;}
-
-.site-footer{margin-top:48px;padding:18px 56px 22px;background:var(--green);color:#0e2a04;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;font-weight:700;}
-
-@media(max-width:900px){
+    .game-hero{margin:16px 56px 0;border-radius:28px;padding:28px 36px;background:linear-gradient(135deg,#fae0ed 0%,#E9F4D6 90%);border:1px solid var(--line);position:relative;overflow:hidden;}
+    .hero-top{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+    .hero-tag{background:var(--accent);color:#fff;font-weight:900;font-size:12px;padding:5px 12px;border-radius:8px;letter-spacing:.12em;font-family:'M PLUS Rounded 1c',sans-serif;}
+    .hero-en{font-family:'M PLUS Rounded 1c',sans-serif;font-weight:900;font-size:11px;color:var(--muted);letter-spacing:.22em;}
+    .hero-h1{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:48px;line-height:1.1;margin:0;letter-spacing:.01em;}
+    .hero-lede{font-size:17px;font-family:'Zen Maru Gothic',sans-serif;font-weight:700;color:var(--ink2);margin:12px 0 0;}
+    .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:22px;max-width:700px;}
+    .stat-box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;}
+    .stat-label{font-size:10px;color:var(--muted);font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;letter-spacing:.14em;}
+    .stat-val{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:20px;margin-top:3px;}
+    .toc-strip{margin:22px 56px 0;display:flex;gap:8px;flex-wrap:wrap;}
+    .toc-item{background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:7px 16px;font-size:13px;font-weight:700;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:border-color .1s;}
+    .toc-item:hover{border-color:var(--accent);}
+    .toc-hash{color:var(--accent);font-family:'M PLUS Rounded 1c',sans-serif;font-weight:900;}
+    .page-sec{padding:36px 56px 0;}
+    .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:18px;}
+    .sec-hash{font-family:'M PLUS Rounded 1c',sans-serif;font-weight:900;font-size:12px;color:var(--accent);letter-spacing:.22em;}
+    .sec-h2{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:26px;margin:0;}
+    .sec-rule{flex:1;height:2px;background:var(--line);margin-left:8px;}
+    .white-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px 24px;}
+    .card-h3{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:18px;margin:0 0 12px;}
+    .rule-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:.6rem;margin-bottom:1.3rem;}
+    .rule-list li{display:flex;align-items:flex-start;gap:.6rem;font-size:.93rem;padding:.55rem .8rem;background:var(--green-light);border:1px solid var(--line);border-radius:8px;color:var(--ink2);}
+    .rule-list .icon{flex-shrink:0;font-size:1rem;margin-top:.1rem;}
+    .warn-box{background:#fffbf0;border:1px solid #e8d08a;border-left:4px solid #F5A623;border-radius:8px;padding:1rem 1.2rem;}
+    .warn-title{color:#b87820;font-weight:800;font-size:.92rem;margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem;}
+    .warn-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:.5rem;}
+    .warn-list li{display:flex;align-items:flex-start;gap:.5rem;font-size:.88rem;color:var(--ink2);}
+    .warn-list .wi{color:#F5A623;flex-shrink:0;margin-top:.15rem;}
+    .kit-banner{display:flex;align-items:center;justify-content:space-between;gap:1rem;background:#fff;border:1px solid var(--line);border-radius:20px;padding:1.4rem 1.8rem;flex-wrap:wrap;}
+    .kit-banner-text h3{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:18px;border-left:3px solid var(--accent);padding-left:.75rem;margin-bottom:.3rem;}
+    .kit-banner-text p{color:var(--muted);font-size:.88rem;padding-left:.75rem;}
+    .kit-btn{display:inline-flex;align-items:center;gap:.4rem;background:var(--accent);color:#fff;text-decoration:none;font-weight:900;font-size:.93rem;padding:.75rem 1.5rem;border-radius:12px;font-family:'Zen Maru Gothic',sans-serif;box-shadow:0 4px 0 var(--accent-deep);transition:transform .1s;white-space:nowrap;}
+    .kit-btn:hover{transform:translateY(-1px);}
+    .map-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px;}
+    .map-card{background:var(--green-light);border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
+    .map-name{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:15px;color:var(--ink);margin-bottom:5px;}
+    .map-desc{font-size:.85rem;color:var(--ink2);line-height:1.6;}
+    .sfx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-top:4px;}
+    .sfx-item{background:#fff;border:1px solid var(--line);border-radius:10px;padding:.65rem .9rem;}
+    .sfx-name{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:14px;color:var(--ink);margin-bottom:3px;}
+    .sfx-desc{font-size:.8rem;color:var(--muted);line-height:1.5;}
+    @media(max-width:900px){
   .site-header{padding:12px 20px;}
   .breadcrumb,.toc-strip,.page-sec{padding-left:20px;padding-right:20px;}
   .game-hero{margin:14px 20px 0;padding:22px 24px;}
@@ -100,7 +72,7 @@ body{font-family:'Noto Sans JP','Hiragino Sans',sans-serif;background:var(--crea
   .map-grid{grid-template-columns:1fr;}
   .site-footer{padding:16px 20px;flex-direction:column;gap:6px;text-align:center;}
 }
-</style>
+  </style>
 </head>
 <body>
 
