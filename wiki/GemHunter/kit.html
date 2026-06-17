@@ -129,14 +129,9 @@
 </head>
 <body>
 
-<header class="site-header">
-  <div class="pixel-logo" id="pxl"></div>
-  <a href="../index.html" class="brand">れよんサーバー Wiki</a>
-  <nav class="topnav">
-    <a href="index.html" class="nav-pill">ゲーム説明</a>
-    <a href="#" class="nav-pill active">キット一覧</a>
-  </nav>
-</header>
+<div class="wiki-header" data-brand="../index.html"
+     data-nav='[{"label": "ゲーム説明", "href": "index.html"}, {"label": "キット一覧", "href": "#", "active": true}]'></div>
+<script src="../header.js"></script>
 
 <div class="breadcrumb">
   <a href="../index.html">ホーム</a> ／ <a href="index.html">ジェムハンター</a> ／ <span style="color:var(--ink);font-weight:800;">キット一覧</span>
@@ -553,12 +548,5 @@
   <span>ジェムハンター キット一覧 — れよんサーバー Wiki</span>
 </footer>
 
-<script>
-(function(){
-  var el=document.getElementById('pxl');if(!el)return;
-  var p=['#7CC93C','#9DD96B','#5BAF22','#C6E4A6','#4F9F1F','#FFFDF6'];
-  for(var i=0;i<64;i++){var d=document.createElement('div');d.style.background=p[(i*7+(i%5))%p.length];el.appendChild(d);}
-})();
-</script>
 </body>
 </html>

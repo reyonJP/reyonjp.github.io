@@ -81,13 +81,9 @@ body{font-family:'Noto Sans JP','Hiragino Sans',sans-serif;background:var(--crea
 </head>
 <body>
 
-<header class="site-header">
-  <div class="pixel-logo" id="pxl"></div>
-  <a href="/" class="brand">れよんサーバー Wiki</a>
-  <nav class="topnav">
-    <a href="../mypage" class="nav-pill active">ホーム</a>
-  </nav>
-</header>
+<div class="wiki-header" data-brand="/"
+     data-nav='[{"label": "ホーム", "href": "../mypage", "active": true}]'></div>
+<script src="header.js"></script>
 
 <section class="hero">
   <div class="hero-badge">OFFICIAL WIKI</div>
@@ -196,12 +192,5 @@ body{font-family:'Noto Sans JP','Hiragino Sans',sans-serif;background:var(--crea
   <span>れよんの部屋</span>
 </footer>
 
-<script>
-(function(){
-  var el=document.getElementById('pxl');if(!el)return;
-  var p=['#7CC93C','#9DD96B','#5BAF22','#C6E4A6','#4F9F1F','#FFFDF6'];
-  for(var i=0;i<64;i++){var d=document.createElement('div');d.style.background=p[(i*7+(i%5))%p.length];el.appendChild(d);}
-})();
-</script>
 </body>
 </html>
