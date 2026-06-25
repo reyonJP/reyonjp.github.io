@@ -11,7 +11,7 @@ document.write(
             <div id="menu">
             <ul id="textmenu">
                 <li><a href="/">ホーム</a></li>
-                <li><a href="products.html">製作物</a></li>
+                <li><a href="products">製作物</a></li>
                 <li><a href="../wiki">Wiki</a></li>
             </ul>
             <ul id="pngmenu">
