@@ -30,29 +30,36 @@ jobs:
           COMMENT_BODY: ${{ github.event.comment.body }}
           COMMENT_URL: ${{ github.event.comment.html_url }}
         run: |
-          # ── イベントごとにメッセージを組み立て ──────────────────────
           if [ "$EVENT" = "push" ]; then
-            COLOR=3447003   # 青
+            COLOR=3447003
             TITLE="📦 Push: ${REPO}"
-            DESCRIPTION="**${ACTOR}** が \`${REF}\` にプッシュしました\n\n${COMMIT_MSG}"
+            DESCRIPTION="**${ACTOR}** が \`${REF}\` にプッシュしました
+
+${COMMIT_MSG}"
             URL="${COMMIT_URL}"
 
           elif [ "$EVENT" = "pull_request" ] && [ "$ACTION" = "closed" ] && [ "$PR_MERGED" = "true" ]; then
-            COLOR=5763719   # 緑
+            COLOR=5763719
             TITLE="✅ Merge: ${REPO}"
-            DESCRIPTION="**${ACTOR}** が PR をマージしました\n\n**${PR_TITLE}**"
+            DESCRIPTION="**${ACTOR}** が PR をマージしました
+
+**${PR_TITLE}**"
             URL="${PR_URL}"
 
           elif [ "$EVENT" = "pull_request" ]; then
-            COLOR=16776960  # 黄
+            COLOR=16776960
             TITLE="🔀 Pull Request (${ACTION}): ${REPO}"
-            DESCRIPTION="**${ACTOR}** が PR を ${ACTION} しました\n\n**${PR_TITLE}**"
+            DESCRIPTION="**${ACTOR}** が PR を ${ACTION} しました
+
+**${PR_TITLE}**"
             URL="${PR_URL}"
 
           elif [ "$EVENT" = "pull_request_review_comment" ] || [ "$EVENT" = "issue_comment" ]; then
-            COLOR=15158332  # 赤
+            COLOR=15158332
             TITLE="💬 PRコメント: ${REPO}"
-            DESCRIPTION="**${ACTOR}** がコメントしました\n\n${COMMENT_BODY}"
+            DESCRIPTION="**${ACTOR}** がコメントしました
+
+${COMMENT_BODY}"
             URL="${COMMENT_URL}"
 
           else
@@ -60,20 +67,12 @@ jobs:
             exit 0
           fi
 
-          # ── JSON ペイロードを組み立てて送信 ─────────────────────────
           PAYLOAD=$(jq -n \
-            --arg title    "$TITLE" \
-            --arg desc     "$DESCRIPTION" \
-            --arg url      "$URL" \
+            --arg title "$TITLE" \
+            --arg desc  "$DESCRIPTION" \
+            --arg url   "$URL" \
             --argjson color "$COLOR" \
-            '{
-              embeds: [{
-                title:       $title,
-                description: $desc,
-                url:         $url,
-                color:       $color
-              }]
-            }')
+            '{embeds:[{title:$title, description:$desc, url:$url, color:$color}]}')
 
           curl -s -o /dev/null -w "%{http_code}" \
             -H "Content-Type: application/json" \
