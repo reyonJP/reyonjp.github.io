@@ -30,36 +30,30 @@ jobs:
           COMMENT_BODY: ${{ github.event.comment.body }}
           COMMENT_URL: ${{ github.event.comment.html_url }}
         run: |
+          NL=$'\n'
+
           if [ "$EVENT" = "push" ]; then
             COLOR=3447003
             TITLE="📦 Push: ${REPO}"
-            DESCRIPTION="**${ACTOR}** が \`${REF}\` にプッシュしました
-
-${COMMIT_MSG}"
+            DESCRIPTION="**${ACTOR}** が \`${REF}\` にプッシュしました${NL}${NL}${COMMIT_MSG}"
             URL="${COMMIT_URL}"
 
           elif [ "$EVENT" = "pull_request" ] && [ "$ACTION" = "closed" ] && [ "$PR_MERGED" = "true" ]; then
             COLOR=5763719
             TITLE="✅ Merge: ${REPO}"
-            DESCRIPTION="**${ACTOR}** が PR をマージしました
-
-**${PR_TITLE}**"
+            DESCRIPTION="**${ACTOR}** が PR をマージしました${NL}${NL}**${PR_TITLE}**"
             URL="${PR_URL}"
 
           elif [ "$EVENT" = "pull_request" ]; then
             COLOR=16776960
             TITLE="🔀 Pull Request (${ACTION}): ${REPO}"
-            DESCRIPTION="**${ACTOR}** が PR を ${ACTION} しました
-
-**${PR_TITLE}**"
+            DESCRIPTION="**${ACTOR}** が PR を ${ACTION} しました${NL}${NL}**${PR_TITLE}**"
             URL="${PR_URL}"
 
           elif [ "$EVENT" = "pull_request_review_comment" ] || [ "$EVENT" = "issue_comment" ]; then
             COLOR=15158332
             TITLE="💬 PRコメント: ${REPO}"
-            DESCRIPTION="**${ACTOR}** がコメントしました
-
-${COMMENT_BODY}"
+            DESCRIPTION="**${ACTOR}** がコメントしました${NL}${NL}${COMMENT_BODY}"
             URL="${COMMENT_URL}"
 
           else
