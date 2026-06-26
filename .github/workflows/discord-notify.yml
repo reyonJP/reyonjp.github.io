@@ -1,57 +1,81 @@
-name: Discord Git Notification
+name: Discord通知
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["**"]
   pull_request:
-    types: [opened, synchronize, closed]
-  issue_comment:
-    types: [created]
+    types: [opened, reopened, synchronize, closed]
   pull_request_review_comment:
+    types: [created]
+  issue_comment:
     types: [created]
 
 jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Send Notification to Discord
+      - name: イベント種別を判定してDiscordに通知
         env:
-          WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          EVENT: ${{ github.event_name }}
+          ACTION: ${{ github.event.action }}
+          REPO: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+          REF: ${{ github.ref_name }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_MERGED: ${{ github.event.pull_request.merged }}
+          COMMIT_MSG: ${{ github.event.commits[0].message }}
+          COMMIT_URL: ${{ github.event.compare }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          COMMENT_URL: ${{ github.event.comment.html_url }}
         run: |
-          # 1. 各イベントに応じたメッセージを組み立てる
-          if [ "${{ github.event_name }}" = "push" ]; then
-            MSG="📝 **[Push]** ${{ github.actor }} が \`${{ github.ref_name }}\` にコミットをプッシュしました。\nURL: ${{ github.event.compare }}"
-            
-          elif [ "${{ github.event_name }}" = "pull_request" ]; then
-            PR_TITLE="${{ github.event.pull_request.title }}"
-            PR_URL="${{ github.event.pull_request.html_url }}"
-            PR_USER="${{ github.event.pull_request.user.login }}"
-            
-            if [ "${{ github.event.action }}" = "opened" ]; then
-              MSG="🚀 **[PR作成]** ${PR_USER} が新しいPull Requestを作成しました。\n**タイトル:** ${PR_TITLE}\nURL: ${PR_URL}"
-            elif [ "${{ github.event.action }}" = "synchronize" ]; then
-              MSG="🔄 **[PR更新]** ${PR_USER} のPull Requestに新しいコミットが追加されました。\n**タイトル:** ${PR_TITLE}\nURL: ${PR_URL}"
-            elif [ "${{ github.event.action }}" = "closed" ]; then
-              if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
-                MSG="💜 **[Merge]** Pull Requestがマージされました！ 🎉\n**タイトル:** ${PR_TITLE}\nURL: ${PR_URL}"
-              else
-                MSG="❌ **[PRクローズ]** Pull Requestがマージされずに閉じられました。\n**タイトル:** ${PR_TITLE}\nURL: ${PR_URL}"
-              fi
-            fi
-            
-          elif [ "${{ github.event_name }}" = "issue_comment" ] || [ "${{ github.event_name }}" = "pull_request_review_comment" ]; then
-            # PR自体のコメント、またはコード行へのレビューコメント
-            COMMENT_USER="${{ github.event.comment.user.login }}"
-            COMMENT_BODY="${{ github.event.comment.body }}"
-            COMMENT_URL="${{ github.event.comment.html_url }}"
-            
-            # 1行に収めるか、改行をエスケープしてJSONに入るようにする
-            MSG="💬 **[コメント]** ${COMMENT_USER} からコメントが届きました。\n**内容:** ${COMMENT_BODY}\nURL: ${COMMENT_URL}"
+          # ── イベントごとにメッセージを組み立て ──────────────────────
+          if [ "$EVENT" = "push" ]; then
+            COLOR=3447003   # 青
+            TITLE="📦 Push: ${REPO}"
+            DESCRIPTION="**${ACTOR}** が \`${REF}\` にプッシュしました\n\n${COMMIT_MSG}"
+            URL="${COMMIT_URL}"
+
+          elif [ "$EVENT" = "pull_request" ] && [ "$ACTION" = "closed" ] && [ "$PR_MERGED" = "true" ]; then
+            COLOR=5763719   # 緑
+            TITLE="✅ Merge: ${REPO}"
+            DESCRIPTION="**${ACTOR}** が PR をマージしました\n\n**${PR_TITLE}**"
+            URL="${PR_URL}"
+
+          elif [ "$EVENT" = "pull_request" ]; then
+            COLOR=16776960  # 黄
+            TITLE="🔀 Pull Request (${ACTION}): ${REPO}"
+            DESCRIPTION="**${ACTOR}** が PR を ${ACTION} しました\n\n**${PR_TITLE}**"
+            URL="${PR_URL}"
+
+          elif [ "$EVENT" = "pull_request_review_comment" ] || [ "$EVENT" = "issue_comment" ]; then
+            COLOR=15158332  # 赤
+            TITLE="💬 PRコメント: ${REPO}"
+            DESCRIPTION="**${ACTOR}** がコメントしました\n\n${COMMENT_BODY}"
+            URL="${COMMENT_URL}"
+
+          else
+            echo "通知対象外のイベント: $EVENT"
+            exit 0
           fi
 
-          # 2. JSON内の改行やダブルクォーテーションを綺麗にエスケープ（バグ防止）
-          # jqを利用して安全にJSONを組み立てて送信する
-          PAYLOAD=$(jq -n --arg content "$MSG" '{"username": "GitHub 通知", "content": $content}')
+          # ── JSON ペイロードを組み立てて送信 ─────────────────────────
+          PAYLOAD=$(jq -n \
+            --arg title    "$TITLE" \
+            --arg desc     "$DESCRIPTION" \
+            --arg url      "$URL" \
+            --argjson color "$COLOR" \
+            '{
+              embeds: [{
+                title:       $title,
+                description: $desc,
+                url:         $url,
+                color:       $color
+              }]
+            }')
 
-          # 3. DiscordにPOST
-          curl -H "Content-Type: application/json" -X POST -d "$PAYLOAD" "$WEBHOOK_URL"
+          curl -s -o /dev/null -w "%{http_code}" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD" \
+            "$DISCORD_WEBHOOK_URL"
