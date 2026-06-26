@@ -1,0 +1,57 @@
+name: Discord Git Notification
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    types: [opened, synchronize, closed]
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Notification to Discord
+        env:
+          WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          # 1. 各イベントに応じたメッセージを組み立てる
+          if [ "${{ github.event_name }}" = "push" ]; then
+            MSG="📝 **[Push]** ${{ github.actor }} が \`${{ github.ref_name }}\` にコミットをプッシュしました。\nURL: ${{ github.event.compare }}"
+            
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            PR_TITLE="${{ github.event.pull_request.title }}"
+            PR_URL="${{ github.event.pull_request.html_url }}"
+            PR_USER="${{ github.event.pull_request.user.login }}"
+            
+            if [ "${{ github.event.action }}" = "opened" ]; then
+              MSG="🚀 **[PR作成]** ${PR_USER} が新しいPull Requestを作成しました。\n**タイトル:** ${PR_TITLE}\nURL: ${PR_URL}"
+            elif [ "${{ github.event.action }}" = "synchronize" ]; then
+              MSG="🔄 **[PR更新]** ${PR_USER} のPull Requestに新しいコミットが追加されました。\n**タイトル:** ${PR_TITLE}\nURL: ${PR_URL}"
+            elif [ "${{ github.event.action }}" = "closed" ]; then
+              if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+                MSG="💜 **[Merge]** Pull Requestがマージされました！ 🎉\n**タイトル:** ${PR_TITLE}\nURL: ${PR_URL}"
+              else
+                MSG="❌ **[PRクローズ]** Pull Requestがマージされずに閉じられました。\n**タイトル:** ${PR_TITLE}\nURL: ${PR_URL}"
+              fi
+            fi
+            
+          elif [ "${{ github.event_name }}" = "issue_comment" ] || [ "${{ github.event_name }}" = "pull_request_review_comment" ]; then
+            # PR自体のコメント、またはコード行へのレビューコメント
+            COMMENT_USER="${{ github.event.comment.user.login }}"
+            COMMENT_BODY="${{ github.event.comment.body }}"
+            COMMENT_URL="${{ github.event.comment.html_url }}"
+            
+            # 1行に収めるか、改行をエスケープしてJSONに入るようにする
+            MSG="💬 **[コメント]** ${COMMENT_USER} からコメントが届きました。\n**内容:** ${COMMENT_BODY}\nURL: ${COMMENT_URL}"
+          fi
+
+          # 2. JSON内の改行やダブルクォーテーションを綺麗にエスケープ（バグ防止）
+          # jqを利用して安全にJSONを組み立てて送信する
+          PAYLOAD=$(jq -n --arg content "$MSG" '{"username": "GitHub 通知", "content": $content}')
+
+          # 3. DiscordにPOST
+          curl -H "Content-Type: application/json" -X POST -d "$PAYLOAD" "$WEBHOOK_URL"
