@@ -13,6 +13,7 @@ document.write(
                 <li><a href="/">ホーム</a></li>
                 <li><a href="products">製作物</a></li>
                 <li><a href="../wiki">Wiki</a></li>
+                <li><a href="../stats/ForgeWars">試合統計</a></li>
             </ul>
             <ul id="pngmenu">
                 <li id="discord"><a href="https://discord.gg/jj4TwcW"><i class="fa-brands fa-discord"></i></a>

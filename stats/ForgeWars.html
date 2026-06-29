@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700;900&family=Black+Han+Sans&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<style>
+  :root{
+    --bg:#0f1013;
+    --bg-soft:#14151a;
+    --panel:#181a21;
+    --panel-2:#1e2129;
+    --panel-edge:#2b2f3a;
+    --hairline:#23262f;
+    --ink:#ecebe5;
+    --ink-dim:#9a988f;
+    --ink-faint:#6c6a63;
+    --ember:#ff8a3d;
+    --ember-hot:#ffc857;
+    --ember-deep:#d4581f;
+    --steel:#7fa8c9;
+    --win-bg:rgba(143,191,107,.07);
+    --lose-bg:rgba(224,112,112,.06);
+    --team-a:#5b9bd5;
+    --team-a-bg:rgba(91,155,213,.08);
+    --team-b:#d95f5f;
+    --team-b-bg:rgba(217,95,95,.08);
+    --num-font:'Chakra Petch',monospace;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:
+      radial-gradient(1100px 480px at 78% -8%,rgba(255,138,61,.10),transparent 60%),
+      radial-gradient(900px 500px at -5% 0%,rgba(127,168,201,.06),transparent 55%),
+      var(--bg);
+    background-attachment:fixed;
+    color:var(--ink);
+    font-family:'Noto Sans JP',sans-serif;
+    font-size:14px;line-height:1.6;min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:90%;margin:0 auto;padding:28px 20px 72px}
+  *::-webkit-scrollbar{height:10px;width:10px}
+  *::-webkit-scrollbar-track{background:transparent}
+  *::-webkit-scrollbar-thumb{background:var(--panel-edge);border-radius:99px;border:2px solid transparent;background-clip:content-box}
+  *::-webkit-scrollbar-thumb:hover{background:#3a3f4d;background-clip:content-box}
+
+  /* ヘッダー */
+  header{position:relative;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--panel-edge);display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .nav-links{display:flex;gap:8px;flex-shrink:0}
+  .nav-link{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border:none;border-radius:8px;background:var(--ember);color:#15161a;font-size:13px;font-weight:700;font-family:'Noto Sans JP',sans-serif;text-decoration:none;transition:background .15s,transform .1s}
+  .nav-link:hover{background:var(--ember-hot);transform:translateY(-1px)}
+  .brand-mark{width:42px;height:42px;flex-shrink:0;border-radius:11px;display:grid;place-items:center;font-size:20px;background:linear-gradient(145deg,#23262f,#15171c);border:1px solid var(--panel-edge);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 0 22px -8px var(--ember)}
+  h1{font-family:'Noto Sans JP',sans-serif;font-weight:900;font-size:28px;letter-spacing:.04em;line-height:1.2;color:var(--ink)}
+  h1 .sub{display:block;font-size:12px;letter-spacing:.34em;font-weight:600;color:var(--ember);margin-top:3px}
+
+  /* 名前取得ステータス */
+  #name-status{font-size:11px;color:var(--ink-faint);letter-spacing:.06em;padding:4px 0 12px;min-height:20px}
+
+  /* タブ */
+  .tabs{display:flex;gap:4px;margin-bottom:18px;background:var(--panel);border:1px solid var(--panel-edge);border-radius:12px;padding:4px;width:100%}
+  .tabs button{appearance:none;background:transparent;color:var(--ink-dim);border:none;border-radius:9px;padding:9px 24px;font-size:14px;font-weight:600;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:color .15s,background .15s;flex:1;text-align:center}
+  .tabs button:hover{color:var(--ink)}
+  .tabs button.active{color:#1a130c;background:linear-gradient(160deg,var(--ember-hot),var(--ember));box-shadow:0 6px 18px -8px var(--ember)}
+  .tabs button:focus-visible{outline:2px solid var(--ember-hot);outline-offset:2px}
+
+  /* パネル */
+  .panel{background:linear-gradient(180deg,var(--panel),var(--bg-soft));border:1px solid var(--panel-edge);border-radius:18px;padding:28px;box-shadow:0 24px 60px -40px rgba(0,0,0,.9)}
+  .row{display:flex;flex-wrap:wrap;gap:32px}
+  .col{flex:1 1 380px;min-width:0}
+
+  /* セレクト */
+  label{display:block;font-size:11px;color:var(--ink-dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px}
+  select{width:100%;max-width:360px;appearance:none;-webkit-appearance:none;background:var(--bg-soft);color:var(--ink);border:1px solid var(--panel-edge);border-radius:10px;padding:11px 38px 11px 13px;font-size:14px;font-family:inherit;margin-bottom:20px;cursor:pointer;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23ff8a3d' d='M6 8 0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;transition:border-color .15s}
+  select:hover{border-color:#3a3f4d}
+  select:focus-visible{outline:none;border-color:var(--ember);box-shadow:0 0 0 3px rgba(255,138,61,.18)}
+
+  h2{font-size:12px;font-weight:700;color:var(--ink);letter-spacing:.06em;margin:18px 0 10px;display:flex;align-items:center;gap:9px}
+  h2::before{content:'';width:3px;height:14px;border-radius:2px;background:linear-gradient(var(--ember),var(--ember-deep));box-shadow:0 0 10px -2px var(--ember)}
+  .col > h2:first-child{margin-top:0}
+
+  /* テーブル */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  thead th,th{position:sticky;top:0;text-align:left;color:var(--ink-dim);font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;background:var(--panel);border-bottom:1px solid var(--panel-edge);padding:9px 10px}
+  td{border-bottom:1px solid var(--hairline);padding:10px 12px;color:var(--ink)}
+  tbody tr:hover td{background:rgba(255,255,255,.022)}
+  td.num,th.num{text-align:right;font-family:var(--num-font);font-weight:600;font-variant-numeric:tabular-nums}
+  /* 大きさバー付き数値セル */
+  td.bar{position:relative;isolation:isolate}
+  td.bar::before{content:'';position:absolute;left:8px;top:5px;bottom:5px;width:var(--w,0);max-width:calc(100% - 16px);background:linear-gradient(90deg,rgba(255,138,61,.30),rgba(255,138,61,.07));border-radius:3px;z-index:-1}
+  td.bar span{position:relative}
+  tr.kit-head td{font-weight:700;padding-top:15px;color:var(--ink);border-bottom:1px solid var(--panel-edge);background:rgba(255,138,61,.04)}
+  tr.team-win td{background:var(--win-bg)}
+  tr.team-lose td{background:var(--lose-bg)}
+  tr.team-a td{background:var(--team-a-bg)}
+  tr.team-b td{background:var(--team-b-bg)}
+  #h2-team-a{color:var(--team-a)}
+  #h2-team-b{color:var(--team-b)}
+  #h2-team-a::before{background:var(--team-a);box-shadow:0 0 10px -2px var(--team-a)}
+  #h2-team-b::before{background:var(--team-b);box-shadow:0 0 10px -2px var(--team-b)}
+  .kit-chip{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:8px;vertical-align:baseline;box-shadow:0 0 8px -1px currentColor}
+  .badge{display:inline-block;font-size:10px;font-family:var(--num-font);font-weight:700;padding:1px 6px;border-radius:4px;margin-left:6px;vertical-align:middle}
+  .badge-win{background:rgba(143,191,107,.2);color:#8fbf6b}
+  .badge-lose{background:rgba(224,112,112,.15);color:#e07070}
+  .table-scroll{overflow:auto;max-height:560px;border:1px solid var(--hairline);border-radius:12px}
+  .table-noscroll{overflow:visible;border:1px solid var(--hairline);border-radius:12px}
+  .table-scroll td:first-child,.table-scroll th:first-child,
+  .table-noscroll td:first-child,.table-noscroll th:first-child{padding-left:14px}
+  .table-scroll td:last-child,.table-scroll th:last-child,
+  .table-noscroll td:last-child,.table-noscroll th:last-child{padding-right:14px}
+
+  /* h2 + トグルを横並び */
+  .h2-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 10px}
+  .h2-row h2{margin:0}
+  .h2-row .toggle{margin-bottom:0}
+  .col > .h2-row:first-child{margin-top:0}
+
+  /* トグル */
+  .toggle{display:inline-flex;margin-bottom:16px;border:1px solid var(--panel-edge);border-radius:10px;overflow:hidden;background:var(--panel)}
+  .toggle button{background:transparent;color:var(--ink-dim);border:none;padding:8px 18px;font-size:13px;font-weight:600;font-family:'Noto Sans JP',sans-serif;cursor:pointer;border-right:1px solid var(--panel-edge);transition:color .15s,background .15s}
+  .toggle button:last-child{border-right:none}
+  .toggle button:hover{color:var(--ink)}
+  .toggle button.active{background:linear-gradient(160deg,var(--ember-hot),var(--ember));color:#1a130c;font-weight:700}
+  .toggle button:focus-visible{outline:2px solid var(--ember-hot);outline-offset:-2px}
+
+  /* キット統計グラフ（勝率・ピック率） */
+  .kit-stats{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+  .kit-stats .kstat{position:relative;overflow:hidden;background:linear-gradient(160deg,var(--panel-2),var(--panel));border:1px solid var(--panel-edge);border-radius:var(--radius);padding:16px 20px;display:flex;flex-direction:column;gap:8px}
+  .kit-stats .kstat::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(var(--ember),var(--ember-deep))}
+  .kit-stats .kstat-k{font-size:13px;color:var(--ink);letter-spacing:.08em;font-weight:700;text-transform:uppercase;font-family:var(--num-font)}
+
+  /* キット詳細ヘッダー */
+  .kit-detail-header{display:flex;align-items:center;gap:16px;margin-bottom:16px;padding:18px 22px;background:var(--panel-2);border:1px solid var(--panel-edge);border-radius:12px}
+  .kit-detail-header .kit-chip-lg{width:20px;height:20px;border-radius:5px;flex-shrink:0;box-shadow:0 0 16px -2px currentColor}
+  .kit-detail-header .kit-detail-label{font-family:'Noto Sans JP',sans-serif;font-size:22px;font-weight:900;color:var(--ink);letter-spacing:.04em;line-height:1.1}
+  .kit-detail-header .kit-detail-name{font-family:var(--num-font);font-size:13px;font-weight:600;color:var(--ember);letter-spacing:.1em;margin-top:4px;text-transform:uppercase}
+
+  /* クリックヒント */
+  .click-hint{font-size:10px;font-family:'Noto Sans JP',sans-serif;font-weight:500;color:var(--ember);letter-spacing:.06em;opacity:.85;vertical-align:middle;margin-left:4px}
+
+  /* チャート */
+  .chart-box{background:radial-gradient(120% 120% at 100% 0%,rgba(255,138,61,.05),transparent 60%),var(--bg-soft);border:1px solid var(--hairline);border-radius:12px;padding:16px;margin-bottom:14px}
+  .chart-box-fullwidth{width:100%;margin-bottom:24px}
+
+  /* プレイヤー統計カード */
+  .pstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:24px}
+  .pstat{position:relative;overflow:hidden;background:linear-gradient(160deg,var(--panel-2),var(--panel));border:1px solid var(--panel-edge);border-radius:var(--radius);padding:18px 20px;display:flex;flex-direction:column;gap:5px}
+  .pstat::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(var(--ember),var(--ember-deep))}
+  .pstat .pk{font-size:11px;color:var(--ink-dim);letter-spacing:.1em;text-transform:uppercase}
+  .pstat .pv{font-family:var(--num-font);font-size:28px;font-weight:700;color:var(--ember-hot);line-height:1.1}
+  .pstat .psub{font-size:11px;color:var(--ink-faint)}
+  .pstat.kit-card .pv{font-size:20px;display:flex;align-items:center;gap:8px;color:var(--ink)}
+
+  /* ローディング / エラー */
+  .loading,.error{text-align:center;padding:80px 20px;color:var(--ink-dim);font-family:var(--num-font);letter-spacing:.18em;font-size:13px;text-transform:uppercase}
+  .error{color:#e88a8a}
+  /* データ待ちスケルトン */
+  .data-loading{display:flex;flex-direction:column;gap:12px;padding:20px 0}
+  .skel{background:linear-gradient(90deg,var(--panel-edge) 25%,var(--panel-2) 50%,var(--panel-edge) 75%);background-size:200% 100%;border-radius:8px;animation:shimmer 1.4s infinite}
+  .skel-chart{height:220px}
+  .skel-table{height:140px}
+  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+  @media (max-width:640px){
+    .wrap{padding:18px 14px 56px}
+    h1{font-size:19px}
+    .panel{padding:16px}
+    .tabs{display:flex;width:100%}
+    .tabs button{flex:1;padding:9px 8px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">🔥</div>
+      <h1>フォージウォーズ　統計サイト</h1>
+    </div>
+    <nav class="nav-links">
+      <a class="nav-link" href="../mypage/" target="_blank">🏠 ホーム</a>
+      <a class="nav-link" href="../wiki/" target="_blank">📖 Wiki</a>
+    </nav>
+  </header>
+
+  <div id="error" class="error" style="display:none"></div>
+
+  <div id="app">
+    <div id="name-status"></div>
+    <div class="tabs" role="tablist">
+      <button id="tab-kit"    class="active" onclick="switchTab('kit')">キット</button>
+      <button id="tab-match"  onclick="switchTab('match')">試合</button>
+      <button id="tab-player" onclick="switchTab('player')">プレイヤー</button>
+    </div>
+
+    <!-- キットタブ -->
+    <div class="panel" id="view-kit">
+      <!-- 勝率・ピック率グラフ -->
+      <div class="kit-stats">
+        <div class="kstat">
+          <span class="kstat-k">勝率 <span class="click-hint">クリックで詳細</span></span>
+          <div class="chart-box" style="margin-bottom:0"><canvas id="chart-kit-winrate"></canvas></div>
+        </div>
+        <div class="kstat">
+          <span class="kstat-k">ピック率 <span class="click-hint">クリックで詳細</span></span>
+          <div class="chart-box" style="margin-bottom:0"><canvas id="chart-kit-pick"></canvas></div>
+        </div>
+      </div>
+
+      <!-- 選択キット詳細ヘッダー -->
+      <div class="kit-detail-header" id="kit-detail-header">
+        <span class="kit-chip-lg" id="kit-detail-chip"></span>
+        <div>
+          <div class="kit-detail-label">パフォーマンス詳細</div>
+          <div class="kit-detail-name" id="kit-detail-name">—</div>
+        </div>
+      </div>
+
+      <!-- アビリティ平均 + 使用プレイヤー -->
+      <div id="kit-skeleton" class="data-loading">
+        <div class="skel skel-chart"></div>
+        <div class="skel skel-table"></div>
+      </div>
+      <div id="kit-content" style="display:none">
+      <div class="row">
+        <div class="col">
+          <div class="h2-row">
+            <h2 id="h2-kit-chart">アビリティ別 平均ダメージ</h2>
+            <div class="toggle" id="kit-toggle" role="group" aria-label="アビリティ表示モード">
+              <button class="active" onclick="setKitMode('avg')">平均ダメージ</button>
+              <button onclick="setKitMode('ratio')">Basic_Attack比</button>
+            </div>
+          </div>
+          <div class="chart-box"><canvas id="chart-kit-ability"></canvas></div>
+        </div>
+        <div class="col">
+          <h2>使用したプレイヤー</h2>
+          <div class="table-scroll"><table id="table-kit-players"></table></div>
+        </div>
+      </div>
+      </div><!-- /kit-content -->
+    </div>
+
+    <!-- 試合タブ -->
+    <div class="panel" id="view-match" style="display:none">
+      <label for="sel-match">試合を選択</label>
+      <select id="sel-match" onchange="renderMatch()"></select>
+      <div id="match-skeleton" class="data-loading">
+        <div class="skel skel-table"></div>
+        <div class="skel skel-chart"></div>
+      </div>
+      <div id="match-content" style="display:none">
+      <div class="row" id="match-teams">
+        <div class="col">
+          <h2 id="h2-team-a">チーム A</h2>
+          <div class="table-noscroll"><table id="table-match-a"></table></div>
+        </div>
+        <div class="col">
+          <h2 id="h2-team-b">チーム B</h2>
+          <div class="table-noscroll"><table id="table-match-b"></table></div>
+        </div>
+      </div>
+      <h2>プレイヤー別 合計ダメージ <span class="click-hint">クリックでアビリティ詳細</span></h2>
+      <div class="chart-box chart-box-fullwidth"><canvas id="chart-match"></canvas></div>
+      <!-- クリックで展開するアビリティ詳細 -->
+      <div id="match-ability-detail" style="display:none;margin-top:8px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <h2 id="match-ability-title" style="margin:0"></h2>
+        </div>
+        <div class="table-noscroll"><table id="table-match-ability"></table></div>
+      </div>
+      </div><!-- /match-content -->
+    </div>
+
+    <!-- プレイヤータブ -->
+    <div class="panel" id="view-player" style="display:none">
+      <label for="sel-player">プレイヤーを選択</label>
+      <select id="sel-player" onchange="renderPlayer()"></select>
+      <div id="player-skeleton" class="data-loading">
+        <div class="skel" style="height:80px"></div>
+        <div class="skel skel-chart"></div>
+      </div>
+      <div id="player-content" style="display:none">
+      <div class="pstats" id="player-stats"></div>
+      <div class="row">
+        <div class="col">
+          <h2>アビリティ別 平均ダメージ</h2>
+          <div class="chart-box"><canvas id="chart-player"></canvas></div>
+        </div>
+        <div class="col">
+          <h2>キット別・アビリティ別 内訳</h2>
+          <div class="table-noscroll"><table id="table-player"></table></div>
+        </div>
+      </div>
+      </div><!-- /player-content -->
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== 状態 ===== */
+let ROWS = [];        // 全レコード。playerId=UUID, playerName=UUID(暫定→名前解決後に上書き)
+let NAMES = {};       // UUID → Minecraft表示名
+let KIT_COLORS = {};
+const PALETTE = ['#ff8a3d','#7fa8c9','#ffc857','#8fbf6b','#c98ad6',
+                 '#5fb8a8','#e07070','#b0a07a','#6f8de0','#d6788f'];
+let charts = {};
+
+const AXIS_TICK = '#9a988f';
+const AXIS_GRID = 'rgba(255,255,255,.05)';
+
+const fmt    = n => n.toLocaleString('ja-JP',{maximumFractionDigits:1});
+const fmtInt = n => Math.round(n).toLocaleString('ja-JP');   // ダメージは整数で表示
+const pct    = n => (n*100).toFixed(1)+'%';
+const disp   = u => NAMES[u] || u;   // UUID → 表示名（未解決ならUUIDのまま）
+
+// アビリティ名を読みやすく整形（"_Damage" 除去・アンダースコアを空白に）。ロジックは生の名前を使う。
+function prettyAbility(name){
+  let s=String(name).replace(/_?[Dd]amage/g,'').replace(/_+/g,' ').replace(/\s+/g,' ').trim();
+  return s || String(name);
+}
+
+// 右寄せ数値セル＋背景に大きさバー。max を基準に幅を決める。
+function barCell(val, max){
+  const w = max>0 ? Math.max(2, Math.round(val/max*100)) : 0;
+  return `<td class="num bar" style="--w:${w}%"><span>${fmtInt(val)}</span></td>`;
+}
+
+// datalabels を全チャートで有効化（棒の先に値を表示）
+if (window.ChartDataLabels) Chart.register(window.ChartDataLabels);
+
+/* ===== AWS Lambda 設定 ===== */
+// デプロイ後に発行された「関数URL」をここに貼り付けてください
+const LAMBDA_URL = 'https://2gcjv7f3gcqrygc4ya6gt4z4au0ojrlv.lambda-url.ap-northeast-1.on.aws/';
+
+/* ===== 起動 (Lambda GET → 全マッチデータ取得) ===== */
+fetch(LAMBDA_URL)
+  .then(r=>{ if(!r.ok) throw new Error('サーバーエラー ('+r.status+')'); return r.json(); })
+  .then(result=>init(result.data))
+  .catch(e=>{
+    ['kit-skeleton','match-skeleton','player-skeleton'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.innerHTML=`<div class="error" style="padding:20px">読み込み失敗: ${e.message}</div>`;
+    });
+  });
+
+function init(rows){
+  ROWS = rows;
+
+  const kits=[...new Set(ROWS.map(r=>r.kit))].sort();
+  kits.forEach((k,i)=> KIT_COLORS[k]=PALETTE[i%PALETTE.length]);
+
+  buildSelects();
+
+  // スケルトンを消してコンテンツを表示
+  ['kit','match','player'].forEach(tab=>{
+    const sk=document.getElementById(tab+'-skeleton');
+    const ct=document.getElementById(tab+'-content');
+    if(sk) sk.style.display='none';
+    if(ct) ct.style.display='block';
+  });
+
+  renderKit(); renderMatch(); renderPlayer();
+
+  // バックグラウンドで Mojang API を叩く
+  document.getElementById('name-status').textContent='プレイヤー名を取得中…';
+  loadNames();
+}
+
+/* ===== セレクト構築 ===== */
+function buildSelects(){
+  const kits=[...new Set(ROWS.map(r=>r.kit))].sort();
+  if(document.getElementById('sel-kit')) fillSelect('sel-kit', kits);
+  if(kits.length) renderKit._default=kits[0];
+
+  const matches=new Set(ROWS.map(r=>r.matchId));
+  const matchOpts=[...matches].map(id=>{
+    const d=ROWS.find(r=>r.matchId===id).date;
+    return {value:id, label:`${d}  (試合ID : ${id})`};
+  }).sort((a,b)=>b.label.localeCompare(a.label));
+  fillSelect('sel-match', matchOpts);
+
+  rebuildPlayerSelect();
+}
+
+function rebuildPlayerSelect(){
+  const cur=document.getElementById('sel-player').value;
+  const opts=[...new Set(ROWS.map(r=>r.playerId))]
+    .sort((a,b)=>disp(a).localeCompare(disp(b),'ja'))
+    .map(u=>({value:u, label:disp(u)}));
+  fillSelect('sel-player', opts);
+  if(cur) document.getElementById('sel-player').value=cur;
+}
+
+/* ===== Mojang 名前解決 (Lambda POST) ===== */
+function loadNames(){
+  const uuids=[...new Set(ROWS.map(r=>r.playerId))];
+  const BATCH=6;
+  let done=0;
+  for(let i=0;i<uuids.length;i+=BATCH){
+    const batch=uuids.slice(i,i+BATCH);
+    fetch(LAMBDA_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({uuids:batch})
+    })
+      .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+      .then(result=>{
+        const map=result.data;
+        Object.assign(NAMES,map);
+        ROWS.forEach(r=>{ r.playerName=NAMES[r.playerId]||r.playerId; });
+        done+=batch.length;
+        rebuildPlayerSelect();
+        renderKit(); renderMatch(); renderPlayer();
+        if(done>=uuids.length) document.getElementById('name-status').textContent='';
+      })
+      .catch(()=>{
+        done+=batch.length;
+        if(done>=uuids.length) document.getElementById('name-status').textContent='一部プレイヤー名の取得に失敗しました';
+      });
+  }
+}
+
+/* ===== ユーティリティ ===== */
+function fillSelect(id,items){
+  document.getElementById(id).innerHTML=items.map(it=>{
+    const v=typeof it==='string'?it:it.value;
+    const l=typeof it==='string'?it:it.label;
+    return `<option value="${esc(v)}">${esc(l)}</option>`;
+  }).join('');
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
+
+function switchTab(name){
+  ['kit','match','player'].forEach(t=>{
+    document.getElementById('view-'+t).style.display=t===name?'block':'none';
+    document.getElementById('tab-'+t).classList.toggle('active',t===name);
+  });
+}
+
+/* ===== Chart ヘルパー ===== */
+function barChart(canvasId,labels,data,colors,horizontal,fmtVal,onClickKit){
+  if(charts[canvasId]) charts[canvasId].destroy();
+  const ctx=document.getElementById(canvasId);
+  const labelFmt = fmtVal || fmtInt;
+  charts[canvasId]=new Chart(ctx,{
+    type:'bar',
+    data:{labels,datasets:[{data,backgroundColor:colors,borderRadius:4,maxBarThickness:30}]},
+    options:{
+      indexAxis:horizontal?'y':'x',
+      responsive:true,maintainAspectRatio:false,
+      layout:{padding:{right:horizontal?56:8,top:horizontal?0:22}},
+      onClick: onClickKit ? (e,elements)=>{
+        if(!elements.length) return;
+        const label=labels[elements[0].index];
+        onClickKit(label);
+      } : undefined,
+      onHover: onClickKit ? (e,elements)=>{
+        e.native.target.style.cursor=elements.length?'pointer':'default';
+      } : undefined,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'#1e2129',borderColor:'#2b2f3a',borderWidth:1,
+          titleColor:'#ecebe5',bodyColor:'#ecebe5',padding:10,cornerRadius:8,
+          titleFont:{family:'Chakra Petch'},bodyFont:{family:'Chakra Petch'},
+          callbacks:{label:c=>labelFmt(c.raw)}
+        },
+        datalabels:{
+          anchor:'end', align:'end', clamp:true,
+          color:'#cfcdc6', font:{family:'Chakra Petch',size:11,weight:600},
+          formatter:v=>labelFmt(v)
+        }
+      },
+      scales:{
+        x:{ticks:{color:AXIS_TICK,font:{family:'Chakra Petch'}},grid:{color:AXIS_GRID,drawBorder:false}},
+        y:{ticks:{color:AXIS_TICK,font:{family:'Chakra Petch',size:11},autoSkip:false},grid:{color:AXIS_GRID,drawBorder:false}}
+      }
+    }
+  });
+  ctx.parentElement.style.height=horizontal?Math.max(220,labels.length*36+90)+'px':'340px';
+  charts[canvasId].resize();
+}
+
+/* ===== キットタブ ===== */
+let kitMode='avg';
+
+function setKitMode(mode){
+  kitMode=mode;
+  document.querySelectorAll('#kit-toggle button').forEach((b,i)=>{
+    b.classList.toggle('active',(mode==='avg')===(i===0));
+  });
+  renderKit();
+}
+
+function renderKit(){
+  const selEl=document.getElementById('sel-kit');
+  const kit=selEl ? selEl.value : (renderKit._current||renderKit._default||'');
+  if(kit) renderKit._current=kit;
+
+  // ピック集計（matchId|playerId|kit）
+  const pickSet=new Set(ROWS.map(r=>r.matchId+'|'+r.playerId+'|'+r.kit));
+  const pickCount={};
+  pickSet.forEach(key=>{
+    const k=key.split('|')[2];
+    pickCount[k]=(pickCount[k]||0)+1;
+  });
+  const totalPicks=pickSet.size;
+  const allKits=Object.keys(pickCount).sort((a,b)=>pickCount[b]-pickCount[a]);
+
+  // 勝率集計（ピック単位）
+  const kitMatchWin={};
+  ROWS.forEach(r=>{
+    const key=r.matchId+'|'+r.kit+'|'+r.playerId;
+    if(!kitMatchWin[key+'_seen']){
+      kitMatchWin[key+'_seen']=true;
+      kitMatchWin[r.kit]=kitMatchWin[r.kit]||{won:0,total:0};
+      kitMatchWin[r.kit].total++;
+      if(r.won) kitMatchWin[r.kit].won++;
+    }
+  });
+
+  // クリックでキット選択して詳細へスクロール
+  function selectKit(kitName){
+    const sel=document.getElementById('sel-kit');
+    if(sel){
+      if(sel.value===kitName) return;
+      sel.value=kitName;
+    } else {
+      if(renderKit._current===kitName) return;
+      renderKit._current=kitName;
+    }
+    renderKit();
+    document.getElementById('kit-detail-header').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  // 勝率グラフ（降順ソート、選択中はハイライト）
+  const wrSorted=[...allKits].sort((a,b)=>{
+    const wa=(kitMatchWin[a]?.won||0)/(kitMatchWin[a]?.total||1);
+    const wb=(kitMatchWin[b]?.won||0)/(kitMatchWin[b]?.total||1);
+    return wb-wa;
+  });
+  barChart('chart-kit-winrate',
+    wrSorted,
+    wrSorted.map(k=>kitMatchWin[k]?(kitMatchWin[k].won/kitMatchWin[k].total*100):0),
+    wrSorted.map(k=>k===kit?KIT_COLORS[k]:KIT_COLORS[k]+'66'),
+    true, v=>v.toFixed(1)+'%', selectKit);
+
+  // ピック率グラフ（選択中はハイライト）
+  barChart('chart-kit-pick',
+    allKits,
+    allKits.map(k=>pickCount[k]/totalPicks*100),
+    allKits.map(k=>k===kit?KIT_COLORS[k]:KIT_COLORS[k]+'66'),
+    true, v=>v.toFixed(1)+'%', selectKit);
+
+  // 選択キット詳細ヘッダー更新
+  document.getElementById('kit-detail-name').textContent=kit;
+  const chip=document.getElementById('kit-detail-chip');
+  chip.style.background=KIT_COLORS[kit]||'#888';
+  chip.style.color=KIT_COLORS[kit]||'#888';
+
+  const rows=ROWS.filter(r=>r.kit===kit);
+
+  // アビリティ集計
+  const byAb={};
+  rows.forEach(r=>{
+    const a=byAb[r.ability]=byAb[r.ability]||{sum:0,max:0,n:0};
+    a.sum+=r.damage; a.max=Math.max(a.max,r.damage); a.n++;
+  });
+
+  // ピック単位（Basic_Attack比用）
+  const picks={};
+  rows.forEach(r=>{
+    const key=r.matchId+'|'+r.playerId;
+    picks[key]=picks[key]||{};
+    picks[key][r.ability]=(picks[key][r.ability]||0)+r.damage;
+  });
+  const ratioAgg={};
+  Object.values(picks).forEach(p=>{
+    const base=p['Basic_Attack'];
+    if(!base||base<=0) return;
+    Object.keys(p).forEach(ab=>{
+      const g=ratioAgg[ab]=ratioAgg[ab]||{sum:0,n:0};
+      g.sum+=p[ab]/base; g.n++;
+    });
+  });
+
+  const abs=Object.keys(byAb).sort();
+  const isRatio=kitMode==='ratio';
+
+  document.getElementById('h2-kit-chart').textContent=
+    isRatio?'アビリティ別 Basic_Attack比':'アビリティ別 平均ダメージ';
+
+  if(isRatio){
+    const labels=abs.filter(a=>ratioAgg[a]);
+    barChart('chart-kit-ability',labels.map(prettyAbility),
+      labels.map(a=>ratioAgg[a].sum/ratioAgg[a].n),
+      labels.map(()=>KIT_COLORS[kit]),true,v=>'×'+v.toFixed(2));
+  } else {
+    barChart('chart-kit-ability',abs.map(prettyAbility),abs.map(a=>byAb[a].sum/byAb[a].n),
+      abs.map(()=>KIT_COLORS[kit]),true);
+  }
+
+  // 使用プレイヤー
+  const byPlayer={};
+  ROWS.filter(r=>r.kit===kit).forEach(r=>{
+    const key=r.matchId+'|'+r.playerId;
+    if(!byPlayer[r.playerId]) byPlayer[r.playerId]={pickKeys:new Set(),winKeys:new Set(),totalDmg:0};
+    byPlayer[r.playerId].pickKeys.add(key);
+    if(r.won) byPlayer[r.playerId].winKeys.add(r.matchId);
+    byPlayer[r.playerId].totalDmg+=r.damage;
+  });
+  let ph=`<tr><th>プレイヤー</th><th class="num">使用回数</th><th class="num">勝率</th><th class="num">平均ダメージ</th></tr>`;
+  const maxAvgDmg=Math.max(...Object.values(byPlayer).map(d=>d.totalDmg/d.pickKeys.size),0);
+  Object.keys(byPlayer)
+    .sort((a,b)=>byPlayer[b].totalDmg/byPlayer[b].pickKeys.size - byPlayer[a].totalDmg/byPlayer[a].pickKeys.size)
+    .forEach(pid=>{
+      const d=byPlayer[pid];
+      const pc=d.pickKeys.size;
+      ph+=`<tr><td>${esc(disp(pid))}</td><td class="num">${pc}</td>`
+         +`<td class="num">${pct(d.winKeys.size/pc)}</td>`
+         +barCell(d.totalDmg/pc,maxAvgDmg)+`</tr>`;
+    });
+  document.getElementById('table-kit-players').innerHTML=ph;
+}
+
+/* ===== 試合タブ ===== */
+function renderMatch(){
+  const id=document.getElementById('sel-match').value;
+  const rows=ROWS.filter(r=>r.matchId===id);
+
+  // playerId単位で集計
+  const byPid={};
+  rows.forEach(r=>{
+    if(!byPid[r.playerId]) byPid[r.playerId]={
+      name:disp(r.playerId), kit:r.kit, team:r.team, won:r.won,
+      kills:r.kills, deaths:r.deaths, assists:r.assists,
+      total:0, abilities:[]
+    };
+    byPid[r.playerId].total+=r.damage;
+    byPid[r.playerId].abilities.push(r);
+  });
+
+  const allPids=Object.keys(byPid);
+  const teamA=allPids.filter(p=>byPid[p].team==='A').sort((a,b)=>byPid[b].total-byPid[a].total);
+  const teamB=allPids.filter(p=>byPid[p].team==='B').sort((a,b)=>byPid[b].total-byPid[a].total);
+  const aWon=teamA.length&&byPid[teamA[0]]&&byPid[teamA[0]].won;
+
+  // チャート: チームA=青・チームB=赤で色分け（ダメージ降順）、クリックでアビリティ詳細展開
+  const chartPids=[...allPids].sort((a,b)=>byPid[b].total-byPid[a].total);
+  const TEAM_A_COLOR='#5b9bd5';
+  const TEAM_B_COLOR='#d95f5f';
+
+  function showAbilityDetail(playerName){
+    const pid=chartPids.find(p=>byPid[p].name===playerName);
+    if(!pid) return;
+    const d=byPid[pid];
+    document.getElementById('match-ability-detail').style.display='block';
+    document.getElementById('match-ability-title').textContent=`${d.name} — ${d.kit} アビリティ別ダメージ`;
+    const abs=[...d.abilities].sort((a,b)=>b.damage-a.damage);
+    const maxDmg=abs[0]?.damage||0;
+    let html=`<tr><th>アビリティ</th><th class="num">ダメージ</th></tr>`;
+    abs.forEach(r=>{
+      html+=`<tr><td>${esc(prettyAbility(r.ability))}</td>${barCell(r.damage,maxDmg)}</tr>`;
+    });
+    document.getElementById('table-match-ability').innerHTML=html;
+  }
+
+  barChart('chart-match',
+    chartPids.map(p=>byPid[p].name),
+    chartPids.map(p=>byPid[p].total),
+    chartPids.map(p=>byPid[p].team==='A' ? TEAM_A_COLOR : TEAM_B_COLOR),
+    true, null, showAbilityDetail);
+
+  // チーム見出し（勝敗バッジ付き）
+  const badgeWin=`<span class="badge badge-win">🏆 WIN</span>`;
+  const badgeLose=`<span class="badge badge-lose">LOSE</span>`;
+  document.getElementById('h2-team-a').innerHTML=`チーム A ${aWon ? badgeWin : badgeLose}`;
+  document.getElementById('h2-team-b').innerHTML=`チーム B ${aWon ? badgeLose : badgeWin}`;
+
+  // アビリティ詳細：最初から1人目のデータを表示
+  if(chartPids.length) showAbilityDetail(byPid[chartPids[0]].name);
+
+  // チームごとにテーブルを生成（プレイヤー行のみ、アビリティ行なし）
+  const hasKDA=rows.some(r=>r.kills!=null);
+  const matchMaxTotal=Math.max(...allPids.map(p=>byPid[p].total),0);
+
+  function teamTable(pids, teamClass){
+    let html=`<tr><th></th><th class="num">ダメージ</th></tr>`;
+    pids.forEach(pid=>{
+      const d=byPid[pid];
+      const kda=hasKDA&&d.kills!=null
+        ?` <span style="color:var(--ink-dim);font-size:11px">K${d.kills}/D${d.deaths}/A${d.assists}</span>`:'';
+      const w=matchMaxTotal>0?Math.max(2,Math.round(d.total/matchMaxTotal*100)):0;
+      html+=`<tr class="kit-head team-${teamClass}">`
+           +`<td><strong>${esc(d.name)}</strong> — ${esc(d.kit)}${kda}</td>`
+           +`<td class="num bar" style="--w:${w}%"><span>${fmtInt(d.total)}</span></td></tr>`;
+    });
+    return html;
+  }
+
+  document.getElementById('table-match-a').innerHTML=teamTable(teamA, 'a');
+  document.getElementById('table-match-b').innerHTML=teamTable(teamB, 'b');
+}
+
+/* ===== プレイヤータブ ===== */
+function renderPlayer(){
+  const pid=document.getElementById('sel-player').value;
+  const rows=ROWS.filter(r=>r.playerId===pid);
+
+  const byKit={};
+  rows.forEach(r=>{
+    byKit[r.kit]=byKit[r.kit]||{};
+    const a=byKit[r.kit][r.ability]=byKit[r.kit][r.ability]||{sum:0,max:0,n:0};
+    a.sum+=r.damage; a.max=Math.max(a.max,r.damage); a.n++;
+  });
+
+  const labels=[],data=[],colors=[];
+  Object.keys(byKit).sort().forEach(kit=>{
+    Object.keys(byKit[kit]).sort().forEach(ab=>{
+      const a=byKit[kit][ab];
+      labels.push(prettyAbility(ab)); data.push(a.sum/a.n); colors.push(KIT_COLORS[kit]);
+    });
+  });
+  barChart('chart-player',labels,data,colors,true);
+
+  // 試合単位の集計（勝敗・KDA・キット使用回数）
+  const matchMeta={};
+  rows.forEach(r=>{
+    if(!matchMeta[r.matchId]) matchMeta[r.matchId]={won:r.won,kills:r.kills,deaths:r.deaths,assists:r.assists,kit:r.kit};
+  });
+  const played=Object.keys(matchMeta).length;
+  const won=Object.values(matchMeta).filter(m=>m.won).length;
+
+  // 最多使用キット（試合単位でカウント）
+  const kitUse={};
+  Object.values(matchMeta).forEach(m=>{ kitUse[m.kit]=(kitUse[m.kit]||0)+1; });
+  const topKit=Object.keys(kitUse).sort((a,b)=>kitUse[b]-kitUse[a])[0];
+
+  // KDA合計
+  const hasKDA=Object.values(matchMeta).some(m=>m.kills!=null);
+  let kdaCard='';
+  if(hasKDA){
+    const vals=Object.values(matchMeta);
+    const K=vals.reduce((s,v)=>s+(v.kills||0),0);
+    const D=vals.reduce((s,v)=>s+(v.deaths||0),0);
+    const A=vals.reduce((s,v)=>s+(v.assists||0),0);
+    kdaCard=`<div class="pstat"><span class="pk">K / D / A</span><span class="pv">${K}/${D}/${A}</span><span class="psub">KD比 ${D?(K/D).toFixed(2):'∞'}</span></div>`;
+  }
+
+  // 統計カードを描画
+  const winRate=played?pct(won/played):'—';
+  document.getElementById('player-stats').innerHTML=
+     `<div class="pstat"><span class="pk">プレイ数</span><span class="pv">${played}</span><span class="psub">勝利 ${won}</span></div>`
+   + `<div class="pstat"><span class="pk">勝率</span><span class="pv">${winRate}</span><span class="psub">${won} / ${played}</span></div>`
+   + `<div class="pstat kit-card"><span class="pk">最多使用キット</span><span class="pv"><span class="kit-chip" style="background:${topKit?KIT_COLORS[topKit]:'transparent'}"></span>${topKit?esc(topKit):'—'}</span><span class="psub">${topKit?kitUse[topKit]+' 試合':''}</span></div>`
+   + kdaCard;
+
+  // 内訳テーブル（集計行は上のカードに集約したので省く）
+  let html=`<tr><th>アビリティ</th><th class="num">平均</th><th class="num">最大</th><th class="num">合計</th><th class="num">回数</th></tr>`;
+  Object.keys(byKit).sort().forEach(kit=>{
+    html+=`<tr class="kit-head"><td colspan="5"><span class="kit-chip" style="background:${KIT_COLORS[kit]}"></span>${esc(kit)}</td></tr>`;
+    const abList=Object.keys(byKit[kit]).sort();
+    const maxAvg=Math.max(...abList.map(ab=>byKit[kit][ab].sum/byKit[kit][ab].n),0);
+    abList.forEach(ab=>{
+      const a=byKit[kit][ab];
+      html+=`<tr><td>${esc(prettyAbility(ab))}</td>`
+           +barCell(a.sum/a.n,maxAvg)
+           +`<td class="num">${fmtInt(a.max)}</td><td class="num">${fmtInt(a.sum)}</td><td class="num">${a.n}</td></tr>`;
+    });
+  });
+  document.getElementById('table-player').innerHTML=html;
+}
+</script>
+</body>
+</html>
