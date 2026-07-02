@@ -88,6 +88,15 @@
   /* テーブル */
   table{width:100%;border-collapse:collapse;font-size:13px}
   thead th,th{position:sticky;top:0;text-align:left;color:var(--ink-dim);font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;background:var(--panel);border-bottom:1px solid var(--panel-edge);padding:9px 10px}
+  th.sortable{cursor:pointer;user-select:none;transition:color .15s,background .15s;position:relative;padding-right:20px!important}
+  th.sortable:hover{color:var(--ember-hot);background:rgba(255,138,61,.08)}
+  th.sortable::after{
+    content:'';position:absolute;right:7px;top:50%;transform:translateY(-45%);
+    width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;
+    border-top:5px solid currentColor;opacity:.35;
+  }
+  th.sortable.sort-active{color:var(--ember-hot);background:rgba(255,138,61,.12)}
+  th.sortable.sort-active::after{opacity:1;border-top-color:var(--ember-hot)}
   td{border-bottom:1px solid var(--hairline);padding:10px 12px;color:var(--ink)}
   tbody tr:hover td{background:rgba(255,255,255,.022)}
   td.num,th.num{text-align:right;font-family:var(--num-font);font-weight:600;font-variant-numeric:tabular-nums}
@@ -140,9 +149,19 @@
   .kit-detail-header .kit-chip-lg{width:20px;height:20px;border-radius:5px;flex-shrink:0;box-shadow:0 0 16px -2px currentColor}
   .kit-detail-header .kit-detail-label{font-family:'Noto Sans JP',sans-serif;font-size:22px;font-weight:900;color:var(--ink);letter-spacing:.04em;line-height:1.1}
   .kit-detail-header .kit-detail-name{font-family:var(--num-font);font-size:13px;font-weight:600;color:var(--ember);letter-spacing:.1em;margin-top:4px;text-transform:uppercase}
+  .kit-detail-usage{margin-left:auto;text-align:right;display:flex;flex-direction:column;gap:2px}
+  .kit-detail-usage-v{font-family:var(--num-font);font-size:24px;font-weight:700;color:var(--ember-hot);line-height:1.1}
+  .kit-detail-usage-k{font-size:11px;color:var(--ink-dim);letter-spacing:.08em}
 
   /* クリックヒント */
   .click-hint{font-size:10px;font-family:'Noto Sans JP',sans-serif;font-weight:500;color:var(--ember);letter-spacing:.06em;opacity:.85;vertical-align:middle;margin-left:4px}
+
+  /* 試合メタ情報（時間・マップ：実装待ちプレースホルダー） */
+  .match-meta{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+  .match-meta-item{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--panel-2);border:1px dashed var(--panel-edge);border-radius:8px}
+  .match-meta-k{font-size:11px;color:var(--ink-dim);letter-spacing:.08em}
+  .match-meta-v{font-size:13px;color:var(--ink);font-family:var(--num-font);font-weight:600}
+  .match-meta-v:empty::before,.match-meta-v[data-placeholder],.match-meta-item .match-meta-v[style*="italic"]{color:var(--ink-faint);font-style:italic;font-family:inherit;font-weight:400}
 
   /* チャート */
   .chart-box{background:radial-gradient(120% 120% at 100% 0%,rgba(255,138,61,.05),transparent 60%),var(--bg-soft);border:1px solid var(--hairline);border-radius:12px;padding:16px;margin-bottom:14px}
@@ -173,6 +192,8 @@
     .panel{padding:16px}
     .tabs{display:flex;width:100%}
     .tabs button{flex:1;padding:9px 8px}
+    .kit-detail-header{flex-wrap:wrap}
+    .kit-detail-usage{margin-left:0;text-align:left}
   }
 </style>
 </head>
@@ -184,8 +205,8 @@
       <h1>フォージウォーズ　統計サイト</h1>
     </div>
     <nav class="nav-links">
-      <a class="nav-link" href="../mypage/" target="_blank">🏠 ホーム</a>
-      <a class="nav-link" href="../wiki/" target="_blank">📖 Wiki</a>
+      <a class="nav-link" href="../mypage/" >🏠 ホーム</a>
+      <a class="nav-link" href="../wiki/">📖 Wiki</a>
     </nav>
   </header>
 
@@ -220,6 +241,10 @@
           <div class="kit-detail-label">パフォーマンス詳細</div>
           <div class="kit-detail-name" id="kit-detail-name">—</div>
         </div>
+        <div class="kit-detail-usage" id="kit-detail-usage">
+          <span class="kit-detail-usage-v" id="kit-detail-usage-v">-</span>
+          <span class="kit-detail-usage-k">合計使用回数</span>
+        </div>
       </div>
 
       <!-- アビリティ平均 + 使用プレイヤー -->
@@ -251,6 +276,16 @@
     <div class="panel" id="view-match" style="display:none">
       <label for="sel-match">試合を選択</label>
       <select id="sel-match" onchange="renderMatch()"></select>
+      <div class="match-meta" id="match-meta">
+        <div class="match-meta-item">
+          <span class="match-meta-k">試合時間</span>
+          <span class="match-meta-v">-</span>
+        </div>
+        <div class="match-meta-item">
+          <span class="match-meta-k">マップ</span>
+          <span class="match-meta-v">-</span>
+        </div>
+      </div>
       <div id="match-skeleton" class="data-loading">
         <div class="skel skel-table"></div>
         <div class="skel skel-chart"></div>
@@ -315,10 +350,10 @@ let charts = {};
 const AXIS_TICK = '#9a988f';
 const AXIS_GRID = 'rgba(255,255,255,.05)';
 
-const fmt    = n => n.toLocaleString('ja-JP',{maximumFractionDigits:1});
-const fmtInt = n => Math.round(n).toLocaleString('ja-JP');   // ダメージは整数で表示
-const pct    = n => (n*100).toFixed(1)+'%';
-const disp   = u => NAMES[u] || u;   // UUID → 表示名（未解決ならUUIDのまま）
+const fmtInt      = n => Math.round(n).toLocaleString('ja-JP');
+const pct         = n => (n*100).toFixed(1)+'%';
+const disp        = u => NAMES[u] || u;
+const fmtDuration = s => s==null ? '-' : `${Math.floor(s/60)}分${String(s%60).padStart(2,'0')}秒`;
 
 // アビリティ名を読みやすく整形（"_Damage" 除去・アンダースコアを空白に）。ロジックは生の名前を使う。
 function prettyAbility(name){
@@ -458,8 +493,8 @@ function barChart(canvasId,labels,data,colors,horizontal,fmtVal,onClickKit){
       layout:{padding:{right:horizontal?56:8,top:horizontal?0:22}},
       onClick: onClickKit ? (e,elements)=>{
         if(!elements.length) return;
-        const label=labels[elements[0].index];
-        onClickKit(label);
+        const i=elements[0].index;
+        onClickKit(labels[i], i);
       } : undefined,
       onHover: onClickKit ? (e,elements)=>{
         e.native.target.style.cursor=elements.length?'pointer':'default';
@@ -490,6 +525,7 @@ function barChart(canvasId,labels,data,colors,horizontal,fmtVal,onClickKit){
 
 /* ===== キットタブ ===== */
 let kitMode='avg';
+let kitPlayerSort='avgDmg'; // 'count' | 'winRate' | 'avgDmg'
 
 function setKitMode(mode){
   kitMode=mode;
@@ -516,10 +552,11 @@ function renderKit(){
 
   // 勝率集計（ピック単位）
   const kitMatchWin={};
+  const seenPicks=new Set();
   ROWS.forEach(r=>{
     const key=r.matchId+'|'+r.kit+'|'+r.playerId;
-    if(!kitMatchWin[key+'_seen']){
-      kitMatchWin[key+'_seen']=true;
+    if(!seenPicks.has(key)){
+      seenPicks.add(key);
       kitMatchWin[r.kit]=kitMatchWin[r.kit]||{won:0,total:0};
       kitMatchWin[r.kit].total++;
       if(r.won) kitMatchWin[r.kit].won++;
@@ -564,6 +601,7 @@ function renderKit(){
   const chip=document.getElementById('kit-detail-chip');
   chip.style.background=KIT_COLORS[kit]||'#888';
   chip.style.color=KIT_COLORS[kit]||'#888';
+  document.getElementById('kit-detail-usage-v').textContent=fmtInt(pickCount[kit]||0);
 
   const rows=ROWS.filter(r=>r.kit===kit);
 
@@ -616,24 +654,63 @@ function renderKit(){
     if(r.won) byPlayer[r.playerId].winKeys.add(r.matchId);
     byPlayer[r.playerId].totalDmg+=r.damage;
   });
-  let ph=`<tr><th>プレイヤー</th><th class="num">使用回数</th><th class="num">勝率</th><th class="num">平均ダメージ</th></tr>`;
+
   const maxAvgDmg=Math.max(...Object.values(byPlayer).map(d=>d.totalDmg/d.pickKeys.size),0);
-  Object.keys(byPlayer)
-    .sort((a,b)=>byPlayer[b].totalDmg/byPlayer[b].pickKeys.size - byPlayer[a].totalDmg/byPlayer[a].pickKeys.size)
-    .forEach(pid=>{
-      const d=byPlayer[pid];
-      const pc=d.pickKeys.size;
-      ph+=`<tr><td>${esc(disp(pid))}</td><td class="num">${pc}</td>`
-         +`<td class="num">${pct(d.winKeys.size/pc)}</td>`
-         +barCell(d.totalDmg/pc,maxAvgDmg)+`</tr>`;
-    });
+
+  // ソートキーの値を取得
+  function sortVal(pid,key){
+    const d=byPlayer[pid];
+    const pc=d.pickKeys.size;
+    if(key==='count')   return pc;
+    if(key==='winRate') return d.winKeys.size/pc;
+    return d.totalDmg/pc; // avgDmg
+  }
+
+  const sortedPids=Object.keys(byPlayer)
+    .sort((a,b)=>sortVal(b,kitPlayerSort)-sortVal(a,kitPlayerSort));
+
+  const activeCls=key=> key===kitPlayerSort ? ' sort-active' : '';
+  let ph=`<tr>`
+       +`<th>プレイヤー</th>`
+       +`<th class="num sortable${activeCls('count')}" onclick="sortKitPlayers('count')">使用回数</th>`
+       +`<th class="num sortable${activeCls('winRate')}" onclick="sortKitPlayers('winRate')">勝率</th>`
+       +`<th class="num sortable${activeCls('avgDmg')}" onclick="sortKitPlayers('avgDmg')">平均ダメージ</th>`
+       +`</tr>`;
+  sortedPids.forEach(pid=>{
+    const d=byPlayer[pid];
+    const pc=d.pickKeys.size;
+    ph+=`<tr><td>${esc(disp(pid))}</td><td class="num">${pc}</td>`
+       +`<td class="num">${pct(d.winKeys.size/pc)}</td>`
+       +barCell(d.totalDmg/pc,maxAvgDmg)+`</tr>`;
+  });
   document.getElementById('table-kit-players').innerHTML=ph;
+}
+
+// ヘッダークリックでソート列を切り替え（常に降順）
+function sortKitPlayers(key){
+  kitPlayerSort=key;
+  renderKit();
 }
 
 /* ===== 試合タブ ===== */
 function renderMatch(){
   const id=document.getElementById('sel-match').value;
   const rows=ROWS.filter(r=>r.matchId===id);
+
+  // 試合メタ情報（最初の行から取得）
+  const meta=rows[0];
+  const durationEl=document.querySelector('#match-meta .match-meta-item:nth-child(1) .match-meta-v');
+  const mapEl=document.querySelector('#match-meta .match-meta-item:nth-child(2) .match-meta-v');
+  if(durationEl) durationEl.textContent=meta?.duration!=null ? fmtDuration(meta.duration) : '-';
+  if(mapEl) mapEl.textContent=meta?.map || '-';
+
+  // データなしなら以降をクリアして終了
+  if(!rows.length){
+    document.getElementById('table-match-a').innerHTML='';
+    document.getElementById('table-match-b').innerHTML='';
+    document.getElementById('match-ability-detail').style.display='none';
+    return;
+  }
 
   // playerId単位で集計
   const byPid={};
@@ -657,10 +734,11 @@ function renderMatch(){
   const TEAM_A_COLOR='#5b9bd5';
   const TEAM_B_COLOR='#d95f5f';
 
-  function showAbilityDetail(playerName){
-    const pid=chartPids.find(p=>byPid[p].name===playerName);
-    if(!pid) return;
+  // playerIdでアビリティ詳細を表示（名前でなくIDで特定）
+  function showAbilityDetailByPid(pid){
     const d=byPid[pid];
+    if(!d) return;
+    renderMatch._selected={matchId:id, pid};  // 再描画後も選択を保持
     document.getElementById('match-ability-detail').style.display='block';
     document.getElementById('match-ability-title').textContent=`${d.name} — ${d.kit} アビリティ別ダメージ`;
     const abs=[...d.abilities].sort((a,b)=>b.damage-a.damage);
@@ -676,7 +754,7 @@ function renderMatch(){
     chartPids.map(p=>byPid[p].name),
     chartPids.map(p=>byPid[p].total),
     chartPids.map(p=>byPid[p].team==='A' ? TEAM_A_COLOR : TEAM_B_COLOR),
-    true, null, showAbilityDetail);
+    true, null, (label,i)=>showAbilityDetailByPid(chartPids[i]));
 
   // チーム見出し（勝敗バッジ付き）
   const badgeWin=`<span class="badge badge-win">🏆 WIN</span>`;
@@ -684,8 +762,13 @@ function renderMatch(){
   document.getElementById('h2-team-a').innerHTML=`チーム A ${aWon ? badgeWin : badgeLose}`;
   document.getElementById('h2-team-b').innerHTML=`チーム B ${aWon ? badgeLose : badgeWin}`;
 
-  // アビリティ詳細：最初から1人目のデータを表示
-  if(chartPids.length) showAbilityDetail(byPid[chartPids[0]].name);
+  // アビリティ詳細：同じ試合で選択済みならそれを維持、なければ1位を表示
+  const sel=renderMatch._selected;
+  if(sel && sel.matchId===id && byPid[sel.pid]){
+    showAbilityDetailByPid(sel.pid);
+  } else {
+    showAbilityDetailByPid(chartPids[0]);
+  }
 
   // チームごとにテーブルを生成（プレイヤー行のみ、アビリティ行なし）
   const hasKDA=rows.some(r=>r.kills!=null);
@@ -762,17 +845,18 @@ function renderPlayer(){
    + `<div class="pstat kit-card"><span class="pk">最多使用キット</span><span class="pv"><span class="kit-chip" style="background:${topKit?KIT_COLORS[topKit]:'transparent'}"></span>${topKit?esc(topKit):'—'}</span><span class="psub">${topKit?kitUse[topKit]+' 試合':''}</span></div>`
    + kdaCard;
 
-  // 内訳テーブル（集計行は上のカードに集約したので省く）
-  let html=`<tr><th>アビリティ</th><th class="num">平均</th><th class="num">最大</th><th class="num">合計</th><th class="num">回数</th></tr>`;
+  // 内訳テーブル（回数はキットごとに1つだけ表示）
+  let html=`<tr><th>アビリティ</th><th class="num">平均</th><th class="num">最大</th><th class="num">合計</th></tr>`;
   Object.keys(byKit).sort().forEach(kit=>{
-    html+=`<tr class="kit-head"><td colspan="5"><span class="kit-chip" style="background:${KIT_COLORS[kit]}"></span>${esc(kit)}</td></tr>`;
+    const kitMatchCount=Object.values(matchMeta).filter(m=>m.kit===kit).length;
+    html+=`<tr class="kit-head"><td colspan="3"><span class="kit-chip" style="background:${KIT_COLORS[kit]}"></span>${esc(kit)}</td><td class="num">${kitMatchCount} 試合</td></tr>`;
     const abList=Object.keys(byKit[kit]).sort();
     const maxAvg=Math.max(...abList.map(ab=>byKit[kit][ab].sum/byKit[kit][ab].n),0);
     abList.forEach(ab=>{
       const a=byKit[kit][ab];
       html+=`<tr><td>${esc(prettyAbility(ab))}</td>`
            +barCell(a.sum/a.n,maxAvg)
-           +`<td class="num">${fmtInt(a.max)}</td><td class="num">${fmtInt(a.sum)}</td><td class="num">${a.n}</td></tr>`;
+           +`<td class="num">${fmtInt(a.max)}</td><td class="num">${fmtInt(a.sum)}</td></tr>`;
     });
   });
   document.getElementById('table-player').innerHTML=html;
