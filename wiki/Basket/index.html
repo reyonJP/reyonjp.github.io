@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="ja">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SR1ZM40WZ5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-SR1ZM40WZ5');
+    </script>
+<meta charset="utf-8"/>
+<title>バスケットボール — れよんサーバー Wiki</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&family=M+PLUS+Rounded+1c:wght@500;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../main.css"/>
+<style>
+    :root{
+  --accent:#ee7722;--accent-deep:#b8480a;--accent-pale:#fff1e2;--accent-line:#f5c69a;
+}
+    .game-hero{margin:16px 56px 0;border-radius:28px;padding:28px 36px;background:linear-gradient(135deg,#ffe8cf 0%,#E9F4D6 90%);border:1px solid var(--line);position:relative;overflow:hidden;}
+    /* コート風のライン装飾 */
+    .game-hero::after{content:"";position:absolute;right:-90px;top:50%;transform:translateY(-50%);width:300px;height:300px;border-radius:50%;border:3px solid rgba(238,119,34,.16);}
+    .game-hero::before{content:"";position:absolute;right:-190px;top:50%;transform:translateY(-50%);width:420px;height:420px;border-radius:50%;border:3px solid rgba(238,119,34,.1);}
+    .hero-top,.hero-h1,.hero-lede,.stat-grid{position:relative;z-index:1;}
+    .hero-top{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+    .hero-tag{background:var(--accent);color:#fff;font-weight:900;font-size:12px;padding:5px 12px;border-radius:8px;letter-spacing:.12em;font-family:'M PLUS Rounded 1c',sans-serif;}
+    .hero-en{font-family:'M PLUS Rounded 1c',sans-serif;font-weight:900;font-size:11px;color:var(--muted);letter-spacing:.22em;}
+    .hero-h1{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:48px;line-height:1.1;margin:0;letter-spacing:.01em;}
+    .hero-lede{font-size:17px;font-family:'Zen Maru Gothic',sans-serif;font-weight:700;color:var(--ink2);margin:12px 0 0;}
+    .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px;max-width:560px;}
+    .stat-box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;}
+    .stat-label{font-size:10px;color:var(--muted);font-family:'M PLUS Rounded 1c',sans-serif;font-weight:800;letter-spacing:.14em;}
+    .stat-val{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:20px;margin-top:3px;}
+    .toc-strip{margin:22px 56px 0;display:flex;gap:8px;flex-wrap:wrap;}
+    .toc-item{background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:7px 16px;font-size:13px;font-weight:700;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:border-color .1s;}
+    .toc-item:hover{border-color:var(--accent);}
+    .toc-hash{color:var(--accent);font-family:'M PLUS Rounded 1c',sans-serif;font-weight:900;}
+    .page-sec{padding:36px 56px 0;}
+    .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:18px;}
+    .sec-hash{font-family:'M PLUS Rounded 1c',sans-serif;font-weight:900;font-size:12px;color:var(--accent);letter-spacing:.22em;}
+    .sec-h,.sec-h2{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:26px;margin:0;}
+    .sec-rule{flex:1;height:2px;background:var(--line);margin-left:8px;}
+    .white-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px 24px;}
+
+    /* ===== 得点ルール（スコアボード風） ===== */
+    .score-board{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:18px;background:linear-gradient(135deg,#fff6ec,#fffdf6);border:2px solid var(--accent-line);border-radius:18px;padding:20px 24px;margin-bottom:14px;}
+    .score-cell{text-align:center;}
+    .score-num{font-family:'M PLUS Rounded 1c',sans-serif;font-weight:900;font-size:46px;line-height:1;color:var(--accent-deep);}
+    .score-unit{font-size:20px;margin-left:2px;}
+    .score-cap{font-size:.82rem;font-weight:800;color:var(--ink2);margin-top:6px;}
+    .score-sep{font-family:'M PLUS Rounded 1c',sans-serif;font-weight:900;font-size:14px;color:var(--muted);letter-spacing:.12em;border-left:2px dashed var(--accent-line);border-right:2px dashed var(--accent-line);padding:0 18px;}
+
+    /* ===== ボール取得ルール ===== */
+    .rule-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:1.3rem;}
+    .rule-box{border-radius:16px;padding:18px 20px;background:var(--accent-pale);border:2px solid var(--accent-line);}
+    .rule-box.alt{background:var(--green-light);border-color:var(--line);}
+    .rule-name{font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:16px;margin-bottom:10px;display:flex;align-items:center;gap:.4rem;}
+    .rule-box ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:.4rem;}
+    .rule-box li{display:flex;align-items:flex-start;gap:.5rem;font-size:.88rem;color:var(--ink2);}
+    .rule-box .ri{font-size:.7rem;color:var(--accent);flex-shrink:0;margin-top:.3rem;}
+    .lead-line{font-size:.92rem;font-weight:700;color:var(--ink2);margin-bottom:.9rem;}
+    .lead-line strong{color:var(--accent-deep);}
+
+    .warn-box{background:#fffbf0;border:1px solid #e8d08a;border-left:4px solid #F5A623;border-radius:8px;padding:1rem 1.2rem;}
+    .warn-title{color:#b87820;font-weight:800;font-size:.92rem;margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem;}
+    .warn-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:.5rem;}
+    .warn-list li{display:flex;align-items:flex-start;gap:.5rem;font-size:.88rem;color:var(--ink2);}
+    .warn-list .wi{color:#F5A623;flex-shrink:0;margin-top:.15rem;}
+    @media(max-width:900px){
+  .site-header{padding:12px 20px;}
+  .breadcrumb,.toc-strip,.page-sec{padding-left:20px;padding-right:20px;}
+  .game-hero{margin:14px 20px 0;padding:22px 24px;}
+  .game-hero::before,.game-hero::after{display:none;}
+  .hero-h1{font-size:32px;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .rule-grid{grid-template-columns:1fr;}
+  .score-board{grid-template-columns:1fr;gap:12px;padding:18px 20px;}
+  .score-sep{border:0;border-top:2px dashed var(--accent-line);border-bottom:2px dashed var(--accent-line);padding:8px 0;text-align:center;}
+  .site-footer{padding:16px 20px;flex-direction:column;gap:6px;text-align:center;}
+}
+  </style>
+</head>
+<body>
+
+<div class="wiki-header" data-brand="../index.html"
+     data-nav='[{"label": "ホーム", "href": "../index.html"}, {"label": "ルール", "href": "#rules", "active": true}]'></div>
+<script src="../header.js"></script>
+
+<div class="breadcrumb">
+  <a href="../index.html">ホーム</a> ／ <a href="../index.html">ゲーム一覧</a> ／ <span style="color:var(--ink);font-weight:800;">バスケットボール</span>
+</div>
+
+<section class="game-hero">
+  <div class="hero-top">
+    <span class="hero-tag">SPORTS</span>
+    <span class="hero-en">BASKETBALL</span>
+  </div>
+  <h1 class="hero-h1">🏀 バスケットボール</h1>
+  <p class="hero-lede">パスをつないでシュートを放て<!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+  </head>
+  <body>
+    
+  </body>
+  </html></p>
+  <div class="stat-grid">
+    <div class="stat-box"><div class="stat-label">FORMAT</div><div class="stat-val">チーム戦</div></div>
+    <div class="stat-box"><div class="stat-label">SCORE</div><div class="stat-val">ゴールで1点</div></div>
+    <div class="stat-box"><div class="stat-label">WIN</div><div class="stat-val">5点先取</div></div>
+  </div>
+</section>
+
+<nav class="toc-strip">
+  <a href="#rules" class="toc-item"><span class="toc-hash">#01</span> ルール</a>
+</nav>
+
+<!-- Rules -->
+<section class="page-sec" id="rules" style="padding-bottom:48px;">
+  <div class="sec-head">
+    <span class="sec-hash">#01 RULES</span>
+    <h2 class="sec-h">ゲームルール</h2>
+    <span class="sec-rule"></span>
+  </div>
+  <div class="white-card">
+
+    <div class="score-board">
+      <div class="score-cell">
+        <div class="score-num">1<span class="score-unit">点</span></div>
+        <div class="score-cap">ゴールを決めると獲得</div>
+      </div>
+      <div class="score-sep">FIRST TO</div>
+      <div class="score-cell">
+        <div class="score-num">5<span class="score-unit">点</span></div>
+        <div class="score-cap">先取したチームの勝利</div>
+      </div>
+    </div>
+
+    <p class="lead-line">🏀 <strong>ボールを自分のものにする方法は2つ。</strong>どちらでも取得できます。</p>
+
+    <div class="rule-grid">
+      <div class="rule-box">
+        <div class="rule-name">📦 アイテム化したボールを拾う</div>
+        <ul>
+          <li><span class="ri">▶</span><span>壁やゴールに当たって<strong>跳ね返ったボール</strong>はアイテムになります</span></li>
+          <li><span class="ri">▶</span><span>落ちているボールを拾えば自分のボールになります</span></li>
+        </ul>
+      </div>
+      <div class="rule-box alt">
+        <div class="rule-name">🙌 飛んでいるボールを直接キャッチ</div>
+        <ul>
+          <li><span class="ri">▶</span><span>空中を飛んでいるボールに触れると<strong>直接キャッチ</strong>できます</span></li>
+          <li><span class="ri">▶</span><span>相手のパスやシュートを狙ってカットしましょう</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="warn-box">
+      <div class="warn-title">⚠ 注意点</div>
+      <ul class="warn-list">
+        <li>
+          <span class="wi">▶</span>
+          <span>ボールを<strong>2秒間</strong>持ち続けるとその場に強制的にドロップされるので、制限時間内にパスかシュートを狙いましょう</span>
+        </li>
+        <li>
+          <span class="wi">▶</span>
+          <span>飛んでいるボールを直接キャッチするとドロップまでの時間が<strong>3秒</strong>に伸びます</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <span>© れよんの部屋 / reyon.cloudfree.jp</span>
+  <span>バスケットボール — れよんサーバー Wiki</span>
+</footer>
+
+</body>
+</html>
