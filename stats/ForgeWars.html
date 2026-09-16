@@ -205,8 +205,8 @@
       <h1>フォージウォーズ　統計サイト</h1>
     </div>
     <nav class="nav-links">
-      <a class="nav-link" href="../mypage/" >🏠 ホーム</a>
-      <a class="nav-link" href="../wiki/">📖 Wiki</a>
+      <a class="nav-link" href="https://reyonjp.github.io/mypage/" target="_blank">🏠 ホーム</a>
+      <a class="nav-link" href="https://reyonjp.github.io/wiki/" target="_blank">📖 Wiki</a>
     </nav>
   </header>
 
@@ -279,11 +279,11 @@
       <div class="match-meta" id="match-meta">
         <div class="match-meta-item">
           <span class="match-meta-k">試合時間</span>
-          <span class="match-meta-v">-</span>
+          <span class="match-meta-v" id="match-meta-duration">-</span>
         </div>
         <div class="match-meta-item">
           <span class="match-meta-k">マップ</span>
-          <span class="match-meta-v">-</span>
+          <span class="match-meta-v" id="match-meta-map">-</span>
         </div>
       </div>
       <div id="match-skeleton" class="data-loading">
@@ -339,528 +339,534 @@
 </div>
 
 <script>
-/* ===== 状態 ===== */
-let ROWS = [];        // 全レコード。playerId=UUID, playerName=UUID(暫定→名前解決後に上書き)
-let NAMES = {};       // UUID → Minecraft表示名
-let KIT_COLORS = {};
+/* ================================================================
+ *  フォージウォーズ 統計サイト — フロントエンド
+ *
+ *  構成
+ *    1. 設定・定数
+ *    2. 状態
+ *    3. 汎用ユーティリティ
+ *    4. データ派生（state.rows からの集計）
+ *    5. チャート
+ *    6. 描画：キット / 試合 / プレイヤー
+ *    7. 名前解決（Mojang）
+ *    8. 起動
+ * ================================================================ */
+
+/* ---------- 1. 設定・定数 ---------- */
+const LAMBDA_URL = 'https://2gcjv7f3gcqrygc4ya6gt4z4au0ojrlv.lambda-url.ap-northeast-1.on.aws/';
+
 const PALETTE = ['#ff8a3d','#7fa8c9','#ffc857','#8fbf6b','#c98ad6',
                  '#5fb8a8','#e07070','#b0a07a','#6f8de0','#d6788f'];
-let charts = {};
+const TEAM_COLOR = { A:'#5b9bd5', B:'#d95f5f' };
+const CHART_THEME = {
+  tick:'#9a988f', grid:'rgba(255,255,255,.05)', label:'#cfcdc6',
+  font:'Chakra Petch',
+  tooltip:{ bg:'#1e2129', border:'#2b2f3a', text:'#ecebe5' },
+};
+const NAME_BATCH = 10;
+const BASIC_ATTACK = 'Basic_Attack';   // Basic比の基準アビリティ（生の名前）
 
-const AXIS_TICK = '#9a988f';
-const AXIS_GRID = 'rgba(255,255,255,.05)';
+/* ---------- 2. 状態 ---------- */
+const state = {
+  rows: [],          // 全レコード（Lambda GET の結果）
+  names: {},         // UUID → Minecraft 表示名
+  kitColors: {},     // キット名 → 色
+  kitStats: null,    // state.rows から1回だけ計算する全キット統計（derive.kitStats）
+  charts: {},        // canvasId → Chart インスタンス
+  suppressAnim: false,
+  kit: { current:null, mode:'avg', sort:'avgDmg' },   // mode: 'avg'|'ratio'  sort: 'count'|'winRate'|'avgDmg'
+  match: { selected:null },                            // { matchId, pid }：アビリティ詳細で選択中のプレイヤー
+};
+
+/* ---------- 3. 汎用ユーティリティ ---------- */
+const $ = id => document.getElementById(id);
 
 const fmtInt      = n => Math.round(n).toLocaleString('ja-JP');
 const pct         = n => (n*100).toFixed(1)+'%';
-const disp        = u => NAMES[u] || u;
+const pctFromUnit = v => v.toFixed(1)+'%';            // 0-100 スケール用（チャートラベル）
+const fmtRatio    = v => '×'+v.toFixed(2);
 const fmtDuration = s => s==null ? '-' : `${Math.floor(s/60)}分${String(s%60).padStart(2,'0')}秒`;
+const disp        = uuid => state.names[uuid] || uuid;
+const esc         = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const maxOf       = arr => arr.length ? Math.max(...arr) : 0;
+const uniq        = arr => [...new Set(arr)];
+const byDesc      = fn => (a,b) => fn(b)-fn(a);
+const sleep       = ms => new Promise(r=>setTimeout(r,ms));
 
-// アビリティ名を読みやすく整形（"_Damage" 除去・アンダースコアを空白に）。ロジックは生の名前を使う。
+// アビリティ名の表示用整形（"_Damage" 除去・アンダースコアを空白に）。ロジックは必ず生の名前を使う。
 function prettyAbility(name){
-  let s=String(name).replace(/_?[Dd]amage/g,'').replace(/_+/g,' ').replace(/\s+/g,' ').trim();
+  const s=String(name).replace(/_?[Dd]amage/g,'').replace(/_+/g,' ').replace(/\s+/g,' ').trim();
   return s || String(name);
 }
 
-// 右寄せ数値セル＋背景に大きさバー。max を基準に幅を決める。
-function barCell(val, max){
+// {sum,max,n} 集計器。obj[key] に damage を積む。
+function accumulate(obj, key, damage){
+  const a = obj[key] ??= { sum:0, max:0, n:0 };
+  a.sum += damage; a.max = Math.max(a.max, damage); a.n++;
+  return a;
+}
+const avgOf = a => a.sum / a.n;
+
+// 「1ピック」＝ 試合×プレイヤー のキー
+const pickKey = r => r.matchId+'|'+r.playerId;
+
+// 右寄せ数値セル＋背景に大きさバー
+function barCell(val, max, text = fmtInt(val)){
   const w = max>0 ? Math.max(2, Math.round(val/max*100)) : 0;
-  return `<td class="num bar" style="--w:${w}%"><span>${fmtInt(val)}</span></td>`;
+  return `<td class="num bar" style="--w:${w}%"><span>${text}</span></td>`;
 }
 
-// datalabels を全チャートで有効化（棒の先に値を表示）
-if (window.ChartDataLabels) Chart.register(window.ChartDataLabels);
-
-/* ===== AWS Lambda 設定 ===== */
-// デプロイ後に発行された「関数URL」をここに貼り付けてください
-const LAMBDA_URL = 'https://2gcjv7f3gcqrygc4ya6gt4z4au0ojrlv.lambda-url.ap-northeast-1.on.aws/';
-
-/* ===== 起動 (Lambda GET → 全マッチデータ取得) ===== */
-fetch(LAMBDA_URL)
-  .then(r=>{ if(!r.ok) throw new Error('サーバーエラー ('+r.status+')'); return r.json(); })
-  .then(result=>init(result.data))
-  .catch(e=>{
-    ['kit-skeleton','match-skeleton','player-skeleton'].forEach(id=>{
-      const el=document.getElementById(id);
-      if(el) el.innerHTML=`<div class="error" style="padding:20px">読み込み失敗: ${e.message}</div>`;
-    });
-  });
-
-function init(rows){
-  ROWS = rows;
-
-  const kits=[...new Set(ROWS.map(r=>r.kit))].sort();
-  kits.forEach((k,i)=> KIT_COLORS[k]=PALETTE[i%PALETTE.length]);
-
-  buildSelects();
-
-  // スケルトンを消してコンテンツを表示
-  ['kit','match','player'].forEach(tab=>{
-    const sk=document.getElementById(tab+'-skeleton');
-    const ct=document.getElementById(tab+'-content');
-    if(sk) sk.style.display='none';
-    if(ct) ct.style.display='block';
-  });
-
-  renderKit(); renderMatch(); renderPlayer();
-
-  // バックグラウンドで Mojang API を叩く
-  document.getElementById('name-status').textContent='プレイヤー名を取得中…';
-  loadNames();
-}
-
-/* ===== セレクト構築 ===== */
-function buildSelects(){
-  const kits=[...new Set(ROWS.map(r=>r.kit))].sort();
-  if(document.getElementById('sel-kit')) fillSelect('sel-kit', kits);
-  if(kits.length) renderKit._default=kits[0];
-
-  const matches=new Set(ROWS.map(r=>r.matchId));
-  const matchOpts=[...matches].map(id=>{
-    const d=ROWS.find(r=>r.matchId===id).date;
-    return {value:id, label:`${d}  (試合ID : ${id})`};
-  }).sort((a,b)=>b.label.localeCompare(a.label));
-  fillSelect('sel-match', matchOpts);
-
-  rebuildPlayerSelect();
-}
-
-function rebuildPlayerSelect(){
-  const cur=document.getElementById('sel-player').value;
-  const opts=[...new Set(ROWS.map(r=>r.playerId))]
-    .sort((a,b)=>disp(a).localeCompare(disp(b),'ja'))
-    .map(u=>({value:u, label:disp(u)}));
-  fillSelect('sel-player', opts);
-  if(cur) document.getElementById('sel-player').value=cur;
-}
-
-/* ===== Mojang 名前解決 (Lambda POST) ===== */
-function loadNames(){
-  const uuids=[...new Set(ROWS.map(r=>r.playerId))];
-  const BATCH=6;
-  let done=0;
-  for(let i=0;i<uuids.length;i+=BATCH){
-    const batch=uuids.slice(i,i+BATCH);
-    fetch(LAMBDA_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({uuids:batch})
-    })
-      .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-      .then(result=>{
-        const map=result.data;
-        Object.assign(NAMES,map);
-        ROWS.forEach(r=>{ r.playerName=NAMES[r.playerId]||r.playerId; });
-        done+=batch.length;
-        rebuildPlayerSelect();
-        renderKit(); renderMatch(); renderPlayer();
-        if(done>=uuids.length) document.getElementById('name-status').textContent='';
-      })
-      .catch(()=>{
-        done+=batch.length;
-        if(done>=uuids.length) document.getElementById('name-status').textContent='一部プレイヤー名の取得に失敗しました';
-      });
-  }
-}
-
-/* ===== ユーティリティ ===== */
-function fillSelect(id,items){
-  document.getElementById(id).innerHTML=items.map(it=>{
+function fillSelect(id, items, keepValue = false){
+  const sel=$(id);
+  const cur=keepValue ? sel.value : null;
+  sel.innerHTML=items.map(it=>{
     const v=typeof it==='string'?it:it.value;
     const l=typeof it==='string'?it:it.label;
     return `<option value="${esc(v)}">${esc(l)}</option>`;
   }).join('');
+  if(cur) sel.value=cur;
 }
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
 
 function switchTab(name){
   ['kit','match','player'].forEach(t=>{
-    document.getElementById('view-'+t).style.display=t===name?'block':'none';
-    document.getElementById('tab-'+t).classList.toggle('active',t===name);
+    $('view-'+t).style.display = t===name ? 'block' : 'none';
+    $('tab-'+t).classList.toggle('active', t===name);
   });
 }
 
-/* ===== Chart ヘルパー ===== */
-function barChart(canvasId,labels,data,colors,horizontal,fmtVal,onClickKit){
-  if(charts[canvasId]) charts[canvasId].destroy();
-  const ctx=document.getElementById(canvasId);
-  const labelFmt = fmtVal || fmtInt;
-  charts[canvasId]=new Chart(ctx,{
+// 名前解決後など、データ差し替えだけの再描画用（アニメーションなし）
+function rerenderAll(){
+  state.suppressAnim=true;
+  rebuildPlayerSelect();
+  renderKit(); renderMatch(); renderPlayer();
+  state.suppressAnim=false;
+}
+
+/* ---------- 4. データ派生 ---------- */
+const derive = {
+  // 全キット統計：ピック数・勝率。state.rows のみ依存なので init で1回計算して state.kitStats にキャッシュ
+  kitStats(rows){
+    const seen=new Set();
+    const stats={};                // kit → { picks, wins }
+    rows.forEach(r=>{
+      const key=pickKey(r)+'|'+r.kit;
+      if(seen.has(key)) return;
+      seen.add(key);
+      const s = stats[r.kit] ??= { picks:0, wins:0 };
+      s.picks++;
+      if(r.won) s.wins++;
+    });
+    const totalPicks=seen.size;
+    const kits=Object.keys(stats).sort(byDesc(k=>stats[k].picks));
+    return {
+      totalPicks, kits,
+      picks:   k => stats[k]?.picks ?? 0,
+      winRate: k => stats[k] ? stats[k].wins/stats[k].picks : 0,
+      pickRate:k => totalPicks ? (stats[k]?.picks ?? 0)/totalPicks : 0,
+    };
+  },
+
+  // キット1つ分のアビリティ統計（平均ダメージ & Basic比）
+  kitAbilities(rows){
+    const byAb={};
+    rows.forEach(r=>accumulate(byAb, r.ability, r.damage));
+
+    // Basic比：ピックごとに「アビリティ / そのピックの Basic_Attack」を出し平均
+    const perPick={};
+    rows.forEach(r=>{
+      const p = perPick[pickKey(r)] ??= {};
+      p[r.ability]=(p[r.ability]||0)+r.damage;
+    });
+    const ratio={};
+    Object.values(perPick).forEach(p=>{
+      const base=p[BASIC_ATTACK];
+      if(!base || base<=0) return;
+      Object.entries(p).forEach(([ab,dmg])=>{
+        const g = ratio[ab] ??= { sum:0, n:0 };
+        g.sum += dmg/base; g.n++;
+      });
+    });
+    return { byAb, ratio, abilities:Object.keys(byAb).sort() };
+  },
+
+  // キット1つ分のプレイヤー別統計（使用回数・勝率・平均ダメージ）
+  kitPlayers(rows){
+    const byPlayer={};
+    rows.forEach(r=>{
+      const p = byPlayer[r.playerId] ??= { picks:new Set(), wins:new Set(), totalDmg:0 };
+      p.picks.add(pickKey(r));
+      if(r.won) p.wins.add(r.matchId);
+      p.totalDmg+=r.damage;
+    });
+    const metric={
+      count:  p => p.picks.size,
+      winRate:p => p.wins.size/p.picks.size,
+      avgDmg: p => p.totalDmg/p.picks.size,
+    };
+    return { byPlayer, metric };
+  },
+
+  // 試合1つ分のプレイヤー別モデル
+  matchPlayers(rows){
+    const byPid={};
+    rows.forEach(r=>{
+      const p = byPid[r.playerId] ??= {
+        pid:r.playerId, name:disp(r.playerId), kit:r.kit, team:r.team, won:r.won,
+        kills:r.kills, deaths:r.deaths, assists:r.assists, total:0, abilities:[]
+      };
+      p.total+=r.damage;
+      p.abilities.push(r);
+    });
+    const players=Object.values(byPid).sort(byDesc(p=>p.total));
+    return {
+      byPid, players,
+      team: t => players.filter(p=>p.team===t),
+      hasKDA: rows.some(r=>r.kills!=null),
+    };
+  },
+
+  // プレイヤー1人分：キット→アビリティ集計 と 試合単位メタ
+  playerProfile(rows){
+    const byKit={};
+    rows.forEach(r=>{
+      byKit[r.kit] ??= {};
+      accumulate(byKit[r.kit], r.ability, r.damage);
+    });
+    const matchMeta={};
+    rows.forEach(r=>{
+      matchMeta[r.matchId] ??= { won:r.won, kills:r.kills, deaths:r.deaths, assists:r.assists, kit:r.kit };
+    });
+    const matches=Object.values(matchMeta);
+    const kitUse={};
+    matches.forEach(m=>{ kitUse[m.kit]=(kitUse[m.kit]||0)+1; });
+    return {
+      byKit, kits:Object.keys(byKit).sort(),
+      played: matches.length,
+      won:    matches.filter(m=>m.won).length,
+      kitUse,
+      topKit: Object.keys(kitUse).sort(byDesc(k=>kitUse[k]))[0],
+      hasKDA: matches.some(m=>m.kills!=null),
+      kda: ['kills','deaths','assists'].map(f=>matches.reduce((s,m)=>s+(m[f]||0),0)),
+    };
+  },
+};
+
+/* ---------- 5. チャート ---------- */
+if (window.ChartDataLabels) Chart.register(window.ChartDataLabels);
+
+/**
+ * 横棒グラフを描く。
+ * @param {string} canvasId
+ * @param {{labels:string[], data:number[], colors:string[], format?:(v)=>string, onClick?:(label,index)=>void}} opt
+ */
+function barChart(canvasId, { labels, data, colors, format = fmtInt, onClick }){
+  state.charts[canvasId]?.destroy();
+  const ctx=$(canvasId);
+  const F=CHART_THEME.font;
+  state.charts[canvasId]=new Chart(ctx,{
     type:'bar',
-    data:{labels,datasets:[{data,backgroundColor:colors,borderRadius:4,maxBarThickness:30}]},
+    data:{ labels, datasets:[{ data, backgroundColor:colors, borderRadius:4, maxBarThickness:30 }] },
     options:{
-      indexAxis:horizontal?'y':'x',
-      responsive:true,maintainAspectRatio:false,
-      layout:{padding:{right:horizontal?56:8,top:horizontal?0:22}},
-      onClick: onClickKit ? (e,elements)=>{
-        if(!elements.length) return;
-        const i=elements[0].index;
-        onClickKit(labels[i], i);
-      } : undefined,
-      onHover: onClickKit ? (e,elements)=>{
-        e.native.target.style.cursor=elements.length?'pointer':'default';
-      } : undefined,
+      indexAxis:'y',
+      responsive:true, maintainAspectRatio:false,
+      animation: state.suppressAnim ? false : undefined,
+      layout:{ padding:{ right:56 } },
+      onClick: onClick && ((e,els)=>{ if(els.length){ const i=els[0].index; onClick(labels[i], i); } }),
+      onHover: onClick && ((e,els)=>{ e.native.target.style.cursor = els.length ? 'pointer' : 'default'; }),
       plugins:{
-        legend:{display:false},
+        legend:{ display:false },
         tooltip:{
-          backgroundColor:'#1e2129',borderColor:'#2b2f3a',borderWidth:1,
-          titleColor:'#ecebe5',bodyColor:'#ecebe5',padding:10,cornerRadius:8,
-          titleFont:{family:'Chakra Petch'},bodyFont:{family:'Chakra Petch'},
-          callbacks:{label:c=>labelFmt(c.raw)}
+          backgroundColor:CHART_THEME.tooltip.bg, borderColor:CHART_THEME.tooltip.border, borderWidth:1,
+          titleColor:CHART_THEME.tooltip.text, bodyColor:CHART_THEME.tooltip.text, padding:10, cornerRadius:8,
+          titleFont:{ family:F }, bodyFont:{ family:F },
+          callbacks:{ label:c=>format(c.raw) }
         },
-        datalabels:{
-          anchor:'end', align:'end', clamp:true,
-          color:'#cfcdc6', font:{family:'Chakra Petch',size:11,weight:600},
-          formatter:v=>labelFmt(v)
-        }
+        datalabels:{ anchor:'end', align:'end', clamp:true, color:CHART_THEME.label,
+                     font:{ family:F, size:11, weight:600 }, formatter:format }
       },
       scales:{
-        x:{ticks:{color:AXIS_TICK,font:{family:'Chakra Petch'}},grid:{color:AXIS_GRID,drawBorder:false}},
-        y:{ticks:{color:AXIS_TICK,font:{family:'Chakra Petch',size:11},autoSkip:false},grid:{color:AXIS_GRID,drawBorder:false}}
+        x:{ ticks:{ color:CHART_THEME.tick, font:{ family:F } },          grid:{ color:CHART_THEME.grid, drawBorder:false } },
+        y:{ ticks:{ color:CHART_THEME.tick, font:{ family:F, size:11 }, autoSkip:false }, grid:{ color:CHART_THEME.grid, drawBorder:false } }
       }
     }
   });
-  ctx.parentElement.style.height=horizontal?Math.max(220,labels.length*36+90)+'px':'340px';
-  charts[canvasId].resize();
+  ctx.parentElement.style.height = Math.max(220, labels.length*36+90)+'px';
+  state.charts[canvasId].resize();
 }
 
-/* ===== キットタブ ===== */
-let kitMode='avg';
-let kitPlayerSort='avgDmg'; // 'count' | 'winRate' | 'avgDmg'
+// 選択中は不透明、それ以外は半透明
+const highlight = (kit, selected) => selected===kit ? state.kitColors[kit] : state.kitColors[kit]+'66';
+
+/* ---------- 6-a. キットタブ ---------- */
+function renderKit(){
+  const kit = state.kit.current;
+  if(!kit) return;
+  renderKitOverview(kit);
+  renderKitDetail(kit);
+}
+
+// 全キットの勝率・ピック率グラフ + 詳細ヘッダー
+function renderKitOverview(kit){
+  const ks=state.kitStats;
+
+  barChart('chart-kit-winrate',{
+    labels:[...ks.kits].sort(byDesc(ks.winRate)),
+    data:  [...ks.kits].sort(byDesc(ks.winRate)).map(k=>ks.winRate(k)*100),
+    colors:[...ks.kits].sort(byDesc(ks.winRate)).map(k=>highlight(k,kit)),
+    format:pctFromUnit, onClick:selectKit,
+  });
+  barChart('chart-kit-pick',{
+    labels:ks.kits,
+    data:  ks.kits.map(k=>ks.pickRate(k)*100),
+    colors:ks.kits.map(k=>highlight(k,kit)),
+    format:pctFromUnit, onClick:selectKit,
+  });
+
+  $('kit-detail-name').textContent=kit;
+  const chip=$('kit-detail-chip');
+  chip.style.background = chip.style.color = state.kitColors[kit] || '#888';
+  $('kit-detail-usage-v').textContent=fmtInt(ks.picks(kit));
+}
+
+// 選択キットのアビリティ別グラフ + 使用プレイヤー表
+function renderKitDetail(kit){
+  const rows=state.rows.filter(r=>r.kit===kit);
+  const color=()=>state.kitColors[kit];
+
+  // アビリティ別（平均 / Basic比）
+  const { byAb, ratio, abilities } = derive.kitAbilities(rows);
+  const isRatio = state.kit.mode==='ratio';
+  $('h2-kit-chart').textContent = isRatio ? 'アビリティ別 Basic_Attack比' : 'アビリティ別 平均ダメージ';
+  if(isRatio){
+    const labels=abilities.filter(a=>ratio[a]);
+    barChart('chart-kit-ability',{ labels:labels.map(prettyAbility),
+      data:labels.map(a=>ratio[a].sum/ratio[a].n), colors:labels.map(color), format:fmtRatio });
+  }else{
+    barChart('chart-kit-ability',{ labels:abilities.map(prettyAbility),
+      data:abilities.map(a=>avgOf(byAb[a])), colors:abilities.map(color) });
+  }
+
+  // 使用プレイヤー（見出しクリックでソート列切替、常に降順）
+  const { byPlayer, metric } = derive.kitPlayers(rows);
+  const sortKey=state.kit.sort;
+  const pids=Object.keys(byPlayer).sort(byDesc(pid=>metric[sortKey](byPlayer[pid])));
+  const maxAvg=maxOf(pids.map(pid=>metric.avgDmg(byPlayer[pid])));
+  const th=(key,label)=>`<th class="num sortable${key===sortKey?' sort-active':''}" onclick="sortKitPlayers('${key}')">${label}</th>`;
+
+  $('table-kit-players').innerHTML =
+    `<tr><th>プレイヤー</th>${th('count','使用回数')}${th('winRate','勝率')}${th('avgDmg','平均ダメージ')}</tr>` +
+    pids.map(pid=>{
+      const p=byPlayer[pid];
+      return `<tr><td>${esc(disp(pid))}</td><td class="num">${metric.count(p)}</td>`
+           + `<td class="num">${pct(metric.winRate(p))}</td>${barCell(metric.avgDmg(p),maxAvg)}</tr>`;
+    }).join('');
+}
+
+// グラフの棒クリック → キット選択して詳細へスクロール
+function selectKit(kit){
+  if(state.kit.current===kit) return;
+  state.kit.current=kit;
+  renderKit();
+  $('kit-detail-header').scrollIntoView({ behavior:'smooth', block:'start' });
+}
 
 function setKitMode(mode){
-  kitMode=mode;
-  document.querySelectorAll('#kit-toggle button').forEach((b,i)=>{
-    b.classList.toggle('active',(mode==='avg')===(i===0));
-  });
+  state.kit.mode=mode;
+  document.querySelectorAll('#kit-toggle button').forEach((b,i)=>b.classList.toggle('active',(mode==='avg')===(i===0)));
   renderKit();
 }
 
-function renderKit(){
-  const selEl=document.getElementById('sel-kit');
-  const kit=selEl ? selEl.value : (renderKit._current||renderKit._default||'');
-  if(kit) renderKit._current=kit;
-
-  // ピック集計（matchId|playerId|kit）
-  const pickSet=new Set(ROWS.map(r=>r.matchId+'|'+r.playerId+'|'+r.kit));
-  const pickCount={};
-  pickSet.forEach(key=>{
-    const k=key.split('|')[2];
-    pickCount[k]=(pickCount[k]||0)+1;
-  });
-  const totalPicks=pickSet.size;
-  const allKits=Object.keys(pickCount).sort((a,b)=>pickCount[b]-pickCount[a]);
-
-  // 勝率集計（ピック単位）
-  const kitMatchWin={};
-  const seenPicks=new Set();
-  ROWS.forEach(r=>{
-    const key=r.matchId+'|'+r.kit+'|'+r.playerId;
-    if(!seenPicks.has(key)){
-      seenPicks.add(key);
-      kitMatchWin[r.kit]=kitMatchWin[r.kit]||{won:0,total:0};
-      kitMatchWin[r.kit].total++;
-      if(r.won) kitMatchWin[r.kit].won++;
-    }
-  });
-
-  // クリックでキット選択して詳細へスクロール
-  function selectKit(kitName){
-    const sel=document.getElementById('sel-kit');
-    if(sel){
-      if(sel.value===kitName) return;
-      sel.value=kitName;
-    } else {
-      if(renderKit._current===kitName) return;
-      renderKit._current=kitName;
-    }
-    renderKit();
-    document.getElementById('kit-detail-header').scrollIntoView({behavior:'smooth',block:'start'});
-  }
-
-  // 勝率グラフ（降順ソート、選択中はハイライト）
-  const wrSorted=[...allKits].sort((a,b)=>{
-    const wa=(kitMatchWin[a]?.won||0)/(kitMatchWin[a]?.total||1);
-    const wb=(kitMatchWin[b]?.won||0)/(kitMatchWin[b]?.total||1);
-    return wb-wa;
-  });
-  barChart('chart-kit-winrate',
-    wrSorted,
-    wrSorted.map(k=>kitMatchWin[k]?(kitMatchWin[k].won/kitMatchWin[k].total*100):0),
-    wrSorted.map(k=>k===kit?KIT_COLORS[k]:KIT_COLORS[k]+'66'),
-    true, v=>v.toFixed(1)+'%', selectKit);
-
-  // ピック率グラフ（選択中はハイライト）
-  barChart('chart-kit-pick',
-    allKits,
-    allKits.map(k=>pickCount[k]/totalPicks*100),
-    allKits.map(k=>k===kit?KIT_COLORS[k]:KIT_COLORS[k]+'66'),
-    true, v=>v.toFixed(1)+'%', selectKit);
-
-  // 選択キット詳細ヘッダー更新
-  document.getElementById('kit-detail-name').textContent=kit;
-  const chip=document.getElementById('kit-detail-chip');
-  chip.style.background=KIT_COLORS[kit]||'#888';
-  chip.style.color=KIT_COLORS[kit]||'#888';
-  document.getElementById('kit-detail-usage-v').textContent=fmtInt(pickCount[kit]||0);
-
-  const rows=ROWS.filter(r=>r.kit===kit);
-
-  // アビリティ集計
-  const byAb={};
-  rows.forEach(r=>{
-    const a=byAb[r.ability]=byAb[r.ability]||{sum:0,max:0,n:0};
-    a.sum+=r.damage; a.max=Math.max(a.max,r.damage); a.n++;
-  });
-
-  // ピック単位（Basic_Attack比用）
-  const picks={};
-  rows.forEach(r=>{
-    const key=r.matchId+'|'+r.playerId;
-    picks[key]=picks[key]||{};
-    picks[key][r.ability]=(picks[key][r.ability]||0)+r.damage;
-  });
-  const ratioAgg={};
-  Object.values(picks).forEach(p=>{
-    const base=p['Basic_Attack'];
-    if(!base||base<=0) return;
-    Object.keys(p).forEach(ab=>{
-      const g=ratioAgg[ab]=ratioAgg[ab]||{sum:0,n:0};
-      g.sum+=p[ab]/base; g.n++;
-    });
-  });
-
-  const abs=Object.keys(byAb).sort();
-  const isRatio=kitMode==='ratio';
-
-  document.getElementById('h2-kit-chart').textContent=
-    isRatio?'アビリティ別 Basic_Attack比':'アビリティ別 平均ダメージ';
-
-  if(isRatio){
-    const labels=abs.filter(a=>ratioAgg[a]);
-    barChart('chart-kit-ability',labels.map(prettyAbility),
-      labels.map(a=>ratioAgg[a].sum/ratioAgg[a].n),
-      labels.map(()=>KIT_COLORS[kit]),true,v=>'×'+v.toFixed(2));
-  } else {
-    barChart('chart-kit-ability',abs.map(prettyAbility),abs.map(a=>byAb[a].sum/byAb[a].n),
-      abs.map(()=>KIT_COLORS[kit]),true);
-  }
-
-  // 使用プレイヤー
-  const byPlayer={};
-  ROWS.filter(r=>r.kit===kit).forEach(r=>{
-    const key=r.matchId+'|'+r.playerId;
-    if(!byPlayer[r.playerId]) byPlayer[r.playerId]={pickKeys:new Set(),winKeys:new Set(),totalDmg:0};
-    byPlayer[r.playerId].pickKeys.add(key);
-    if(r.won) byPlayer[r.playerId].winKeys.add(r.matchId);
-    byPlayer[r.playerId].totalDmg+=r.damage;
-  });
-
-  const maxAvgDmg=Math.max(...Object.values(byPlayer).map(d=>d.totalDmg/d.pickKeys.size),0);
-
-  // ソートキーの値を取得
-  function sortVal(pid,key){
-    const d=byPlayer[pid];
-    const pc=d.pickKeys.size;
-    if(key==='count')   return pc;
-    if(key==='winRate') return d.winKeys.size/pc;
-    return d.totalDmg/pc; // avgDmg
-  }
-
-  const sortedPids=Object.keys(byPlayer)
-    .sort((a,b)=>sortVal(b,kitPlayerSort)-sortVal(a,kitPlayerSort));
-
-  const activeCls=key=> key===kitPlayerSort ? ' sort-active' : '';
-  let ph=`<tr>`
-       +`<th>プレイヤー</th>`
-       +`<th class="num sortable${activeCls('count')}" onclick="sortKitPlayers('count')">使用回数</th>`
-       +`<th class="num sortable${activeCls('winRate')}" onclick="sortKitPlayers('winRate')">勝率</th>`
-       +`<th class="num sortable${activeCls('avgDmg')}" onclick="sortKitPlayers('avgDmg')">平均ダメージ</th>`
-       +`</tr>`;
-  sortedPids.forEach(pid=>{
-    const d=byPlayer[pid];
-    const pc=d.pickKeys.size;
-    ph+=`<tr><td>${esc(disp(pid))}</td><td class="num">${pc}</td>`
-       +`<td class="num">${pct(d.winKeys.size/pc)}</td>`
-       +barCell(d.totalDmg/pc,maxAvgDmg)+`</tr>`;
-  });
-  document.getElementById('table-kit-players').innerHTML=ph;
-}
-
-// ヘッダークリックでソート列を切り替え（常に降順）
 function sortKitPlayers(key){
-  kitPlayerSort=key;
+  state.kit.sort=key;
   renderKit();
 }
 
-/* ===== 試合タブ ===== */
+/* ---------- 6-b. 試合タブ ---------- */
 function renderMatch(){
-  const id=document.getElementById('sel-match').value;
-  const rows=ROWS.filter(r=>r.matchId===id);
-
-  // 試合メタ情報（最初の行から取得）
+  const id=$('sel-match').value;
+  const rows=state.rows.filter(r=>r.matchId===id);
   const meta=rows[0];
-  const durationEl=document.querySelector('#match-meta .match-meta-item:nth-child(1) .match-meta-v');
-  const mapEl=document.querySelector('#match-meta .match-meta-item:nth-child(2) .match-meta-v');
-  if(durationEl) durationEl.textContent=meta?.duration!=null ? fmtDuration(meta.duration) : '-';
-  if(mapEl) mapEl.textContent=meta?.map || '-';
 
-  // データなしなら以降をクリアして終了
+  $('match-meta-duration').textContent = meta?.duration!=null ? fmtDuration(meta.duration) : '-';
+  $('match-meta-map').textContent      = meta?.map || '-';
+
   if(!rows.length){
-    document.getElementById('table-match-a').innerHTML='';
-    document.getElementById('table-match-b').innerHTML='';
-    document.getElementById('match-ability-detail').style.display='none';
+    $('table-match-a').innerHTML=$('table-match-b').innerHTML='';
+    $('match-ability-detail').style.display='none';
     return;
   }
 
-  // playerId単位で集計
-  const byPid={};
-  rows.forEach(r=>{
-    if(!byPid[r.playerId]) byPid[r.playerId]={
-      name:disp(r.playerId), kit:r.kit, team:r.team, won:r.won,
-      kills:r.kills, deaths:r.deaths, assists:r.assists,
-      total:0, abilities:[]
-    };
-    byPid[r.playerId].total+=r.damage;
-    byPid[r.playerId].abilities.push(r);
+  const m=derive.matchPlayers(rows);
+  const aWon=Boolean(m.team('A')[0]?.won);
+
+  barChart('chart-match',{
+    labels:m.players.map(p=>p.name),
+    data:  m.players.map(p=>p.total),
+    colors:m.players.map(p=>TEAM_COLOR[p.team] ?? TEAM_COLOR.B),
+    onClick:(label,i)=>renderMatchAbility(m.players[i], meta, id),
   });
 
-  const allPids=Object.keys(byPid);
-  const teamA=allPids.filter(p=>byPid[p].team==='A').sort((a,b)=>byPid[b].total-byPid[a].total);
-  const teamB=allPids.filter(p=>byPid[p].team==='B').sort((a,b)=>byPid[b].total-byPid[a].total);
-  const aWon=teamA.length&&byPid[teamA[0]]&&byPid[teamA[0]].won;
+  const badge=won=>won ? '<span class="badge badge-win">🏆 WIN</span>' : '<span class="badge badge-lose">LOSE</span>';
+  $('h2-team-a').innerHTML=`チーム A ${badge(aWon)}`;
+  $('h2-team-b').innerHTML=`チーム B ${badge(!aWon)}`;
 
-  // チャート: チームA=青・チームB=赤で色分け（ダメージ降順）、クリックでアビリティ詳細展開
-  const chartPids=[...allPids].sort((a,b)=>byPid[b].total-byPid[a].total);
-  const TEAM_A_COLOR='#5b9bd5';
-  const TEAM_B_COLOR='#d95f5f';
+  // アビリティ詳細：同じ試合で選択済みならそれを維持、なければ1位
+  const sel=state.match.selected;
+  const target = (sel && sel.matchId===id && m.byPid[sel.pid]) ? m.byPid[sel.pid] : m.players[0];
+  renderMatchAbility(target, meta, id);
 
-  // playerIdでアビリティ詳細を表示（名前でなくIDで特定）
-  function showAbilityDetailByPid(pid){
-    const d=byPid[pid];
-    if(!d) return;
-    renderMatch._selected={matchId:id, pid};  // 再描画後も選択を保持
-    document.getElementById('match-ability-detail').style.display='block';
-    document.getElementById('match-ability-title').textContent=`${d.name} — ${d.kit} アビリティ別ダメージ`;
-    const abs=[...d.abilities].sort((a,b)=>b.damage-a.damage);
-    const maxDmg=abs[0]?.damage||0;
-    let html=`<tr><th>アビリティ</th><th class="num">ダメージ</th></tr>`;
-    abs.forEach(r=>{
-      html+=`<tr><td>${esc(prettyAbility(r.ability))}</td>${barCell(r.damage,maxDmg)}</tr>`;
-    });
-    document.getElementById('table-match-ability').innerHTML=html;
-  }
-
-  barChart('chart-match',
-    chartPids.map(p=>byPid[p].name),
-    chartPids.map(p=>byPid[p].total),
-    chartPids.map(p=>byPid[p].team==='A' ? TEAM_A_COLOR : TEAM_B_COLOR),
-    true, null, (label,i)=>showAbilityDetailByPid(chartPids[i]));
-
-  // チーム見出し（勝敗バッジ付き）
-  const badgeWin=`<span class="badge badge-win">🏆 WIN</span>`;
-  const badgeLose=`<span class="badge badge-lose">LOSE</span>`;
-  document.getElementById('h2-team-a').innerHTML=`チーム A ${aWon ? badgeWin : badgeLose}`;
-  document.getElementById('h2-team-b').innerHTML=`チーム B ${aWon ? badgeLose : badgeWin}`;
-
-  // アビリティ詳細：同じ試合で選択済みならそれを維持、なければ1位を表示
-  const sel=renderMatch._selected;
-  if(sel && sel.matchId===id && byPid[sel.pid]){
-    showAbilityDetailByPid(sel.pid);
-  } else {
-    showAbilityDetailByPid(chartPids[0]);
-  }
-
-  // チームごとにテーブルを生成（プレイヤー行のみ、アビリティ行なし）
-  const hasKDA=rows.some(r=>r.kills!=null);
-  const matchMaxTotal=Math.max(...allPids.map(p=>byPid[p].total),0);
-
-  function teamTable(pids, teamClass){
-    let html=`<tr><th></th><th class="num">ダメージ</th></tr>`;
-    pids.forEach(pid=>{
-      const d=byPid[pid];
-      const kda=hasKDA&&d.kills!=null
-        ?` <span style="color:var(--ink-dim);font-size:11px">K${d.kills}/D${d.deaths}/A${d.assists}</span>`:'';
-      const w=matchMaxTotal>0?Math.max(2,Math.round(d.total/matchMaxTotal*100)):0;
-      html+=`<tr class="kit-head team-${teamClass}">`
-           +`<td><strong>${esc(d.name)}</strong> — ${esc(d.kit)}${kda}</td>`
-           +`<td class="num bar" style="--w:${w}%"><span>${fmtInt(d.total)}</span></td></tr>`;
-    });
-    return html;
-  }
-
-  document.getElementById('table-match-a').innerHTML=teamTable(teamA, 'a');
-  document.getElementById('table-match-b').innerHTML=teamTable(teamB, 'b');
+  const maxTotal=maxOf(m.players.map(p=>p.total));
+  $('table-match-a').innerHTML=teamTable(m.team('A'),'a',maxTotal,m.hasKDA);
+  $('table-match-b').innerHTML=teamTable(m.team('B'),'b',maxTotal,m.hasKDA);
 }
 
-/* ===== プレイヤータブ ===== */
+// チームメンバー表（プレイヤー行のみ）
+function teamTable(players, teamClass, maxTotal, hasKDA){
+  return `<tr><th></th><th class="num">ダメージ</th></tr>` + players.map(p=>{
+    const kda = hasKDA && p.kills!=null
+      ? ` <span style="color:var(--ink-dim);font-size:11px">K${p.kills}/D${p.deaths}/A${p.assists}</span>` : '';
+    return `<tr class="kit-head team-${teamClass}"><td><strong>${esc(p.name)}</strong> — ${esc(p.kit)}${kda}</td>`
+         + barCell(p.total,maxTotal)+`</tr>`;
+  }).join('');
+}
+
+// 選択プレイヤーのアビリティ別ダメージ（試合時間があれば毎分列を追加）
+function renderMatchAbility(player, meta, matchId){
+  if(!player) return;
+  state.match.selected={ matchId, pid:player.pid };
+
+  const abs=[...player.abilities].sort(byDesc(r=>r.damage));
+  const minutes = meta?.duration>0 ? meta.duration/60 : null;
+  const maxPerMin = minutes ? maxOf(abs.map(r=>r.damage))/minutes : 0;
+
+  $('match-ability-detail').style.display='block';
+  $('match-ability-title').textContent=`${player.name} — ${player.kit} アビリティ別ダメージ`;
+  $('table-match-ability').innerHTML =
+    `<tr><th>アビリティ</th>${minutes?'<th class="num">ダメージ(毎分)</th>':''}<th class="num">総ダメージ</th></tr>` +
+    abs.map(r=>`<tr><td>${esc(prettyAbility(r.ability))}</td>`
+              + (minutes ? barCell(r.damage/minutes,maxPerMin) : '')
+              + `<td class="num">${fmtInt(r.damage)}</td></tr>`).join('');
+}
+
+/* ---------- 6-c. プレイヤータブ ---------- */
 function renderPlayer(){
-  const pid=document.getElementById('sel-player').value;
-  const rows=ROWS.filter(r=>r.playerId===pid);
+  const pid=$('sel-player').value;
+  const rows=state.rows.filter(r=>r.playerId===pid);
+  const p=derive.playerProfile(rows);
 
-  const byKit={};
-  rows.forEach(r=>{
-    byKit[r.kit]=byKit[r.kit]||{};
-    const a=byKit[r.kit][r.ability]=byKit[r.kit][r.ability]||{sum:0,max:0,n:0};
-    a.sum+=r.damage; a.max=Math.max(a.max,r.damage); a.n++;
-  });
-
+  // アビリティ別平均（キット色で色分け）
   const labels=[],data=[],colors=[];
-  Object.keys(byKit).sort().forEach(kit=>{
-    Object.keys(byKit[kit]).sort().forEach(ab=>{
-      const a=byKit[kit][ab];
-      labels.push(prettyAbility(ab)); data.push(a.sum/a.n); colors.push(KIT_COLORS[kit]);
-    });
-  });
-  barChart('chart-player',labels,data,colors,true);
+  p.kits.forEach(kit=>Object.keys(p.byKit[kit]).sort().forEach(ab=>{
+    labels.push(prettyAbility(ab)); data.push(avgOf(p.byKit[kit][ab])); colors.push(state.kitColors[kit]);
+  }));
+  barChart('chart-player',{ labels, data, colors });
 
-  // 試合単位の集計（勝敗・KDA・キット使用回数）
-  const matchMeta={};
-  rows.forEach(r=>{
-    if(!matchMeta[r.matchId]) matchMeta[r.matchId]={won:r.won,kills:r.kills,deaths:r.deaths,assists:r.assists,kit:r.kit};
-  });
-  const played=Object.keys(matchMeta).length;
-  const won=Object.values(matchMeta).filter(m=>m.won).length;
+  // 統計カード
+  const card=(k,v,sub='')=>`<div class="pstat"><span class="pk">${k}</span><span class="pv">${v}</span><span class="psub">${sub}</span></div>`;
+  const [K,D,A]=p.kda;
+  $('player-stats').innerHTML =
+      card('プレイ数', p.played, `勝利 ${p.won}`)
+    + card('勝率', p.played ? pct(p.won/p.played) : '—', `${p.won} / ${p.played}`)
+    + `<div class="pstat kit-card"><span class="pk">最多使用キット</span><span class="pv">`
+    + `<span class="kit-chip" style="background:${p.topKit ? state.kitColors[p.topKit] : 'transparent'}"></span>${p.topKit ? esc(p.topKit) : '—'}</span>`
+    + `<span class="psub">${p.topKit ? p.kitUse[p.topKit]+' 試合' : ''}</span></div>`
+    + (p.hasKDA ? card('K / D / A', `${K}/${D}/${A}`, `KD比 ${D ? (K/D).toFixed(2) : '∞'}`) : '');
 
-  // 最多使用キット（試合単位でカウント）
-  const kitUse={};
-  Object.values(matchMeta).forEach(m=>{ kitUse[m.kit]=(kitUse[m.kit]||0)+1; });
-  const topKit=Object.keys(kitUse).sort((a,b)=>kitUse[b]-kitUse[a])[0];
-
-  // KDA合計
-  const hasKDA=Object.values(matchMeta).some(m=>m.kills!=null);
-  let kdaCard='';
-  if(hasKDA){
-    const vals=Object.values(matchMeta);
-    const K=vals.reduce((s,v)=>s+(v.kills||0),0);
-    const D=vals.reduce((s,v)=>s+(v.deaths||0),0);
-    const A=vals.reduce((s,v)=>s+(v.assists||0),0);
-    kdaCard=`<div class="pstat"><span class="pk">K / D / A</span><span class="pv">${K}/${D}/${A}</span><span class="psub">KD比 ${D?(K/D).toFixed(2):'∞'}</span></div>`;
-  }
-
-  // 統計カードを描画
-  const winRate=played?pct(won/played):'—';
-  document.getElementById('player-stats').innerHTML=
-     `<div class="pstat"><span class="pk">プレイ数</span><span class="pv">${played}</span><span class="psub">勝利 ${won}</span></div>`
-   + `<div class="pstat"><span class="pk">勝率</span><span class="pv">${winRate}</span><span class="psub">${won} / ${played}</span></div>`
-   + `<div class="pstat kit-card"><span class="pk">最多使用キット</span><span class="pv"><span class="kit-chip" style="background:${topKit?KIT_COLORS[topKit]:'transparent'}"></span>${topKit?esc(topKit):'—'}</span><span class="psub">${topKit?kitUse[topKit]+' 試合':''}</span></div>`
-   + kdaCard;
-
-  // 内訳テーブル（回数はキットごとに1つだけ表示）
-  let html=`<tr><th>アビリティ</th><th class="num">平均</th><th class="num">最大</th><th class="num">合計</th></tr>`;
-  Object.keys(byKit).sort().forEach(kit=>{
-    const kitMatchCount=Object.values(matchMeta).filter(m=>m.kit===kit).length;
-    html+=`<tr class="kit-head"><td colspan="3"><span class="kit-chip" style="background:${KIT_COLORS[kit]}"></span>${esc(kit)}</td><td class="num">${kitMatchCount} 試合</td></tr>`;
-    const abList=Object.keys(byKit[kit]).sort();
-    const maxAvg=Math.max(...abList.map(ab=>byKit[kit][ab].sum/byKit[kit][ab].n),0);
-    abList.forEach(ab=>{
-      const a=byKit[kit][ab];
-      html+=`<tr><td>${esc(prettyAbility(ab))}</td>`
-           +barCell(a.sum/a.n,maxAvg)
-           +`<td class="num">${fmtInt(a.max)}</td><td class="num">${fmtInt(a.sum)}</td></tr>`;
-    });
-  });
-  document.getElementById('table-player').innerHTML=html;
+  // 内訳表（回数はキット行に1つだけ）
+  $('table-player').innerHTML =
+    `<tr><th>アビリティ</th><th class="num">平均</th><th class="num">最大</th><th class="num">合計</th></tr>` +
+    p.kits.map(kit=>{
+      const abs=Object.keys(p.byKit[kit]).sort();
+      const maxAvg=maxOf(abs.map(ab=>avgOf(p.byKit[kit][ab])));
+      return `<tr class="kit-head"><td colspan="3"><span class="kit-chip" style="background:${state.kitColors[kit]}"></span>${esc(kit)}</td>`
+           + `<td class="num">${p.kitUse[kit]||0} 試合</td></tr>`
+           + abs.map(ab=>{
+               const a=p.byKit[kit][ab];
+               return `<tr><td>${esc(prettyAbility(ab))}</td>${barCell(avgOf(a),maxAvg)}`
+                    + `<td class="num">${fmtInt(a.max)}</td><td class="num">${fmtInt(a.sum)}</td></tr>`;
+             }).join('');
+    }).join('');
 }
+
+/* ---------- 7. 名前解決（Mojang via Lambda POST） ---------- */
+async function fetchNames(uuids){
+  const res=await fetch(LAMBDA_URL,{ method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ uuids }) });
+  if(!res.ok) throw new Error('HTTP '+res.status);
+  return (await res.json()).data;
+}
+
+function applyNames(map){
+  Object.assign(state.names,map);
+  state.rows.forEach(r=>{ r.playerName=disp(r.playerId); });
+  rerenderAll();
+}
+
+// バッチを同時に投げると Mojang のレート制限に当たるため順番に処理し、取りこぼしは2巡目で再試行
+async function loadNames(){
+  const uuids=uniq(state.rows.map(r=>r.playerId));
+  const status=$('name-status');
+  const unresolved=()=>uuids.filter(u=>!state.names[u]||state.names[u]===u);
+
+  const runBatches=async(list,label)=>{
+    for(let i=0;i<list.length;i+=NAME_BATCH){
+      status.textContent=`${label} (${Math.min(i+NAME_BATCH,list.length)}/${list.length})`;
+      try{ applyNames(await fetchNames(list.slice(i,i+NAME_BATCH))); }
+      catch(e){ console.warn('name batch failed:',e); }
+    }
+  };
+
+  await runBatches(uuids,'プレイヤー名を取得中…');
+  if(unresolved().length){ await sleep(1200); await runBatches(unresolved(),'プレイヤー名を再取得中…'); }
+
+  const missing=unresolved().length;
+  status.textContent = missing ? `${missing}件のプレイヤー名を取得できませんでした` : '';
+}
+
+/* ---------- 8. 起動 ---------- */
+function rebuildPlayerSelect(){
+  const opts=uniq(state.rows.map(r=>r.playerId))
+    .sort((a,b)=>disp(a).localeCompare(disp(b),'ja'))
+    .map(u=>({ value:u, label:disp(u) }));
+  fillSelect('sel-player', opts, true);
+}
+
+function buildSelects(){
+  const matchOpts=uniq(state.rows.map(r=>r.matchId)).map(id=>{
+    const d=state.rows.find(r=>r.matchId===id).date;
+    return { value:id, label:`${d}  (試合ID : ${id})` };
+  }).sort((a,b)=>b.label.localeCompare(a.label));
+  fillSelect('sel-match', matchOpts);
+  rebuildPlayerSelect();
+}
+
+function init(rows){
+  state.rows=rows;
+  const kits=uniq(rows.map(r=>r.kit)).sort();
+  kits.forEach((k,i)=>state.kitColors[k]=PALETTE[i%PALETTE.length]);
+  state.kitStats=derive.kitStats(rows);
+  state.kit.current=kits[0] ?? null;
+
+  buildSelects();
+  ['kit','match','player'].forEach(t=>{
+    $(t+'-skeleton')?.style.setProperty('display','none');
+    $(t+'-content')?.style.setProperty('display','block');
+  });
+  renderKit(); renderMatch(); renderPlayer();
+
+  $('name-status').textContent='プレイヤー名を取得中…';
+  loadNames();
+}
+
+fetch(LAMBDA_URL)
+  .then(r=>{ if(!r.ok) throw new Error('サーバーエラー ('+r.status+')'); return r.json(); })
+  .then(result=>init(result.data))
+  .catch(e=>{
+    ['kit','match','player'].forEach(t=>{
+      const el=$(t+'-skeleton');
+      if(el) el.innerHTML=`<div class="error" style="padding:20px">読み込み失敗: ${esc(e.message)}</div>`;
+    });
+  });
 </script>
 </body>
 </html>
