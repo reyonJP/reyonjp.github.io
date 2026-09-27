@@ -145,6 +145,24 @@
   .kit-detail-header .kit-detail-label{font-size:23px;font-weight:900;letter-spacing:.04em;line-height:1.1}
   .kit-detail-header .kit-detail-name{font-family:var(--num-font);font-size:14px;font-weight:600;color:var(--ember);letter-spacing:.1em;margin-top:4px;text-transform:uppercase}
 
+  /* 総ピック・総勝利（アビリティ別グラフの左に大きく） */
+  .kit-totals{flex:0 1 260px;display:flex;flex-direction:column;gap:14px}
+  .kit-totals .pstat{flex:1;justify-content:center;padding:22px 24px}
+  .kit-totals .pv{font-size:56px}
+  .kit-totals .pk{font-size:14px}
+  .kit-totals .psub{font-size:14px}
+  @media (max-width:700px){ .kit-totals{flex:1 1 100%;flex-direction:row} .kit-totals .pv{font-size:40px} }
+
+  /* 使用プレイヤー / キット相性 / 習熟カーブ */
+  .sub-row{margin-top:28px}
+  /* 開閉ボタン（h2 の中に置き、見た目は見出しのまま） */
+  .collapse-btn{appearance:none;background:none;border:none;padding:0;color:inherit;font:inherit;letter-spacing:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:color .15s}
+  .collapse-btn:hover{color:var(--ember-hot)}
+  .collapse-btn:focus-visible{outline:2px solid var(--ember-hot);outline-offset:2px}
+  .collapse-btn .chev{font-size:10px;color:var(--ink-dim);transition:transform .15s}
+  .collapse-btn[aria-expanded="true"] .chev{transform:rotate(90deg)}
+  .sub-row.collapsed .toggle,.sub-row.collapsed .click-hint{display:none}
+
   /* 全キット比較 */
   .compare-row{margin-top:32px;padding-top:24px;border-top:1px solid var(--hairline)}
 
@@ -160,7 +178,6 @@
   tr.team-row td{font-weight:700;padding-top:15px;border-bottom:1px solid var(--panel-edge)}
   tr.team-a td{background:var(--team-a-bg)}
   tr.team-b td{background:var(--team-b-bg)}
-  .kda{color:var(--ink-dim);font-size:12px}
   #match-ability-title{margin:8px 0 10px}
 
   /* ================= カード列（試合・プレイヤー選択、横スクロール） ================= */
@@ -247,7 +264,7 @@
     <div class="kit-detail-header" id="kit-detail-header">
       <span class="kit-chip-lg" id="kit-detail-chip"></span>
       <div>
-        <div class="kit-detail-label">パフォーマンス詳細</div>
+        <div class="kit-detail-label">キット詳細</div>
         <div class="kit-detail-name" id="kit-detail-name">—</div>
       </div>
     </div>
@@ -257,22 +274,50 @@
       <div class="skel skel-table"></div>
     </div>
     <div id="kit-content" style="display:none">
-      <!-- アビリティ別 + 使用プレイヤー -->
+      <!-- 総ピック・総勝利 + アビリティ別 -->
       <div class="row">
+        <div class="kit-totals" id="kit-totals"></div>
         <div class="col">
           <div class="h2-row">
-            <h2 id="h2-kit-chart">アビリティ別 平均ダメージ</h2>
+            <h2 id="h2-kit-chart">アビリティ別 毎分ダメージ</h2>
             <div class="toggle" id="kit-mode-toggle" role="group" aria-label="アビリティ表示モード">
-              <button data-value="avg" class="active" onclick="setKitMode(this.dataset.value)">平均ダメージ</button>
+              <button data-value="perMin" class="active" onclick="setKitMode(this.dataset.value)">毎分ダメージ</button>
               <button data-value="ratio" onclick="setKitMode(this.dataset.value)">通常攻撃比</button>
             </div>
           </div>
           <div class="chart-box"><canvas id="chart-kit-ability"></canvas></div>
         </div>
-        <div class="col">
-          <h2>使用したプレイヤー</h2>
-          <div class="table-box"><table id="table-kit-players"></table></div>
+      </div>
+
+      <!-- 使用プレイヤー / キット相性 / 習熟カーブ（3つから選択。見出しクリックで開閉、最初は閉じている） -->
+      <div class="h2-row sub-row collapsed" id="kit-sub-row">
+        <h2><button type="button" class="collapse-btn" id="kit-sub-collapse" aria-expanded="false" aria-controls="kit-sub-body" onclick="toggleKitSubOpen()">
+          <span class="chev" aria-hidden="true">▶</span><span id="h2-kit-sub"></span>
+        </button></h2>
+        <div class="toggle toggle-sm" id="kit-sub-toggle" role="group" aria-label="キット詳細の表示">
+          <button data-value="players" class="active" onclick="setKitSub(this.dataset.value)">使用プレイヤー</button>
+          <button data-value="matchup" onclick="setKitSub(this.dataset.value)">苦手・得意キット</button>
+          <button data-value="learning" onclick="setKitSub(this.dataset.value)">習熟カーブ</button>
         </div>
+        <span class="click-hint" id="kit-sub-hint"></span>
+      </div>
+      <div id="kit-sub-body" hidden>
+      <div id="kit-sub-players">
+        <div class="table-box"><table id="table-kit-players"></table></div>
+      </div>
+      <div id="kit-sub-matchup" class="row" style="display:none">
+        <div class="col">
+          <h2>苦手な敵キット <span class="click-hint">敵にいた時の勝率 低い順</span></h2>
+          <div class="table-box"><table id="table-kit-enemy"></table></div>
+        </div>
+        <div class="col">
+          <h2>相性の良い味方キット <span class="click-hint">味方にいた時の勝率 高い順</span></h2>
+          <div class="table-box"><table id="table-kit-ally"></table></div>
+        </div>
+      </div>
+      <div id="kit-sub-learning" style="display:none">
+        <div class="chart-box" style="height:340px"><canvas id="chart-kit-learning"></canvas></div>
+      </div>
       </div>
 
       <!-- 全キット比較（3つから選択） -->
@@ -353,7 +398,7 @@
  *    1. 設定・定数
  *    2. 状態
  *    3. 汎用ユーティリティ（整形・集計・HTML 部品・UI 同期）
- *    4. データ派生（state.rows からの集計）
+ *    4. データ派生（state.picks / state.rows からの集計）
  *    5. チャート
  *    6. 描画：キット / 試合 / プレイヤー
  *    7. 名前解決（Mojang）
@@ -363,10 +408,24 @@
 /* ---------- 1. 設定・定数 ---------- */
 const LAMBDA_URL = 'https://2gcjv7f3gcqrygc4ya6gt4z4au0ojrlv.lambda-url.ap-northeast-1.on.aws/';
 
-const PALETTE = ['#ff8a3d','#7fa8c9','#ffc857','#8fbf6b','#c98ad6',
-                 '#5fb8a8','#e07070','#b0a07a','#6f8de0','#d6788f'];
+// キット色（#rrggbb。透明度を末尾に付けて使うので短縮形不可）
+const KIT_COLOR = {
+  'カルティスト':   '#b07ce8',   // 紫
+  'レヴィン':       '#f2d544',   // 黄
+  'スウィフト':     '#5fd0e8',   // 水色
+  'リジッド':       '#7cc46a',   // 緑
+  'デストロイヤー': '#e5534b',   // 赤
+  'ガイザー':       '#3f7fe0',   // 青
+  'ヘイル':         '#d9e6ee',   // 氷（白）
+  'グリード':       '#f0913a',   // 橙
+  'ネクター':       '#ec7fb6',   // ピンク
+  'プラトー':       '#b58955',   // 茶
+  'ガーディアン':   '#3fae95',   // 青緑
+};
+// KIT_COLOR にない（新しく追加された）キット用
+const FALLBACK_KIT_COLORS = ['#c9c28a','#8f7fd6','#d6a0a0','#9fc9b8','#c7a5e0'];
 const TEAM_COLOR = { A:'#5b9bd5', B:'#d95f5f' };
-const SHARED_ABILITY_COLOR = '#7fa8c9';   // 複数キットが持つアビリティ（Basic Attack など）の色
+const SHARED_ABILITY_COLOR = '#8a8f99';   // 複数キットが持つアビリティ（通常攻撃など）の色。キット色と被らない灰色
 const CHART_THEME = {
   tick:'#9a988f', grid:'rgba(255,255,255,.07)', label:'#cfcdc6',
   font:'Chakra Petch',
@@ -374,25 +433,30 @@ const CHART_THEME = {
 };
 const TABS = ['kit','match','player'];
 const NAME_BATCH = 10;
-const BASIC_ATTACK = 'Basic_Attack';   // 通常攻撃比の基準アビリティ（データ上の生の名前）
+const BASIC_ATTACK = '通常攻撃';   // 通常攻撃比の基準アビリティ（データ上の生の名前）
 
 /* ---------- 2. 状態 ---------- */
 const state = {
-  rows: [],           // 全レコード（Lambda GET の結果）
+  matches: new Map(), // 試合ID → { id, date, duration, map, winTeam }
+  picks: [],          // 出場（試合×プレイヤー）。ダメージ0でも含む。{ matchId, playerId, kit, team, kills, deaths, won, date, duration, map }
+  rows: [],           // ダメージ記録（試合×プレイヤー×アビリティ）。picks の項目に ability・damage を足したもの
   names: {},          // UUID → Minecraft 表示名
   kitColors: {},      // キット名 → 色
   charts: {},         // canvasId → Chart インスタンス
   suppressAnim: false,
 
-  // state.rows のみに依存する集計（init で1回だけ計算）
+  // データのみに依存する集計（init で1回だけ計算）
   kitStats: null,     // 全キット統計（derive.kitStats）
   abilityRank: [],    // キット横断のダメージソース順位（derive.abilityRanking）
   kitUseNth: {},      // kitUseKey(プレイヤー, キット, 試合) → そのキットの何回目の使用か
+  matchups: {},       // キット → { enemy, ally }（derive.kitMatchups）
 
   kit: {
     current: null,        // 選択中のキット
     listSort: 'pickRate', // キット一覧表のソート列：'name'|'pickRate'|'winRate'|'perMin'
-    mode: 'avg',          // アビリティ別グラフ：'avg'|'ratio'
+    mode: 'perMin',       // アビリティ別グラフ：'perMin'|'ratio'
+    sub: 'players',       // 詳細の表示：'players'|'matchup'|'learning'
+    subOpen: false,       // 詳細（使用プレイヤー等）を開いているか。最初は閉じている
     sort: 'avgDmg',       // 使用プレイヤー表のソート列：'count'|'winRate'|'avgDmg'
     view: 'pickWin',      // 全キット比較：'pickWin'|'dmgWin'|'abilityRank'
   },
@@ -428,15 +492,13 @@ const kitUseKey = (pid, kit, matchId) => pid+'|'+kit+'|'+matchId;
 
 /* 毎分ダメージ集計
  * 試合時間のある試合だけを対象に「合計ダメージ ÷ 合計試合時間(分)」を出す。
- * 試合ごとに長さが違うため、ピック平均ではなく総量どうしの比で求める。 */
+ * 試合ごとに長さが違うため、ピック平均ではなく総量どうしの比で求める。
+ * 分母はピック（addPick：1ピック1回）、分子はダメージ記録（addDamage）から足すので、
+ * ダメージ0のピックも分母に入る。 */
 const perMin = {
-  create: () => ({ dmg:0, minutes:0, seen:new Set() }),
-  add(acc, r){
-    if(!(r.duration > 0)) return;            // 時間データのない試合は除外（通常は Lambda 側で除外済み）
-    acc.dmg += r.damage;
-    const k = pickKey(r);
-    if(!acc.seen.has(k)){ acc.seen.add(k); acc.minutes += r.duration/60; }
-  },
+  create: () => ({ dmg:0, minutes:0 }),
+  addPick(acc, p){ if(p.duration > 0) acc.minutes += p.duration/60; },   // 時間データのない試合は除外（通常は Lambda 側で除外済み）
+  addDamage(acc, r){ if(r.duration > 0) acc.dmg += r.damage; },
   value: acc => acc.minutes > 0 ? acc.dmg/acc.minutes : null,
 };
 
@@ -487,24 +549,48 @@ function rerenderQuiet(fn){
   try{ fn(); } finally{ state.suppressAnim=false; }
 }
 
-/* ---------- 4. データ派生 ---------- */
+/* ---------- 4. データ派生 ----------
+ * picks：出場（試合×プレイヤー）… ピック数・勝率・試合数・毎分ダメージの分母
+ * rows ：ダメージ記録            … ダメージ系の集計の分子
+ * ダメージ0の出場は rows に現れないので、出場に関わる数は必ず picks から数える */
+
+// Lambda GET の応答（matches / players / damage）から state.matches / picks / rows を組み立てる
+function buildTables({ matches, players, damage }){
+  const matchMap=new Map(matches.map(m=>[m.id, m]));
+  const pickByKey=new Map();
+  const picks=[];
+  players.forEach(p=>{
+    const m=matchMap.get(p.matchId);
+    if(!m) return;
+    const pick={ ...p, won: m.winTeam!=='' && p.team===m.winTeam, date:m.date, duration:m.duration, map:m.map };
+    picks.push(pick);
+    pickByKey.set(pickKey(pick), pick);
+  });
+  const rows=[];
+  damage.forEach(d=>{
+    const p=pickByKey.get(pickKey(d));
+    if(p) rows.push({ ...p, ability:d.ability, damage:d.damage });
+  });
+  return { matches:matchMap, picks, rows };
+}
+
 const derive = {
   // 全キット統計：ピック率・勝率・毎分ダメージ。kits はピック数の多い順
-  kitStats(rows){
-    const seen=new Set();
+  kitStats(picks, rows){
     const stats={};                // kit → { picks, wins, pm }
-    rows.forEach(r=>{
-      const s = stats[r.kit] ??= { picks:0, wins:0, pm:perMin.create() };
-      perMin.add(s.pm, r);
-      const key=pickKey(r)+'|'+r.kit;
-      if(seen.has(key)) return;
-      seen.add(key);
+    const get = k => stats[k] ??= { picks:0, wins:0, pm:perMin.create() };
+    picks.forEach(p=>{
+      const s=get(p.kit);
       s.picks++;
-      if(r.won) s.wins++;
+      if(p.won) s.wins++;
+      perMin.addPick(s.pm, p);
     });
-    const totalPicks=seen.size;
+    rows.forEach(r=>perMin.addDamage(get(r.kit).pm, r));
+    const totalPicks=picks.length;
     return {
       kits:    Object.keys(stats).sort(byDesc(k=>stats[k].picks)),
+      picks:   k => stats[k]?.picks ?? 0,
+      wins:    k => stats[k]?.wins ?? 0,
       winRate: k => stats[k] ? stats[k].wins/stats[k].picks : 0,
       pickRate:k => totalPicks ? (stats[k]?.picks ?? 0)/totalPicks : 0,
       perMin:  k => stats[k] ? perMin.value(stats[k].pm) : null,
@@ -512,27 +598,25 @@ const derive = {
   },
 
   // プレイヤー×キットごとに使用した試合を日時順に並べ、各試合が何回目の使用かを求める
-  kitUseNth(rows){
-    const matchDate={};
-    const uses={};                 // プレイヤー|キット → { pid, kit, ids:試合IDの Set }
-    rows.forEach(r=>{
-      matchDate[r.matchId] ??= String(r.date);
-      (uses[r.playerId+'|'+r.kit] ??= { pid:r.playerId, kit:r.kit, ids:new Set() }).ids.add(r.matchId);
-    });
+  kitUseNth(picks){
+    const uses={};                 // プレイヤー|キット → その組み合わせのピック一覧
+    picks.forEach(p=>{ (uses[p.playerId+'|'+p.kit] ??= []).push(p); });
     const nth={};
-    Object.values(uses).forEach(({ pid, kit, ids })=>{
-      [...ids].sort((a,b)=>matchDate[a].localeCompare(matchDate[b]) || String(a).localeCompare(String(b)))
-              .forEach((id,i)=>{ nth[kitUseKey(pid, kit, id)]=i+1; });
+    Object.values(uses).forEach(list=>{
+      list.sort((a,b)=>String(a.date).localeCompare(String(b.date)) || String(a.matchId).localeCompare(String(b.matchId)))
+          .forEach((p,i)=>{ nth[kitUseKey(p.playerId, p.kit, p.matchId)]=i+1; });
     });
     return nth;
   },
 
   // キットを問わずアビリティ名ごとに毎分ダメージを集計（降順）
+  // 分母はそのアビリティでダメージを出したピックの試合時間
   abilityRanking(rows){
     const byAb={};
     rows.forEach(r=>{
-      const a = byAb[r.ability] ??= { pm:perMin.create(), kits:new Set() };
-      perMin.add(a.pm, r);
+      const a = byAb[r.ability] ??= { pm:perMin.create(), picks:new Set(), kits:new Set() };
+      perMin.addDamage(a.pm, r);
+      if(!a.picks.has(pickKey(r))){ a.picks.add(pickKey(r)); perMin.addPick(a.pm, r); }
       a.kits.add(r.kit);
     });
     return Object.entries(byAb)
@@ -541,12 +625,14 @@ const derive = {
       .sort(byDesc(a=>a.perMin));
   },
 
-  // キット1つ分のアビリティ統計（平均ダメージ & 通常攻撃比）
-  kitAbilities(rows){
-    const avg={};                  // ability → { sum, n }
+  // キット1つ分のアビリティ統計（毎分ダメージ & 通常攻撃比）
+  kitAbilities(picks, rows){
+    // 毎分：アビリティの合計ダメージ ÷ そのキットの合計試合時間（使わなかった試合・ダメージ0の試合も分母に含める）
+    const minutes=picks.reduce((s,p)=>s+(p.duration > 0 ? p.duration/60 : 0), 0);
+    const dmg={};                  // ability → 時間データのある試合の合計ダメージ
     rows.forEach(r=>{
-      const a = avg[r.ability] ??= { sum:0, n:0 };
-      a.sum += r.damage; a.n++;
+      dmg[r.ability] ??= 0;
+      if(r.duration > 0) dmg[r.ability] += r.damage;
     });
 
     // 通常攻撃比：ピックごとに「アビリティ / そのピックの通常攻撃」を出して平均
@@ -565,63 +651,118 @@ const derive = {
       });
     });
     const mean = g => g.sum/g.n;
-    return { abilities:Object.keys(avg).sort(), avg:a=>mean(avg[a]), ratio:a=>ratio[a] ? mean(ratio[a]) : null };
+    return {
+      abilities:Object.keys(dmg).sort(),
+      perMin:a=>minutes>0 ? dmg[a]/minutes : null,
+      ratio:a=>ratio[a] ? mean(ratio[a]) : null,
+    };
   },
 
   // キット1つ分のプレイヤー別統計（使用回数・勝率・毎分平均ダメージ）
-  kitPlayers(rows){
+  kitPlayers(picks, rows){
     const byPlayer={};
-    rows.forEach(r=>{
-      const p = byPlayer[r.playerId] ??= { pid:r.playerId, picks:new Set(), wins:new Set(), pm:perMin.create() };
-      p.picks.add(pickKey(r));
-      if(r.won) p.wins.add(r.matchId);
-      perMin.add(p.pm, r);
+    const get = pid => byPlayer[pid] ??= { pid, count:0, wins:0, pm:perMin.create() };
+    picks.forEach(p=>{
+      const s=get(p.playerId);
+      s.count++;
+      if(p.won) s.wins++;
+      perMin.addPick(s.pm, p);
     });
+    rows.forEach(r=>perMin.addDamage(get(r.playerId).pm, r));
     return Object.values(byPlayer).map(p=>({
       pid:    p.pid,
-      count:  p.picks.size,
-      winRate:p.wins.size/p.picks.size,
+      count:  p.count,
+      winRate:p.wins/p.count,
       avgDmg: perMin.value(p.pm) ?? 0,     // 時間データなしは 0 として末尾へ
     }));
   },
 
-  // 試合一覧（新しい順）。カード表示用に日付/時刻/マップ/人数/試合時間をまとめる
-  matchList(rows){
-    const byId={};
-    rows.forEach(r=>{
-      const m = byId[r.matchId] ??= { id:r.matchId, date:r.date, map:r.map, duration:r.duration, players:new Set() };
-      m.players.add(r.playerId);
+  // キット1つ分の習熟カーブ：使用回数の区間ごとの試合数・勝率・毎分ダメージ
+  kitLearning(picks, rows, kit){
+    const buckets=LEARNING_BUCKETS.map(b=>({ ...b, n:0, wins:0, pm:perMin.create() }));
+    const bucketOf=(pid, matchId)=>{
+      const nth=state.kitUseNth[kitUseKey(pid, kit, matchId)];
+      return buckets.find(b=>nth>=b.from && (b.to==null || nth<=b.to));
+    };
+    picks.forEach(p=>{
+      const b=bucketOf(p.playerId, p.matchId);
+      if(!b) return;
+      b.n++;
+      if(p.won) b.wins++;
+      perMin.addPick(b.pm, p);
     });
-    return Object.values(byId)
+    rows.forEach(r=>{
+      const b=bucketOf(r.playerId, r.matchId);
+      if(b) perMin.addDamage(b.pm, r);
+    });
+    return buckets.map(b=>({
+      label:  b.label,
+      n:      b.n,
+      winRate:b.n ? b.wins/b.n : null,
+      perMin: perMin.value(b.pm),
+    }));
+  },
+
+  // キット相性：キットごとに、敵／味方に各キットがいた試合での勝敗数
+  // 戻り値 kit → { enemy:{ 相手キット → { n, wins } }, ally:{ … } }（同じ試合に同キットが複数いても1回と数える）
+  kitMatchups(picks){
+    const byMatch={};              // matchId → その試合のピック一覧
+    picks.forEach(p=>{ (byMatch[p.matchId] ??= []).push(p); });
+    const res={};
+    Object.values(byMatch).forEach(list=>{
+      list.forEach(me=>{
+        const m = res[me.kit] ??= { enemy:{}, ally:{} };
+        const seen={ enemy:new Set(), ally:new Set() };
+        list.forEach(o=>{
+          if(o===me) return;
+          const side = o.team===me.team ? 'ally' : 'enemy';
+          if(seen[side].has(o.kit)) return;
+          seen[side].add(o.kit);
+          const s = m[side][o.kit] ??= { n:0, wins:0 };
+          s.n++;
+          if(me.won) s.wins++;
+        });
+      });
+    });
+    return res;
+  },
+
+  // 試合一覧（新しい順）。カード表示用に日付/時刻/マップ/人数/試合時間をまとめる。出場者のいない試合は除く
+  matchList(matches, picks){
+    const count={};
+    picks.forEach(p=>{ count[p.matchId]=(count[p.matchId]||0)+1; });
+    return [...matches.values()]
+      .filter(m=>count[m.id])
       .map(m=>{
         const [d='', t='']=String(m.date).split(/\s+/);
-        return { id:m.id, dateText:d, timeText:t.replace(/:\d{2}$/,''), map:m.map||'-', players:m.players.size, duration:m.duration };
+        return { id:m.id, dateText:d, timeText:t.replace(/:\d{2}$/,''), map:m.map||'-', players:count[m.id], duration:m.duration };
       })
       .sort((a,b)=>String(b.dateText+b.timeText).localeCompare(String(a.dateText+a.timeText)));
   },
 
   // プレイヤー一覧（名前解決済みを先に、名前順）。カード表示用
-  playerList(rows){
+  playerList(picks){
     const byId={};
-    rows.forEach(r=>{
-      const p = byId[r.playerId] ??= { id:r.playerId, matches:new Set(), wins:new Set() };
-      p.matches.add(r.matchId);
-      if(r.won) p.wins.add(r.matchId);
+    picks.forEach(p=>{
+      const s = byId[p.playerId] ??= { id:p.playerId, matches:0, wins:0 };
+      s.matches++;
+      if(p.won) s.wins++;
     });
     return Object.values(byId)
-      .map(p=>({ id:p.id, name:disp(p.id), matches:p.matches.size,
-                 winRate: p.matches.size ? p.wins.size/p.matches.size : 0 }))
+      .map(p=>({ id:p.id, name:disp(p.id), matches:p.matches,
+                 winRate: p.matches ? p.wins/p.matches : 0 }))
       .sort((a,b)=> (a.name===a.id)-(b.name===b.id) || a.name.localeCompare(b.name,'en',{ sensitivity:'base' }));
   },
 
-  // 試合1つ分のプレイヤー別モデル（合計ダメージ降順）
-  matchPlayers(rows){
+  // 試合1つ分のプレイヤー別モデル（合計ダメージ降順）。ダメージ0の出場者も total:0 で含む
+  matchPlayers(picks, rows){
     const byPid={};
+    picks.forEach(p=>{
+      byPid[p.playerId]={ pid:p.playerId, name:disp(p.playerId), kit:p.kit, team:p.team, won:p.won, total:0, abilities:[] };
+    });
     rows.forEach(r=>{
-      const p = byPid[r.playerId] ??= {
-        pid:r.playerId, name:disp(r.playerId), kit:r.kit, team:r.team, won:r.won,
-        kills:r.kills, deaths:r.deaths, assists:r.assists, total:0, abilities:[]
-      };
+      const p=byPid[r.playerId];
+      if(!p) return;
       p.total+=r.damage;
       p.abilities.push(r);
     });
@@ -629,41 +770,35 @@ const derive = {
     return {
       byPid, players,
       team: t => players.filter(p=>p.team===t),
-      hasKDA: rows.some(r=>r.kills!=null),
     };
   },
 
   // プレイヤー1人分：キット別成績 と 試合単位の集計
-  playerProfile(rows){
+  playerProfile(picks, rows){
     const kitStat={};
-    rows.forEach(r=>{
-      const k = kitStat[r.kit] ??= { picks:new Set(), wins:new Set(), pm:perMin.create() };
-      k.picks.add(pickKey(r));
-      if(r.won) k.wins.add(r.matchId);
-      perMin.add(k.pm, r);
+    const get = k => kitStat[k] ??= { uses:0, wins:0, pm:perMin.create() };
+    picks.forEach(p=>{
+      const k=get(p.kit);
+      k.uses++;
+      if(p.won) k.wins++;
+      perMin.addPick(k.pm, p);
     });
+    rows.forEach(r=>perMin.addDamage(get(r.kit).pm, r));
     const kitRows = Object.entries(kitStat).map(([kit,k])=>({
       kit,
-      uses:    k.picks.size,
-      winRate: k.wins.size/k.picks.size,
+      uses:    k.uses,
+      winRate: k.wins/k.uses,
       perMin:  perMin.value(k.pm),
     })).sort(byDesc(k=>k.uses));
 
-    const matchMeta={};
-    rows.forEach(r=>{
-      matchMeta[r.matchId] ??= { won:r.won, kills:r.kills, deaths:r.deaths, assists:r.assists, kit:r.kit };
-    });
-    const matches=Object.values(matchMeta);
     const kitUse={};
-    matches.forEach(m=>{ kitUse[m.kit]=(kitUse[m.kit]||0)+1; });
-    const played=matches.length;
-    const topKit=Object.keys(kitUse).sort(byDesc(k=>kitUse[k]))[0];
+    kitRows.forEach(k=>{ kitUse[k.kit]=k.uses; });
+    const played=picks.length;
+    const topKit=kitRows[0]?.kit;
     return {
       kitRows, played, kitUse, topKit,
-      won: matches.filter(m=>m.won).length,
+      won: picks.filter(p=>p.won).length,
       topKitShare: topKit && played ? kitUse[topKit]/played : 0,
-      hasKDA: matches.some(m=>m.kills!=null),
-      kda: ['kills','deaths','assists'].map(f=>matches.reduce((s,m)=>s+(m[f]||0),0)),
     };
   },
 };
@@ -681,6 +816,7 @@ const axisStyle = (tickFont = {}) => ({
   ticks:{ color:CHART_THEME.tick, font:{ family:CHART_THEME.font, ...tickFont } },
   grid:{ color:CHART_THEME.grid, drawBorder:false },
 });
+const axisTitle = text => ({ display:true, text, color:CHART_THEME.label, font:{ family:'Noto Sans JP', size:13, weight:700 } });
 const valueLabelFont = () => ({ family:CHART_THEME.font, size:12, weight:600 });
 const pointerOnHover = (e,els) => { e.native.target.style.cursor = els.length ? 'pointer' : 'default'; };
 
@@ -698,10 +834,10 @@ function makeChart(canvasId, config){
  * 横棒グラフを描く。高さは本数に合わせてキャンバスの親要素に設定する。
  * @param {string} canvasId
  * @param {{labels:string[], data:number[], colors:string[], format?:(v)=>string,
- *          onClick?:(label,index)=>void, detail?:(index)=>string}} opt
- *   detail: ツールチップに追加で出す1行
+ *          onClick?:(label,index)=>void, detail?:(index)=>string, xTitle?:string}} opt
+ *   detail: ツールチップに追加で出す1行 / xTitle: 横軸の見出し
  */
-function barChart(canvasId, { labels, data, colors, format = fmtInt, onClick, detail }){
+function barChart(canvasId, { labels, data, colors, format = fmtInt, onClick, detail, xTitle }){
   const yAxis=axisStyle({ size:12 });
   yAxis.ticks.autoSkip=false;   // ラベルを間引かず全件表示
   const chart=makeChart(canvasId,{
@@ -719,7 +855,7 @@ function barChart(canvasId, { labels, data, colors, format = fmtInt, onClick, de
         datalabels:{ anchor:'end', align:'end', clamp:true, color:CHART_THEME.label, font:valueLabelFont(), formatter:format },
       },
       scales:{
-        x:axisStyle(),
+        x:{ ...axisStyle(), title: xTitle ? axisTitle(xTitle) : undefined },
         y:yAxis,
       }
     }
@@ -753,7 +889,7 @@ function scatterChart(canvasId, { points, selected, x:xAxis, refX, onClick }){
   const axis=(title,tick)=>{
     const s=axisStyle();
     return { ...s, ticks:{ ...s.ticks, callback:tick },
-             title:{ display:true, text:title, color:CHART_THEME.label, font:{ family:'Noto Sans JP', size:13, weight:700 } } };
+             title:axisTitle(title) };
   };
   makeChart(canvasId,{
     type:'scatter',
@@ -796,7 +932,9 @@ function renderKit(){
   if(!kit) return;
   renderKitTable(kit);
   renderKitHeader(kit);
-  renderKitDetail(kit);
+  renderKitTotals(kit);
+  renderKitAbility(kit);
+  renderKitSub(kit);
   renderKitCompare(kit);
 }
 
@@ -832,33 +970,143 @@ function renderKitHeader(kit){
   chip.style.background = chip.style.color = state.kitColors[kit] || '#888';
 }
 
-// 選択キットのアビリティ別グラフ + 使用プレイヤー表
-function renderKitDetail(kit){
-  const rows=state.rows.filter(r=>r.kit===kit);
-  const color=state.kitColors[kit];
+const kitPicks = kit => state.picks.filter(p=>p.kit===kit);
+const kitRows  = kit => state.rows.filter(r=>r.kit===kit);
 
-  // アビリティ別（平均 / 通常攻撃比）
-  const ab=derive.kitAbilities(rows);
+// 総ピック数・総勝利数（大きく表示）
+function renderKitTotals(kit){
+  const ks=state.kitStats;
+  const card=(k,v,sub)=>`<div class="pstat"><span class="pk">${k}</span><span class="pv">${v}</span><span class="psub">${sub}</span></div>`;
+  $('kit-totals').innerHTML =
+      card('総ピック数', fmtInt(ks.picks(kit)), 'ピック率 '+pct(ks.pickRate(kit)))
+    + card('総勝利数',   fmtInt(ks.wins(kit)),  '勝率 '+pct(ks.winRate(kit)));
+}
+
+// アビリティ別グラフ（毎分 / 通常攻撃比）
+function renderKitAbility(kit){
+  const color=state.kitColors[kit];
+  const ab=derive.kitAbilities(kitPicks(kit), kitRows(kit));
   const isRatio = state.kit.mode==='ratio';
-  $('h2-kit-chart').textContent = isRatio ? 'アビリティ別 通常攻撃比' : 'アビリティ別 平均ダメージ';
-  const labels = isRatio ? ab.abilities.filter(a=>ab.ratio(a)!=null) : ab.abilities;
+  $('h2-kit-chart').textContent = isRatio ? 'アビリティ別 通常攻撃比' : 'アビリティ別 毎分ダメージ';
+  const value = isRatio ? ab.ratio : ab.perMin;
+  const labels = ab.abilities.filter(a=>value(a)!=null).sort(byDesc(value));   // 値の大きい順
   barChart('chart-kit-ability',{
     labels: labels.map(prettyAbility),
-    data:   labels.map(isRatio ? ab.ratio : ab.avg),
+    data:   labels.map(value),
     colors: labels.map(()=>color),
     format: isRatio ? fmtRatio : fmtInt,
   });
+}
 
-  // 使用プレイヤー（見出しクリックでソート列切替、常に降順）
-  const sortKey=state.kit.sort;
-  const players=derive.kitPlayers(rows).sort(byDesc(p=>p[sortKey]));
-  const maxAvg=maxOf(players.map(p=>p.avgDmg));
-  const th=(key,label)=>sortableTh(key,label,sortKey,'sortKitPlayers');
+// 使用プレイヤー / キット相性 / 習熟カーブ（選択中の1つだけ描く）
+const KIT_SUB = {
+  players:  { title:'使用したプレイヤー', hint:'見出しクリックで並べ替え' },
+  matchup:  { title:'キット相性',         hint:'同じ試合に敵・味方としていたキット別の勝率' },
+  learning: { title:'習熟カーブ',         hint:'各プレイヤーがこのキットを何回目に使った試合か' },
+};
+const KIT_SUB_COLLAPSED_TITLE = '使用プレイヤー・キット相性・習熟カーブ';
+function renderKitSub(kit){
+  const sub=state.kit.sub;
+  const open=state.kit.subOpen;
+  $('kit-sub-row').classList.toggle('collapsed', !open);
+  $('kit-sub-collapse').setAttribute('aria-expanded', open);
+  $('kit-sub-body').hidden = !open;
+  $('h2-kit-sub').textContent = open ? KIT_SUB[sub].title : KIT_SUB_COLLAPSED_TITLE;
+  if(!open) return;   // 閉じている間は描かない（非表示のキャンバスはサイズ 0 になるため、開いた時に描く）
 
-  $('table-kit-players').innerHTML =
-    `<tr><th>プレイヤー</th>${th('count','使用回数')}${th('winRate','勝率')}${th('avgDmg','毎分平均ダメージ')}</tr>`
-    + players.map(p=>`<tr><td>${esc(disp(p.pid))}</td><td class="num">${p.count}</td>`
-                     + `<td class="num">${pct(p.winRate)}</td>${barCell(p.avgDmg,maxAvg)}</tr>`).join('');
+  Object.keys(KIT_SUB).forEach(k=>{ $('kit-sub-'+k).style.display = k===sub ? '' : 'none'; });
+  $('kit-sub-hint').textContent=KIT_SUB[sub].hint;
+
+  if(sub==='players'){
+    // 見出しクリックでソート列切替、常に降順
+    const sortKey=state.kit.sort;
+    const players=derive.kitPlayers(kitPicks(kit), kitRows(kit)).sort(byDesc(p=>p[sortKey]));
+    const maxAvg=maxOf(players.map(p=>p.avgDmg));
+    const th=(key,label)=>sortableTh(key,label,sortKey,'sortKitPlayers');
+    $('table-kit-players').innerHTML =
+      `<tr><th>プレイヤー</th>${th('count','使用回数')}${th('winRate','勝率')}${th('avgDmg','毎分平均ダメージ')}</tr>`
+      + players.map(p=>`<tr><td>${esc(disp(p.pid))}</td><td class="num">${p.count}</td>`
+                       + `<td class="num">${pct(p.winRate)}</td>${barCell(p.avgDmg,maxAvg)}</tr>`).join('');
+  }else if(sub==='matchup'){
+    // 敵：勝率の低い TOP5 / 味方：勝率の高い TOP5
+    const mu=state.matchups[kit] ?? { enemy:{}, ally:{} };
+    $('table-kit-enemy').innerHTML = matchupTable(mu.enemy, 'asc');
+    $('table-kit-ally').innerHTML  = matchupTable(mu.ally, 'desc');
+  }else{
+    // 非表示のキャンバスはサイズ 0 になるため、表示中のときだけ描く
+    learningChart('chart-kit-learning', derive.kitLearning(kitPicks(kit), kitRows(kit), kit), state.kitColors[kit]);
+  }
+}
+
+// 習熟カーブ：毎分ダメージ（棒・右軸）と勝率（折れ線・左軸 0-100%）の複合グラフ
+const LEARNING_LINE_COLOR = CHART_THEME.tooltip.text;   // キット色と被らないニュートラル色
+function learningChart(canvasId, buckets, color){
+  const yLeft=axisStyle(), yRight=axisStyle();
+  const legendLabels={ color:CHART_THEME.label, font:{ family:'Noto Sans JP', size:13 }, boxWidth:14, boxHeight:10 };
+  const maxDmg=maxOf(buckets.map(b=>b.perMin ?? 0));
+  makeChart(canvasId,{
+    data:{
+      labels:buckets.map(b=>[b.label, `${b.n}試合`]),
+      datasets:[
+        { type:'bar', label:'毎分ダメージ', yAxisID:'yDmg', order:2,
+          data:buckets.map(b=>b.perMin),
+          backgroundColor:color, maxBarThickness:56 },
+        { type:'line', label:'勝率', yAxisID:'yWin', order:1,
+          data:buckets.map(b=>b.winRate!=null ? b.winRate*100 : null),
+          borderColor:LEARNING_LINE_COLOR, backgroundColor:LEARNING_LINE_COLOR,
+          borderWidth:2, pointRadius:5, pointHoverRadius:7, spanGaps:true, tension:0 },
+      ],
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      layout:{ padding:{ top:8 } },
+      interaction:{ mode:'index', intersect:false },
+      plugins:{
+        legend:{ display:true, position:'top', align:'end', labels:legendLabels },
+        tooltip:{ ...tooltipStyle(), callbacks:{
+          title:items=>`${buckets[items[0].dataIndex].label}（${buckets[items[0].dataIndex].n}試合）`,
+          label:c=>c.raw==null ? `${c.dataset.label} -`
+            : `${c.dataset.label} ${c.dataset.yAxisID==='yWin' ? pctFromUnit(c.raw) : fmtInt(c.raw)}`,
+        } },
+        datalabels:{ display:c=>c.dataset.type==='bar' && c.raw!=null && c.raw>=maxDmg*0.15,   // 低すぎる棒には収まらないので出さない
+                     anchor:'end', align:'start', offset:4, color:'#15161a', font:valueLabelFont(),
+                     formatter:v=>fmtInt(v) },
+      },
+      scales:{
+        x:axisStyle(),
+        yWin:{ ...yLeft, position:'left', min:0, max:100, title:axisTitle('勝率'),
+               ticks:{ ...yLeft.ticks, callback:v=>v+'%' } },
+        yDmg:{ ...yRight, position:'right', beginAtZero:true, grace:'10%', title:axisTitle('毎分ダメージ'),
+               grid:{ drawOnChartArea:false }, ticks:{ ...yRight.ticks, callback:v=>fmtInt(v) } },
+      },
+    },
+  });
+}
+
+// 習熟カーブの区間（何回目の使用か。to が null は上限なし）
+const LEARNING_BUCKETS = [
+  { label:'1回目',       from:1,  to:1 },
+  { label:'2〜3回目',    from:2,  to:3 },
+  { label:'4〜6回目',    from:4,  to:6 },
+  { label:'7〜10回目',   from:7,  to:10 },
+  { label:'11回目以降',  from:11, to:null },
+];
+
+// 相性表の HTML。試合数の少ない組み合わせが上位を占めないよう、
+// TOP5 が埋まる範囲でできるだけ大きい最低試合数で絞り込む
+const MATCHUP_TOP = 5;
+const MATCHUP_MIN_GAMES = [5, 3, 2, 1];
+function matchupTable(stats, order){
+  const all=Object.entries(stats).map(([kit,s])=>({ kit, n:s.n, winRate:s.wins/s.n }));
+  const min=MATCHUP_MIN_GAMES.find(m=>all.filter(e=>e.n>=m).length>=MATCHUP_TOP) ?? 1;
+  const sign = order==='asc' ? -1 : 1;
+  const top=all.filter(e=>e.n>=min)
+    .sort((a,b)=>sign*(b.winRate-a.winRate) || b.n-a.n)
+    .slice(0, MATCHUP_TOP);
+  const head='<tr><th>キット</th><th class="num">試合数</th><th class="num">勝率</th></tr>';
+  if(!top.length) return head+'<tr><td class="empty" colspan="3">データなし</td></tr>';
+  return head + top.map(e=>`<tr><td>${kitChip(e.kit)}${esc(e.kit)}</td><td class="num">${e.n}</td>`
+                          + barCell(e.winRate, 1, pct(e.winRate), state.kitColors[e.kit]) + '</tr>').join('');
 }
 
 // 全キット比較（ピック率×勝率 / 毎分ダメージ×勝率 / ダメージソース ランキング）
@@ -868,9 +1116,7 @@ function renderKitCompare(kit){
   const isRank = view==='abilityRank';
   $('kit-scatter-box').style.display = isRank ? 'none' : '';
   $('ability-rank-box').style.display = isRank ? '' : 'none';
-  $('kit-compare-hint').textContent = isRank
-    ? `全キット共通・毎分ダメージ（全${state.abilityRank.length}件・スクロール）`
-    : 'クリックで詳細';
+  $('kit-compare-hint').textContent = isRank ? '' : 'クリックで詳細';
 
   // 散布図とランキングの枠は同じ高さ（ランキングははみ出た分を縦スクロール）
   const boxHeight=Math.max(360, ks.kits.length*36+90)+'px';
@@ -908,6 +1154,7 @@ function renderAbilityRanking(){
     data:  list.map(a=>a.perMin),
     colors:list.map(a=>single(a) ? state.kitColors[a.kits[0]] : SHARED_ABILITY_COLOR),
     detail:i=>'キット: '+list[i].kits.join(', '),
+    xTitle:'毎分ダメージ',
   });
 }
 
@@ -927,12 +1174,23 @@ function sortKitList(key){
 function setKitMode(mode){
   state.kit.mode=mode;
   syncToggle('kit-mode-toggle', mode);
-  rerenderQuiet(()=>renderKitDetail(state.kit.current));
+  rerenderQuiet(()=>renderKitAbility(state.kit.current));
+}
+
+function toggleKitSubOpen(){
+  state.kit.subOpen=!state.kit.subOpen;
+  if(state.kit.current) renderKitSub(state.kit.current);
+}
+
+function setKitSub(sub){
+  state.kit.sub=sub;
+  syncToggle('kit-sub-toggle', sub);
+  if(state.kit.current) renderKitSub(state.kit.current);
 }
 
 function sortKitPlayers(key){
   state.kit.sort=key;
-  rerenderQuiet(()=>renderKitDetail(state.kit.current));
+  rerenderQuiet(()=>renderKitSub(state.kit.current));
 }
 
 function setKitView(view){
@@ -944,19 +1202,19 @@ function setKitView(view){
 /* ---------- 6-b. 試合タブ ---------- */
 function renderMatch(){
   const id=state.match.current;
-  const rows=state.rows.filter(r=>r.matchId===id);
-  const meta=rows[0];
+  const meta=state.matches.get(id);
+  const picks=state.picks.filter(p=>p.matchId===id);
   syncStrip('match-strip', id);
 
-  if(!rows.length){
+  if(!meta || !picks.length){
     $('table-match-a').innerHTML=$('table-match-b').innerHTML='';
     $('col-team-a').classList.remove('won'); $('col-team-b').classList.remove('won');
     $('match-ability-detail').style.display='none';
     return;
   }
 
-  const m=derive.matchPlayers(rows);
-  const aWon=Boolean(m.team('A')[0]?.won);
+  const m=derive.matchPlayers(picks, state.rows.filter(r=>r.matchId===id));
+  const aWon=meta.winTeam==='A';
 
   barChart('chart-match',{
     labels:m.players.map(p=>p.name),
@@ -970,8 +1228,8 @@ function renderMatch(){
   $('h2-team-b').innerHTML=`チーム B ${badge(!aWon)}`;
   $('col-team-a').classList.toggle('won',aWon);
   $('col-team-b').classList.toggle('won',!aWon);
-  $('table-match-a').innerHTML=teamTable(m.team('A'),'a',id,m.hasKDA);
-  $('table-match-b').innerHTML=teamTable(m.team('B'),'b',id,m.hasKDA);
+  $('table-match-a').innerHTML=teamTable(m.team('A'),'a',id);
+  $('table-match-b').innerHTML=teamTable(m.team('B'),'b',id);
 
   // アビリティ詳細：同じ試合で選択済みならそれを維持、なければ1位
   const sel=state.match.selected;
@@ -980,12 +1238,11 @@ function renderMatch(){
 }
 
 // チームメンバー表（ダメージは下のグラフに任せ、そのキットを何回目に使ったかを出す）
-function teamTable(players, teamClass, matchId, hasKDA){
+function teamTable(players, teamClass, matchId){
   return `<tr><th>プレイヤー — キット</th><th class="num">キット使用</th></tr>` + players.map(p=>{
-    const kda = hasKDA && p.kills!=null ? ` <span class="kda">K${p.kills}/D${p.deaths}/A${p.assists}</span>` : '';
     const n = state.kitUseNth[kitUseKey(p.pid, p.kit, matchId)];
     const nth = n===1 ? '<span class="badge badge-first">初</span>' : n ? `${n}回目` : '-';
-    return `<tr class="team-row team-${teamClass}"><td><strong>${esc(p.name)}</strong> — ${esc(p.kit)}${kda}</td>`
+    return `<tr class="team-row team-${teamClass}"><td><strong>${esc(p.name)}</strong> — ${esc(p.kit)}</td>`
          + `<td class="num">${nth}</td></tr>`;
   }).join('');
 }
@@ -1003,6 +1260,7 @@ function renderMatchAbility(player, meta, matchId){
   $('match-ability-title').textContent=`${player.name} — ${player.kit} アビリティ別ダメージ`;
   $('table-match-ability').innerHTML =
     `<tr><th>アビリティ</th>${minutes?'<th class="num">ダメージ(毎分)</th>':''}<th class="num">総ダメージ</th></tr>`
+    + (abs.length ? '' : `<tr><td class="empty" colspan="${minutes ? 3 : 2}">ダメージなし</td></tr>`)
     + abs.map(r=>`<tr><td>${esc(prettyAbility(r.ability))}</td>`
                 + (minutes ? barCell(r.damage/minutes,maxPerMin) : '')
                 + `<td class="num">${fmtInt(r.damage)}</td></tr>`).join('');
@@ -1019,7 +1277,7 @@ function selectMatch(id){
 function renderPlayer(){
   const pid=state.player.current;
   syncStrip('player-strip', pid);
-  const p=derive.playerProfile(state.rows.filter(r=>r.playerId===pid));
+  const p=derive.playerProfile(state.picks.filter(q=>q.playerId===pid), state.rows.filter(r=>r.playerId===pid));
 
   // キット別 毎分平均ダメージ（時間データのあるキットのみ）
   const withPm=p.kitRows.filter(k=>k.perMin!=null).sort(byDesc(k=>k.perMin));
@@ -1031,14 +1289,12 @@ function renderPlayer(){
 
   // 統計カード
   const card=(k,v,sub='')=>`<div class="pstat"><span class="pk">${k}</span><span class="pv">${v}</span><span class="psub">${sub}</span></div>`;
-  const [K,D,A]=p.kda;
   $('player-stats').innerHTML =
       card('試合数', p.played, `${p.won}勝 ${p.played-p.won}敗`)
     + card('勝率', p.played ? pct(p.won/p.played) : '—', `${p.kitRows.length} キット使用`)
     + `<div class="pstat kit-card"><span class="pk">最多使用キット</span>`
     + `<span class="pv">${kitChip(p.topKit)}${p.topKit ? esc(p.topKit) : '—'}</span>`
-    + `<span class="psub">${p.topKit ? `${p.kitUse[p.topKit]}試合 ・ 全体の${pct(p.topKitShare)}` : ''}</span></div>`
-    + (p.hasKDA ? card('K / D / A', `${K}/${D}/${A}`, `KD比 ${D ? (K/D).toFixed(2) : '∞'}`) : '');
+    + `<span class="psub">${p.topKit ? `${p.kitUse[p.topKit]}試合 ・ 全体の${pct(p.topKitShare)}` : ''}</span></div>`;
 
   // キット別成績表（見出しクリックでソート列切替、常に降順）
   const sortKey=state.player.sort;
@@ -1068,6 +1324,23 @@ function sortPlayerKits(key){
 }
 
 /* ---------- 7. 名前解決（Mojang via Lambda POST） ---------- */
+// 統合版（Geyser/Floodgate）のプレイヤーは UUID が 00000000 で始まり、Mojang API では名前を引けない
+const isBedrock = uuid => String(uuid).startsWith('00000000');
+
+// ①〜㊿ の丸数字（51以上は (51) のように括弧書き）
+function circledNumber(n){
+  if(n>=1  && n<=20) return String.fromCharCode(0x2460+n-1);
+  if(n>=21 && n<=35) return String.fromCharCode(0x3251+n-21);
+  if(n>=36 && n<=50) return String.fromCharCode(0x32B1+n-36);
+  return `(${n})`;
+}
+
+// 統合版プレイヤーに「統合版プレイヤー①」…を割り当てる（UUID 順なので毎回同じ番号になる）
+function assignBedrockNames(uuids){
+  uuids.filter(isBedrock).sort()
+       .forEach((u,i)=>{ state.names[u]=`統合版プレイヤー${circledNumber(i+1)}`; });
+}
+
 async function fetchNames(uuids){
   const res=await fetch(LAMBDA_URL,{ method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ uuids }) });
   if(!res.ok) throw new Error('HTTP '+res.status);
@@ -1083,9 +1356,10 @@ function applyNames(map){
   });
 }
 
+// GET で名前が返らなかった分だけ問い合わせる。
 // バッチを同時に投げると Mojang のレート制限に当たるため順番に処理し、取りこぼしは2巡目で再試行
 async function loadNames(){
-  const uuids=uniq(state.rows.map(r=>r.playerId));
+  const uuids=uniq(state.picks.map(p=>p.playerId)).filter(u=>!isBedrock(u));   // 統合版は問い合わせない
   const status=$('name-status');
   const unresolved=()=>uuids.filter(u=>!state.names[u]||state.names[u]===u);
 
@@ -1097,7 +1371,7 @@ async function loadNames(){
     }
   };
 
-  await runBatches(uuids,'プレイヤー名を取得中…');
+  if(unresolved().length) await runBatches(unresolved(),'プレイヤー名を取得中…');
   if(unresolved().length){ await sleep(1200); await runBatches(unresolved(),'プレイヤー名を再取得中…'); }
 
   const missing=unresolved().length;
@@ -1107,7 +1381,7 @@ async function loadNames(){
 /* ---------- 8. 起動 ---------- */
 // 試合カード列（データのみ依存なので init で1回）
 function buildMatchStrip(){
-  const list=derive.matchList(state.rows);
+  const list=derive.matchList(state.matches, state.picks);
   $('match-strip').innerHTML=list.map(m=>
     `<button type="button" class="card" role="option" data-id="${esc(m.id)}" onclick="selectMatch(this.dataset.id)">`
     + `<div class="mc-date">${esc(m.dateText)}<small>${esc(m.timeText)}</small></div>`
@@ -1119,7 +1393,7 @@ function buildMatchStrip(){
 
 // プレイヤーカード列（名前解決で表示名・並び順が変わるため再構築されうる）
 function buildPlayerStrip(){
-  const list=derive.playerList(state.rows);
+  const list=derive.playerList(state.picks);
   const el=$('player-strip');
   const keepScroll=el.scrollLeft;
   el.innerHTML=list.map(p=>
@@ -1168,13 +1442,20 @@ function enableDragScroll(el){
   el.addEventListener('pointerleave', ()=>{ if(active && !moved) active=false; });
 }
 
-function init(rows){
+function init(data){
+  const { matches, picks, rows }=buildTables(data);
+  Object.assign(state.names, data.names);   // Lambda が覚えている名前（最初の描画から名前で出す）
+  state.matches=matches;
+  state.picks=picks;
   state.rows=rows;
-  const kits=uniq(rows.map(r=>r.kit)).sort();
-  kits.forEach((k,i)=>state.kitColors[k]=PALETTE[i%PALETTE.length]);
-  state.kitStats=derive.kitStats(rows);
+  const kits=uniq(picks.map(p=>p.kit)).sort();
+  let extra=0;
+  kits.forEach(k=>{ state.kitColors[k] = KIT_COLOR[k] ?? FALLBACK_KIT_COLORS[extra++ % FALLBACK_KIT_COLORS.length]; });
+  state.kitStats=derive.kitStats(picks, rows);
   state.abilityRank=derive.abilityRanking(rows);
-  state.kitUseNth=derive.kitUseNth(rows);
+  state.kitUseNth=derive.kitUseNth(picks);
+  state.matchups=derive.kitMatchups(picks);
+  assignBedrockNames(uniq(picks.map(p=>p.playerId)));   // 最初の描画から統合版の名前で出す
 
   state.kit.current    = kits[0] ?? null;
   state.match.current  = buildMatchStrip()[0]?.id ?? null;
@@ -1193,7 +1474,7 @@ function init(rows){
 
 fetch(LAMBDA_URL)
   .then(r=>{ if(!r.ok) throw new Error('サーバーエラー ('+r.status+')'); return r.json(); })
-  .then(result=>init(result.data))
+  .then(result=>init(result))
   .catch(e=>{
     TABS.forEach(t=>{ $(t+'-skeleton').innerHTML=`<div class="error">読み込み失敗: ${esc(e.message)}</div>`; });
   });
