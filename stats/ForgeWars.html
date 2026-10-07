@@ -63,6 +63,40 @@
   .nav-link{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:var(--radius);background:var(--ember);color:#15161a;font-size:15px;font-weight:700;text-decoration:none;transition:background .15s,transform .1s}
   .nav-link:hover{background:var(--ember-hot);transform:translateY(-1px)}
 
+  /* ================= 統計期間 ================= */
+  .period-bar{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:-8px 0 20px}
+  .period-bar .period-label{font-size:14px;font-weight:700;letter-spacing:.06em;color:var(--ink-dim);margin:0}
+  .period-bar .period-date{font-family:var(--num-font);font-size:15px;font-weight:700;color:var(--ink);min-width:92px;text-align:center;font-variant-numeric:tabular-nums}
+  /* 2つのつまみで範囲を選ぶスライダー（range を2本重ね、つまみだけクリックを受ける） */
+  .range{--thumb:18px;position:relative;flex:1 1 280px;min-width:180px;max-width:560px;height:30px}
+  .range-rail{position:absolute;left:calc(var(--thumb)/2);right:calc(var(--thumb)/2);top:50%;height:4px;margin-top:-2px;background:var(--panel-edge);border-radius:2px}
+  .range-fill{position:absolute;top:0;bottom:0;background:linear-gradient(90deg,var(--ember-deep),var(--ember),var(--ember-hot));box-shadow:0 0 10px -2px var(--ember)}
+  .range-tick{position:absolute;top:50%;width:2px;height:8px;margin:-4px 0 0 -1px;background:var(--edge-hover)}
+  .range-tick.on{background:rgba(26,19,12,.55)}
+  .range input{position:absolute;inset:0;width:100%;height:100%;margin:0;background:none;pointer-events:none;-webkit-appearance:none;appearance:none}
+  .range input:focus{outline:none}
+  .range input::-webkit-slider-runnable-track{background:none;border:none}
+  .range input::-moz-range-track{background:none;border:none}
+  .range input::-webkit-slider-thumb{-webkit-appearance:none;pointer-events:auto;width:var(--thumb);height:var(--thumb);border-radius:50%;background:var(--ember-hot);border:3px solid #1a130c;box-shadow:0 0 0 1px var(--ember),0 0 12px -2px var(--ember);cursor:grab;transition:transform .1s}
+  .range input::-moz-range-thumb{pointer-events:auto;width:var(--thumb);height:var(--thumb);box-sizing:border-box;border-radius:50%;background:var(--ember-hot);border:3px solid #1a130c;box-shadow:0 0 0 1px var(--ember),0 0 12px -2px var(--ember);cursor:grab}
+  .range input:active::-webkit-slider-thumb{cursor:grabbing;transform:scale(1.15)}
+  .range input:focus-visible::-webkit-slider-thumb{outline:2px solid var(--ember-hot);outline-offset:2px}
+  .range input:focus-visible::-moz-range-thumb{outline:2px solid var(--ember-hot);outline-offset:2px}
+  .range input:disabled::-webkit-slider-thumb{opacity:.4;cursor:default}
+  .period-reset{appearance:none;background:transparent;color:var(--ember);border:1px solid var(--ember);border-radius:var(--radius);padding:6px 14px;font-size:14px;font-weight:700;cursor:pointer;transition:color .15s,background .15s}
+  .period-reset:hover{background:var(--ember);color:#1a130c}
+  .period-reset:focus-visible{outline:2px solid var(--ember-hot);outline-offset:2px}
+  .period-reset:disabled{border-color:var(--panel-edge);color:var(--ink-faint);background:transparent;cursor:default}
+  /* 狭い画面：日付を1行目に並べ、スライダーは2行目に全幅で */
+  @media (max-width:640px){
+    .period-bar{gap:8px 10px}
+    .period-bar .period-date{min-width:0}
+    #period-to-label::before{content:'〜';margin-right:8px;color:var(--ink-dim)}
+    .range{order:9;flex:1 1 100%;max-width:none}
+  }
+  .period-bar .period-count{font-size:13px;color:var(--ink-dim);letter-spacing:.04em}
+  .period-bar .period-count b{font-family:var(--num-font);color:var(--ember-hot);margin:0 2px}
+
   /* ================= タブ / パネル / レイアウト ================= */
   .tabs{display:flex;gap:4px;margin-bottom:18px;background:var(--panel);border:1px solid var(--panel-edge);border-radius:var(--radius);padding:4px}
   .tabs button{flex:1;appearance:none;background:transparent;color:var(--ink-dim);border:none;border-radius:var(--radius);padding:10px 24px;font-size:16px;font-weight:600;cursor:pointer;transition:color .15s,background .15s}
@@ -105,6 +139,7 @@
   tbody tr:hover td{background:rgba(255,255,255,.022)}
   td.num,th.num{text-align:right;font-family:var(--num-font);font-weight:600;font-variant-numeric:tabular-nums}
   td.empty{color:var(--ink-faint)}
+  td.no-record{text-align:center;font-family:var(--jp-font);font-weight:500;font-size:13px}
   /* 大きさバー付き数値セル（--w: 幅%、--f: 0〜1 の割合、--bar: バー色） */
   td.bar{position:relative;isolation:isolate}
   td.bar::before{content:'';position:absolute;left:8px;top:5px;bottom:5px;width:var(--w,0);max-width:calc(100% - 16px);background:var(--bar,rgba(255,138,61,.32));z-index:-1}
@@ -246,6 +281,22 @@
       <a class="nav-link" href="https://reyonjp.github.io/wiki/" target="_blank">Wiki</a>
     </nav>
   </header>
+
+  <!-- 統計期間（試合のあった日付から開始日・終了日を選ぶ） -->
+  <div class="period-bar" role="group" aria-label="統計期間">
+    <span class="period-label">統計期間</span>
+    <span class="period-date" id="period-from-label">—</span>
+    <div class="range">
+      <div class="range-rail" id="period-rail"><div class="range-fill" id="period-fill"></div></div>
+      <input type="range" id="period-from" aria-label="開始日" min="0" max="0" step="1" value="0" disabled
+             oninput="onPeriodInput()" onchange="commitPeriod()">
+      <input type="range" id="period-to" aria-label="終了日" min="0" max="0" step="1" value="0" disabled
+             oninput="onPeriodInput()" onchange="commitPeriod()">
+    </div>
+    <span class="period-date" id="period-to-label">—</span>
+    <button type="button" class="period-reset" id="period-reset" onclick="resetPeriod()" disabled>全期間に戻す</button>
+    <span class="period-count" id="period-count"></span>
+  </div>
 
   <div class="tabs" role="tablist">
     <button id="tab-kit" class="active" onclick="switchTab('kit')">キット</button>
@@ -437,6 +488,11 @@ const BASIC_ATTACK = '通常攻撃';   // 通常攻撃比の基準アビリテ�
 
 /* ---------- 2. 状態 ---------- */
 const state = {
+  tab: 'kit',         // 表示中のタブ（TABS の値）
+  all: null,          // 全期間のデータ { matches, picks, rows }（buildTables の結果）
+  dates: [],          // 試合のあった日付（昇順、'YYYY/MM/DD' 等の日付部分）
+  matchDates: [],     // 出場者のいる試合それぞれの日付（期間スライダーの試合数表示用）
+  period: { from:null, to:null },   // 統計期間（dates の値。両端を含む）
   matches: new Map(), // 試合ID → { id, date, duration, map, winTeam }
   picks: [],          // 出場（試合×プレイヤー）。ダメージ0でも含む。{ matchId, playerId, kit, team, kills, deaths, won, date, duration, map }
   rows: [],           // ダメージ記録（試合×プレイヤー×アビリティ）。picks の項目に ability・damage を足したもの
@@ -445,10 +501,11 @@ const state = {
   charts: {},         // canvasId → Chart インスタンス
   suppressAnim: false,
 
-  // データのみに依存する集計（init で1回だけ計算）
+  // 期間内のデータに依存する集計（applyPeriod で計算し直す）
   kitStats: null,     // 全キット統計（derive.kitStats）
   abilityRank: [],    // キット横断のダメージソース順位（derive.abilityRanking）
-  kitUseNth: {},      // kitUseKey(プレイヤー, キット, 試合) → そのキットの何回目の使用か
+  allKits: [],        // 全期間に登場したキット（期間によらずキット表に並べる）
+  kitUseNth: {},      // kitUseKey(プレイヤー, キット, 試合) → そのキットの何回目の使用か（期間によらず全期間で数える）
   matchups: {},       // キット → { enemy, ally }（derive.kitMatchups）
 
   kit: {
@@ -485,6 +542,9 @@ function prettyAbility(name){
   return s || String(name);
 }
 
+// 試合日時（'YYYY-MM-DD hh:mm:ss' 等）の日付部分
+const dateOf = date => String(date).split(/\s+/)[0] || '';
+
 // 「1ピック」＝ 試合×プレイヤー のキー
 const pickKey = r => r.matchId+'|'+r.playerId;
 // キット使用回数の参照キー（derive.kitUseNth と対応）
@@ -519,10 +579,23 @@ function sortableTh(key, label, activeKey, handler, cls = 'num'){
 
 /* --- UI 同期 --- */
 function switchTab(name){
+  state.tab=name;
+  saveHash();
   TABS.forEach(t=>{
     $('view-'+t).style.display = t===name ? 'block' : 'none';
     $('tab-'+t).classList.toggle('active', t===name);
   });
+  revealCard(name);
+}
+
+// 試合・プレイヤータブを開いたとき、選択中のカードがカード列の見える位置に来るよう横スクロール（ページは動かさない）
+function revealCard(tab){
+  if(tab!=='match' && tab!=='player') return;
+  const strip=$(tab+'-strip'), id=state[tab].current;
+  const card=id && strip.querySelector(`.card[data-id="${CSS.escape(id)}"]`);
+  if(!card) return;
+  const left=card.getBoundingClientRect().left - strip.getBoundingClientRect().left;
+  if(left<0 || left+card.offsetWidth>strip.clientWidth) strip.scrollLeft += left - 8;
 }
 
 // トグルのボタン（data-value）の選択状態を合わせる
@@ -576,7 +649,8 @@ function buildTables({ matches, players, damage }){
 
 const derive = {
   // 全キット統計：ピック率・勝率・毎分ダメージ。kits はピック数の多い順
-  kitStats(picks, rows){
+  // allKits：全期間に登場したキット。期間内にピックがないキットも 0 ピックとして並べる（末尾）
+  kitStats(picks, rows, allKits = []){
     const stats={};                // kit → { picks, wins, pm }
     const get = k => stats[k] ??= { picks:0, wins:0, pm:perMin.create() };
     picks.forEach(p=>{
@@ -588,10 +662,10 @@ const derive = {
     rows.forEach(r=>perMin.addDamage(get(r.kit).pm, r));
     const totalPicks=picks.length;
     return {
-      kits:    Object.keys(stats).sort(byDesc(k=>stats[k].picks)),
+      kits:    uniq([...allKits, ...Object.keys(stats)]).sort(byDesc(k=>stats[k]?.picks ?? 0)),
       picks:   k => stats[k]?.picks ?? 0,
       wins:    k => stats[k]?.wins ?? 0,
-      winRate: k => stats[k] ? stats[k].wins/stats[k].picks : 0,
+      winRate: k => stats[k] ? stats[k].wins/stats[k].picks : null,   // 期間内ピックなしは null
       pickRate:k => totalPicks ? (stats[k]?.picks ?? 0)/totalPicks : 0,
       perMin:  k => stats[k] ? perMin.value(stats[k].pm) : null,
     };
@@ -758,7 +832,8 @@ const derive = {
   matchPlayers(picks, rows){
     const byPid={};
     picks.forEach(p=>{
-      byPid[p.playerId]={ pid:p.playerId, name:disp(p.playerId), kit:p.kit, team:p.team, won:p.won, total:0, abilities:[] };
+      byPid[p.playerId]={ pid:p.playerId, name:disp(p.playerId), kit:p.kit, team:p.team, won:p.won,
+                          kills:p.kills, deaths:p.deaths, total:0, abilities:[] };
     });
     rows.forEach(r=>{
       const p=byPid[r.playerId];
@@ -769,6 +844,7 @@ const derive = {
     const players=Object.values(byPid).sort(byDesc(p=>p.total));
     return {
       byPid, players,
+      hasKD: players.some(p=>p.kills!=null || p.deaths!=null),   // キル・デスが記録されている試合か
       team: t => players.filter(p=>p.team===t),
     };
   },
@@ -943,9 +1019,10 @@ function renderKitTable(kit){
   const ks=state.kitStats;
   const sortKey=state.kit.listSort;
   const pm=k=>ks.perMin(k) ?? -1;   // 時間データなしは末尾へ
+  const wr=k=>ks.winRate(k) ?? -1;  // 期間内ピックなしは末尾へ
   const kits = sortKey==='name'
     ? [...ks.kits].sort((a,b)=>a.localeCompare(b,'ja'))
-    : [...ks.kits].sort(byDesc({ pickRate:ks.pickRate, winRate:ks.winRate, perMin:pm }[sortKey]));
+    : [...ks.kits].sort(byDesc({ pickRate:ks.pickRate, winRate:wr, perMin:pm }[sortKey]));
   const maxPick=maxOf(kits.map(ks.pickRate));
   const maxPm=maxOf(kits.map(pm));
   const th=(key,label,cls)=>sortableTh(key,label,sortKey,'sortKitList',cls);
@@ -958,7 +1035,7 @@ function renderKitTable(kit){
         return `<tr class="kit-row${k===kit?' selected':''}" data-kit="${esc(k)}" onclick="selectKit(this.dataset.kit)">`
           + `<td>${kitChip(k)}${esc(k)}</td>`
           + barCell(ks.pickRate(k), maxPick, pct(ks.pickRate(k)), c)
-          + barCell(ks.winRate(k), 1, pct(ks.winRate(k)), c)
+          + (ks.winRate(k)!=null ? barCell(ks.winRate(k), 1, pct(ks.winRate(k)), c) : EMPTY_CELL)
           + (perMinVal!=null ? barCell(perMinVal, maxPm, fmtInt(perMinVal), c) : EMPTY_CELL)
           + `</tr>`;
       }).join('');
@@ -979,7 +1056,7 @@ function renderKitTotals(kit){
   const card=(k,v,sub)=>`<div class="pstat"><span class="pk">${k}</span><span class="pv">${v}</span><span class="psub">${sub}</span></div>`;
   $('kit-totals').innerHTML =
       card('総ピック数', fmtInt(ks.picks(kit)), 'ピック率 '+pct(ks.pickRate(kit)))
-    + card('総勝利数',   fmtInt(ks.wins(kit)),  '勝率 '+pct(ks.winRate(kit)));
+    + card('総勝利数',   fmtInt(ks.wins(kit)),  '勝率 '+(ks.winRate(kit)!=null ? pct(ks.winRate(kit)) : '-'));
 }
 
 // アビリティ別グラフ（毎分 / 通常攻撃比）
@@ -1131,7 +1208,8 @@ function renderKitCompare(kit){
   const common={ selected:kit, onClick:selectKit };
   if(view==='pickWin'){
     scatterChart('chart-kit-scatter',{ ...common,
-      points:ks.kits.map(k=>({ kit:k, x:ks.pickRate(k)*100, y:ks.winRate(k)*100 })),
+      points:ks.kits.filter(k=>ks.winRate(k)!=null)        // 期間内ピックなしは勝率がないので除外
+        .map(k=>({ kit:k, x:ks.pickRate(k)*100, y:ks.winRate(k)*100 })),
       x:{ title:'ピック率', format:pctFromUnit, tick:v=>v+'%' },
       refX: ks.kits.length ? 100/ks.kits.length : null,   // 全キット均等に選ばれた場合のピック率
     });
@@ -1162,6 +1240,7 @@ function renderAbilityRanking(){
 function selectKit(kit){
   if(state.kit.current===kit) return;
   state.kit.current=kit;
+  saveHash();
   renderKit();
   $('kit-detail-header').scrollIntoView({ behavior:'smooth', block:'start' });
 }
@@ -1228,8 +1307,8 @@ function renderMatch(){
   $('h2-team-b').innerHTML=`チーム B ${badge(!aWon)}`;
   $('col-team-a').classList.toggle('won',aWon);
   $('col-team-b').classList.toggle('won',!aWon);
-  $('table-match-a').innerHTML=teamTable(m.team('A'),'a',id);
-  $('table-match-b').innerHTML=teamTable(m.team('B'),'b',id);
+  $('table-match-a').innerHTML=teamTable(m.team('A'),'a',id,m.hasKD);
+  $('table-match-b').innerHTML=teamTable(m.team('B'),'b',id,m.hasKD);
 
   // アビリティ詳細：同じ試合で選択済みならそれを維持、なければ1位
   const sel=state.match.selected;
@@ -1237,14 +1316,18 @@ function renderMatch(){
   renderMatchAbility(target, meta, id);
 }
 
-// チームメンバー表（ダメージは下のグラフに任せ、そのキットを何回目に使ったかを出す）
-function teamTable(players, teamClass, matchId){
-  return `<tr><th>プレイヤー — キット</th><th class="num">キット使用</th></tr>` + players.map(p=>{
-    const n = state.kitUseNth[kitUseKey(p.pid, p.kit, matchId)];
-    const nth = n===1 ? '<span class="badge badge-first">初</span>' : n ? `${n}回目` : '-';
-    return `<tr class="team-row team-${teamClass}"><td><strong>${esc(p.name)}</strong> — ${esc(p.kit)}</td>`
-         + `<td class="num">${nth}</td></tr>`;
-  }).join('');
+// チームメンバー表（ダメージは下のグラフに任せ、キル・デスとそのキットを何回目に使ったかを出す）
+// キル・デスの記録がない試合（hasKD=false）は2列まとめて「記録なし」
+function teamTable(players, teamClass, matchId, hasKD){
+  const kd = v => `<td class="num">${v ?? ''}</td>`;
+  return `<tr><th>プレイヤー — キット</th><th class="num">キル</th><th class="num">デス</th><th class="num">キット使用</th></tr>`
+    + players.map(p=>{
+      const n = state.kitUseNth[kitUseKey(p.pid, p.kit, matchId)];
+      const nth = n===1 ? '<span class="badge badge-first">初</span>' : n ? `${n}回目` : '-';
+      return `<tr class="team-row team-${teamClass}"><td><strong>${esc(p.name)}</strong> — ${esc(p.kit)}</td>`
+           + (hasKD ? kd(p.kills)+kd(p.deaths) : '<td class="num empty no-record" colspan="2">記録なし</td>')
+           + `<td class="num">${nth}</td></tr>`;
+    }).join('');
 }
 
 // 選択プレイヤーのアビリティ別ダメージ（試合時間があれば毎分列を追加）
@@ -1269,6 +1352,7 @@ function renderMatchAbility(player, meta, matchId){
 function selectMatch(id){
   if(state.match.current===id) return;
   state.match.current=id;
+  saveHash();
   renderMatch();
   scrollCardIntoView('match-strip', id);
 }
@@ -1314,6 +1398,7 @@ function renderPlayer(){
 function selectPlayer(id){
   if(state.player.current===id) return;
   state.player.current=id;
+  saveHash();
   renderPlayer();
   scrollCardIntoView('player-strip', id);
 }
@@ -1359,7 +1444,7 @@ function applyNames(map){
 // GET で名前が返らなかった分だけ問い合わせる。
 // バッチを同時に投げると Mojang のレート制限に当たるため順番に処理し、取りこぼしは2巡目で再試行
 async function loadNames(){
-  const uuids=uniq(state.picks.map(p=>p.playerId)).filter(u=>!isBedrock(u));   // 統合版は問い合わせない
+  const uuids=uniq(state.all.picks.map(p=>p.playerId)).filter(u=>!isBedrock(u));   // 統合版は問い合わせない
   const status=$('name-status');
   const unresolved=()=>uuids.filter(u=>!state.names[u]||state.names[u]===u);
 
@@ -1379,7 +1464,73 @@ async function loadNames(){
 }
 
 /* ---------- 8. 起動 ---------- */
-// 試合カード列（データのみ依存なので init で1回）
+/* 表示状態の URL 保存（共有リンク・リロード対策）
+ * 今のタブで選んでいるものだけを書く。タブはどのキーがあるかで決まる（tab= は書かない）
+ *   キットタブ：#kit=カルティスト　試合タブ：#match=19e63642　プレイヤータブ：#player=<UUID>
+ *   統計期間が全期間でなければ &from=2026/09/19&to=2026/10/03 を足す
+ * 読み込み時は ?match=… のようなクエリでも、#tab=match だけでもよい。値は1つだけでも複数でもよい。
+ * # 以降はサーバーに送られないので静的ホスティング（github.io）でも動く。
+ * replaceState で書き換えるので、ブラウザの履歴は増えない */
+const TAB_KEY = { kit:'kit', match:'match', player:'player' };   // タブ → そのタブの選択を表す URL のキー
+const encodeQuery = q => q.toString().replace(/%2F/g,'/');
+
+function saveHash(){
+  let q;
+  if(!state.all){   // 読み込み中はタブだけ書き換え、URL にある他の値は読み込み後のために残す
+    q=urlParams();
+    q.set('tab', state.tab);
+  }else{
+    q=new URLSearchParams();
+    const id=state[state.tab].current;
+    if(id) q.set(TAB_KEY[state.tab], id);
+    else   q.set('tab', state.tab);
+    const full=fullPeriod();
+    if(state.period.from!==full.from || state.period.to!==full.to){   // 全期間なら省略
+      q.set('from', state.period.from);
+      q.set('to', state.period.to);
+    }
+  }
+  history.replaceState(null, '', location.pathname+'#'+encodeQuery(q));   // ?… のクエリは # 形式にまとめて消す
+}
+
+// URL のクエリ（?…）と #… をまとめて読む（同じキーは # 側を優先）
+function urlParams(){
+  const q=new URLSearchParams(location.search);
+  new URLSearchParams(location.hash.slice(1)).forEach((v,k)=>q.set(k,v));
+  return q;
+}
+
+// URL の値を state に読み込む（データにない値は無視して既定のまま）。タブ以外はデータ読み込み後のみ
+// タブは tab= があればそれ、なければ match → player → kit の順に、値のあるキーのタブを開く
+function readHash(){
+  const q=urlParams();
+  const tab = TABS.includes(q.get('tab')) ? q.get('tab') : ['match','player','kit'].find(t=>q.has(TAB_KEY[t]));
+  if(tab) state.tab=tab;
+  if(!state.all) return;
+  const kit=q.get('kit'), match=q.get('match'), player=q.get('player');
+  if(state.allKits.includes(kit)) state.kit.current=kit;
+  if(state.all.matches.has(match)) state.match.current=match;
+  if(state.all.picks.some(p=>p.playerId===player)) state.player.current=player;
+  let from=q.get('from'), to=q.get('to');
+  if(state.dates.includes(from) && state.dates.includes(to)){
+    if(from>to) [from,to]=[to,from];
+    state.period={ from, to };
+  }else{
+    state.period=fullPeriod();
+  }
+}
+
+// URL の状態を画面に反映（読み込み時と、手で URL を書き換えたとき）
+function applyHash(){
+  readHash();
+  syncPeriodSlider();
+  applyPeriod();          // 期間外の選択はここで先頭に切り替わる
+  switchTab(state.tab);   // saveHash もここで行われ、無効な値は URL から消える
+  renderKit(); renderMatch(); renderPlayer();
+  revealCard(state.tab);
+}
+
+// 試合カード列（統計期間が変わるたびに作り直す）
 function buildMatchStrip(){
   const list=derive.matchList(state.matches, state.picks);
   $('match-strip').innerHTML=list.map(m=>
@@ -1442,24 +1593,113 @@ function enableDragScroll(el){
   el.addEventListener('pointerleave', ()=>{ if(active && !moved) active=false; });
 }
 
+/* 統計期間スライダー
+ * 試合のあった日付（state.dates）を等間隔に並べ、左右のつまみで開始・終了を選ぶ。
+ * ドラッグ中は表示（日付・範囲・試合数）だけ更新し、離したとき（change）に集計し直す */
+// 2つのつまみは追い越し可能。左にある方が開始、右にある方が終了
+function periodIndex(){
+  const a=+$('period-from').value, b=+$('period-to').value;
+  return { from:Math.min(a,b), to:Math.max(a,b) };
+}
+const railPos = i => state.dates.length>1 ? i/(state.dates.length-1)*100 : 0;   // 0〜100%
+
+function buildPeriodSlider(){
+  const max=Math.max(0, state.dates.length-1);
+  ['period-from','period-to'].forEach(id=>{ $(id).max=max; $(id).disabled=state.dates.length<2; });
+  $('period-rail').insertAdjacentHTML('beforeend',
+    state.dates.map((d,i)=>`<span class="range-tick" style="left:${railPos(i)}%"></span>`).join(''));
+  syncPeriodSlider();
+}
+
+// state.period をスライダーに反映
+function syncPeriodSlider(){
+  $('period-from').value=Math.max(0, state.dates.indexOf(state.period.from));
+  $('period-to').value  =Math.max(0, state.dates.indexOf(state.period.to));
+  drawPeriodSlider();
+}
+
+// つまみの位置から日付・塗り・目盛り・試合数を描く
+function drawPeriodSlider(){
+  const { from, to }=periodIndex();
+  const fromDate=state.dates[from] ?? '—', toDate=state.dates[to] ?? '—';
+  $('period-from-label').textContent=fromDate;
+  $('period-to-label').textContent=toDate;
+  ['period-from','period-to'].forEach(id=>{
+    const v=+$(id).value;
+    $(id).setAttribute('aria-label', v===from ? '開始日' : '終了日');
+    $(id).setAttribute('aria-valuetext', state.dates[v] ?? '');
+  });
+  $('period-fill').style.left=railPos(from)+'%';
+  $('period-fill').style.right=(100-railPos(to))+'%';
+  document.querySelectorAll('#period-rail .range-tick').forEach((t,i)=>t.classList.toggle('on', i>=from && i<=to));
+  const n=state.matchDates.filter(d=>d>=fromDate && d<=toDate).length;
+  $('period-count').innerHTML=`<b>${n}</b>試合`;
+  $('period-reset').disabled = from===0 && to===state.dates.length-1;   // 既に全期間なら押せない
+}
+
+// ドラッグ中は表示だけ更新
+const onPeriodInput = () => drawPeriodSlider();
+
+function commitPeriod(){
+  const { from, to }=periodIndex();
+  const period={ from:state.dates[from], to:state.dates[to] };
+  if(period.from===state.period.from && period.to===state.period.to) return;
+  changePeriod(period);
+}
+
+// 期間内の試合だけで state.matches / picks / rows と集計を作り直す
+function applyPeriod(){
+  const { from, to }=state.period;
+  const inPeriod=x=>{ const d=dateOf(x.date); return d>=from && d<=to; };
+  const all=state.all;
+  state.matches=new Map([...all.matches].filter(([,m])=>inPeriod(m)));
+  state.picks=all.picks.filter(inPeriod);
+  state.rows=all.rows.filter(inPeriod);
+  state.kitStats=derive.kitStats(state.picks, state.rows, state.allKits);
+  state.abilityRank=derive.abilityRanking(state.rows);
+  state.matchups=derive.kitMatchups(state.picks);
+  state.charts['chart-ability-rank']?.destroy();   // ランキングは未作成のときだけ描くので作り直させる
+  delete state.charts['chart-ability-rank'];
+
+  // 選択中のキット・試合・プレイヤーが期間外になったら先頭に切り替える
+  const kits=state.kitStats.kits;
+  if(!kits.includes(state.kit.current)) state.kit.current=kits[0] ?? null;
+  const matchList=buildMatchStrip();
+  if(!matchList.some(m=>m.id===state.match.current)) state.match.current=matchList[0]?.id ?? null;
+  const playerList=buildPlayerStrip();
+  if(!playerList.some(p=>p.id===state.player.current)) state.player.current=playerList[0]?.id ?? null;
+
+}
+
+const fullPeriod = () => ({ from:state.dates[0] ?? '', to:state.dates.at(-1) ?? '' });
+
+function changePeriod(period){
+  state.period=period;
+  syncPeriodSlider();
+  applyPeriod();
+  saveHash();   // 期間外になった選択が先頭に切り替わるので、その後で保存
+  renderKit(); renderMatch(); renderPlayer();
+}
+const setPeriod   = (side, value) => changePeriod({ ...state.period, [side]:value });
+const resetPeriod = () => changePeriod(fullPeriod());
+
 function init(data){
-  const { matches, picks, rows }=buildTables(data);
+  const all=buildTables(data);
   Object.assign(state.names, data.names);   // Lambda が覚えている名前（最初の描画から名前で出す）
-  state.matches=matches;
-  state.picks=picks;
-  state.rows=rows;
-  const kits=uniq(picks.map(p=>p.kit)).sort();
+  state.all=all;
+  const kits=uniq(all.picks.map(p=>p.kit)).sort();
   let extra=0;
   kits.forEach(k=>{ state.kitColors[k] = KIT_COLOR[k] ?? FALLBACK_KIT_COLORS[extra++ % FALLBACK_KIT_COLORS.length]; });
-  state.kitStats=derive.kitStats(picks, rows);
-  state.abilityRank=derive.abilityRanking(rows);
-  state.kitUseNth=derive.kitUseNth(picks);
-  state.matchups=derive.kitMatchups(picks);
-  assignBedrockNames(uniq(picks.map(p=>p.playerId)));   // 最初の描画から統合版の名前で出す
+  state.kitUseNth=derive.kitUseNth(all.picks);
+  state.allKits=kits;
+  assignBedrockNames(uniq(all.picks.map(p=>p.playerId)));   // 最初の描画から統合版の名前で出す
 
-  state.kit.current    = kits[0] ?? null;
-  state.match.current  = buildMatchStrip()[0]?.id ?? null;
-  state.player.current = buildPlayerStrip()[0]?.id ?? null;
+  // 統計期間：試合のあった日付の全範囲から始める
+  state.matchDates=derive.matchList(all.matches, all.picks).map(m=>dateOf(m.dateText));   // 試合数の表示用
+  state.dates=uniq(state.matchDates.filter(Boolean)).sort();
+  state.period=fullPeriod();
+  state.kit.current=kits[0] ?? null;
+  buildPeriodSlider();
   enableDragScroll($('match-strip'));
   enableDragScroll($('player-strip'));
 
@@ -1467,10 +1707,15 @@ function init(data){
     $(t+'-skeleton').style.display='none';
     $(t+'-content').style.display='block';
   });
-  renderKit(); renderMatch(); renderPlayer();
+  applyHash();   // URL の状態（なければ既定）で描画
+  window.addEventListener('hashchange', applyHash);
 
   loadNames();
 }
+
+// データを待たずに URL のタブを開いておく（読み込み中の表示もそのタブで出る）
+readHash();
+if(state.tab!=='kit') switchTab(state.tab);
 
 fetch(LAMBDA_URL)
   .then(r=>{ if(!r.ok) throw new Error('サーバーエラー ('+r.status+')'); return r.json(); })
