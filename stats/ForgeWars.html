@@ -201,6 +201,31 @@
   /* 全キット比較 */
   .compare-row{margin-top:32px;padding-top:24px;border-top:1px solid var(--hairline)}
 
+  /* ================= アイテムタブ ================= */
+  .item-list{margin:14px 0 24px}
+  .item-kit-filter{flex-wrap:wrap;margin-top:12px}
+  .item-kit-filter .kit-chip{width:9px;height:9px;margin-right:6px}
+  #table-items tr.item-row{cursor:pointer}
+  #table-items tr.selected td{background:rgba(255,138,61,.10)}
+  #table-items tr.selected td:first-child{box-shadow:inset 3px 0 0 var(--ember)}
+  #table-items .item-kits{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:14px}
+  #table-items .item-kits span{white-space:nowrap}
+  #table-items td.low-sample{opacity:.45}
+  #table-items td.pos{color:rgb(var(--win))}
+  #table-items td.neg{color:#e07070}
+  #table-items .item-sub{font-size:11px;color:var(--ink-dim);margin-left:6px}
+  .item-detail-sub{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:6px;font-size:13px;color:var(--ink-dim)}
+  .item-detail-sub b.pos{color:rgb(var(--win))}
+  .item-detail-sub b.neg{color:#e07070}
+  .item-detail-sub b.low-sample{opacity:.45}
+  .item-detail-sub span[title]{cursor:help}
+  .item-detail-sub b{font-family:var(--num-font);font-size:16px;font-weight:700;color:var(--ink);margin-left:6px}
+  /* 購入時刻の分布：数直線上に購入1件を1つの点（キット色）で置き、同じ位置は上に積む */
+  .dot-strip .ds-dot{position:absolute;width:10px;height:10px;margin-left:-5px;border-radius:50%;border:1px solid rgba(0,0,0,.35)}
+  .dot-strip .ds-avg{position:absolute;width:0;border-left:1px dashed var(--ember-hot)}
+  .dot-strip .ds-avg-label{position:absolute;transform:translateX(-50%);font-size:11px;font-weight:700;color:var(--ember-hot);white-space:nowrap}
+  .dot-strip .ds-avg-label b{font-family:var(--num-font);margin-left:4px}
+
   /* ================= 試合タブ ================= */
   /* 勝利チームを緑のエリアで囲う */
   .team-col{padding:14px;border:1px solid transparent;border-radius:var(--radius);transition:background .2s,border-color .2s,box-shadow .2s}
@@ -211,9 +236,38 @@
   #h2-team-a::before{background:var(--team-a);box-shadow:0 0 10px -2px var(--team-a)}
   #h2-team-b::before{background:var(--team-b);box-shadow:0 0 10px -2px var(--team-b)}
   tr.team-row td{font-weight:700;padding-top:15px;border-bottom:1px solid var(--panel-edge)}
+  tr.team-row{cursor:pointer}
+  tbody tr.team-row:hover td{background:rgba(255,255,255,.05)}
+  tr.team-row.selected td{background:rgba(255,138,61,.12)}
+  tr.team-row.selected td:first-child{box-shadow:inset 3px 0 0 var(--ember)}
   tr.team-a td{background:var(--team-a-bg)}
   tr.team-b td{background:var(--team-b-bg)}
-  #match-ability-title{margin:8px 0 10px}
+  /* 試合タブのプレイヤー詳細の見出し */
+  .match-player-head{display:flex;align-items:center;gap:16px;margin:8px 0 6px;padding:16px 22px;background:var(--panel-2);border:1px solid var(--panel-edge);border-radius:var(--radius)}
+  .match-player-head .kit-chip-lg{width:18px;height:18px;flex-shrink:0;box-shadow:0 0 16px -2px currentColor}
+  .match-player-head .mp-name{font-size:22px;font-weight:900;letter-spacing:.03em;line-height:1.2}
+  .match-player-head .mp-name small{font-size:14px;font-weight:700;color:var(--ember);margin-left:10px;letter-spacing:.06em}
+  .match-player-head .mp-stats{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:6px;font-size:13px;color:var(--ink-dim)}
+  .match-player-head .mp-stats b{font-family:var(--num-font);font-size:16px;font-weight:700;color:var(--ink);margin-left:6px}
+  .match-player-head .mp-stats .na{font-size:13px;font-family:var(--jp-font);font-weight:500;color:var(--ink-faint)}
+  #match-items-title{margin-top:24px}
+  /* 購入アイテム：0:00〜試合時間の数直線上に、購入した時刻の位置で並べる。
+   * ラベルは重ならないよう軸の上下の段に振り分ける（段の高さ・位置は JS で決める） */
+  .timeline{position:relative;background:var(--bg-soft);border:1px solid var(--hairline);border-radius:var(--radius);padding:0 28px}
+  .timeline .tl-inner{position:relative}
+  .timeline .tl-axis{position:absolute;left:0;right:0;height:2px;background:var(--panel-edge)}
+  .timeline .tl-tick{position:absolute;width:1px;height:7px;background:var(--edge-hover)}
+  .timeline .tl-tick-label{position:absolute;transform:translateX(-50%);font-family:var(--num-font);font-size:11px;color:var(--ink-faint);white-space:nowrap}
+  .timeline .tl-end{position:absolute;transform:translateX(-100%);font-family:var(--num-font);font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap}
+  .timeline .tl-end small{font-family:var(--jp-font);font-size:10px;font-weight:500;color:var(--ink-dim);margin-left:4px}
+  .timeline .tl-end-mark{position:absolute;width:2px;height:14px;background:var(--ink-dim)}
+  .timeline .tl-dot{position:absolute;width:9px;height:9px;margin-left:-4.5px;border-radius:50%;background:var(--ember-hot);box-shadow:0 0 8px -1px var(--ember)}
+  .timeline .tl-stem{position:absolute;width:1px;background:rgba(255,138,61,.45)}
+  .timeline .tl-label{position:absolute;white-space:nowrap;text-align:center;line-height:1.25;font-size:13px;font-weight:600;padding:3px 7px;
+    background:var(--panel-2);border:1px solid var(--panel-edge);border-radius:var(--radius)}
+  .timeline .tl-label .tl-time{display:block;font-family:var(--num-font);font-size:11px;font-weight:600;color:var(--ember-hot)}
+  .timeline .item-sub{display:block;font-size:10px;font-weight:500;color:var(--ink-dim)}
+  .timeline.empty{padding:14px 16px;color:var(--ink-faint);font-size:14px}
 
   /* ================= カード列（試合・プレイヤー選択、横スクロール） ================= */
   .card-strip{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;padding:4px 2px 14px;margin-bottom:16px;cursor:grab;
@@ -300,6 +354,7 @@
 
   <div class="tabs" role="tablist">
     <button id="tab-kit" class="active" onclick="switchTab('kit')">キット</button>
+    <button id="tab-item" onclick="switchTab('item')">アイテム</button>
     <button id="tab-match" onclick="switchTab('match')">試合</button>
     <button id="tab-player" onclick="switchTab('player')">プレイヤー</button>
   </div>
@@ -386,6 +441,45 @@
     </div>
   </div>
 
+  <!-- ===== アイテムタブ ===== -->
+  <div class="panel" id="view-item" style="display:none">
+    <div id="item-skeleton" class="data-loading">
+      <div class="skel skel-table"></div>
+      <div class="skel skel-chart"></div>
+    </div>
+    <div id="item-content" style="display:none">
+      <div class="h2-row" style="margin-top:0">
+        <div class="toggle" id="item-kind-toggle" role="group" aria-label="アイテムの種類">
+          <button data-value="common" class="active" onclick="setItemKind(this.dataset.value)">共通アイテム</button>
+          <button data-value="upgrade" onclick="setItemKind(this.dataset.value)">キット専用</button>
+        </div>
+        <span class="click-hint" id="item-hint"></span>
+      </div>
+      <!-- アップグレードのキット絞り込み（アップグレード表示のときだけ） -->
+      <div class="toggle toggle-sm item-kit-filter" id="item-kit-filter" role="group" aria-label="キットで絞り込み"></div>
+      <!-- アイテム一覧表 -->
+      <div class="item-list">
+        <div class="table-box"><table id="table-items"></table></div>
+      </div>
+
+      <!-- 選択アイテムの詳細 -->
+      <div id="item-detail">
+        <div class="kit-detail-header" id="item-detail-header">
+          <div>
+            <div class="kit-detail-label" id="item-detail-name">—</div>
+            <div class="item-detail-sub" id="item-detail-sub"></div>
+          </div>
+        </div>
+        <h2>購入時刻の分布</h2>
+        <div class="timeline dot-strip" id="item-time-dist"></div>
+        <div id="item-kit-section">
+          <h2 style="margin-top:24px">キット別 購入率</h2>
+          <div class="chart-box"><canvas id="chart-item-kits"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== 試合タブ ===== -->
   <div class="panel" id="view-match" style="display:none">
     <label>試合を選択</label>
@@ -407,10 +501,19 @@
       </div>
       <h2>プレイヤー別 合計ダメージ <span class="click-hint">クリックでアビリティ詳細</span></h2>
       <div class="chart-box wide"><canvas id="chart-match"></canvas></div>
-      <!-- クリックで切り替わるアビリティ詳細 -->
+      <!-- クリックで切り替わるプレイヤー詳細（見出し：名前 / 小見出し：成績 / 項目：アビリティ別ダメージ・購入アイテム） -->
       <div id="match-ability-detail" style="display:none">
-        <h2 id="match-ability-title"></h2>
+        <div class="match-player-head">
+          <span class="kit-chip-lg" id="match-player-chip"></span>
+          <div>
+            <div class="mp-name" id="match-player-name"></div>
+            <div class="mp-stats" id="match-player-stats"></div>
+          </div>
+        </div>
+        <h2>アビリティ別ダメージ</h2>
         <div class="table-box"><table id="table-match-ability"></table></div>
+        <h2 id="match-items-title">購入アイテム</h2>
+        <div class="timeline" id="match-items-timeline"></div>
       </div>
     </div>
   </div>
@@ -473,6 +576,24 @@ const KIT_COLOR = {
   'プラトー':       '#b58955',   // 茶
   'ガーディアン':   '#3fae95',   // 青緑
 };
+// キット専用アイテム（キット → そのキットだけが買えるアイテムの表示名）。
+// ゲームのソース（ForgeWarsManager/Kit/*）の EnchantUpgradeAbility / EnchantUpgradeUltimateAbility / EnchantType.KIT_ONLY が正。
+// アップグレードの名前は「アビリティ名 + " アップグレード"」。キットやアップグレードが変わったらここも直す
+const UP = name => name+' アップグレード';
+const KIT_ITEMS = {
+  'カルティスト':   [UP('スケアリーヘッド'), UP('ダークパクト'), UP('アルティメット・サクリファイス')],
+  'デストロイヤー': [UP('デトネーション'), UP('ハイマイス'), UP('ホットバースト')],
+  'ガイザー':       [UP('波乗り'), UP('ハイドロインパクト'), UP('ポセイドン・トライデント')],
+  'グリード':       [UP('オブセッション'), UP('エンレイジ'), UP('サンダリング')],
+  'ガーディアン':   [UP('チャージバッシュ'), UP('守護領域'), 'サーマルアーマー'],
+  'ヘイル':         [UP('アイスレーザー'), UP('シャープボール'), UP('フロストノヴァ')],
+  'レヴィン':       [UP('アークテザー'), UP('エレキウェブ'), UP('ブレイクダウン')],
+  'ネクター':       [UP('スネアブルーム'), UP('ジャイアントポーション')+' A', UP('ジャイアントポーション')+' B'],
+  'プラトー':       [UP('キャンプファイア'), UP('レッドギフト'), UP('シエラ')],
+  'リジッド':       [UP('ハードクラッシュ'), UP('ロアリング'), UP('アイアングリップ')],
+  'スウィフト':     [UP('オーバードライブ'), UP('アクセル'), UP('ネイルチャージ')],
+};
+const KIT_OF_ITEM = Object.fromEntries(Object.entries(KIT_ITEMS).flatMap(([kit,list])=>list.map(n=>[n,kit])));
 // KIT_COLOR にない（新しく追加された）キット用
 const FALLBACK_KIT_COLORS = ['#c9c28a','#8f7fd6','#d6a0a0','#9fc9b8','#c7a5e0'];
 const TEAM_COLOR = { A:'#5b9bd5', B:'#d95f5f' };
@@ -482,7 +603,7 @@ const CHART_THEME = {
   font:'Chakra Petch',
   tooltip:{ bg:'#1e2129', border:'#2b2f3a', text:'#ecebe5' },
 };
-const TABS = ['kit','match','player'];
+const TABS = ['kit','item','match','player'];
 const NAME_BATCH = 10;
 const BASIC_ATTACK = '通常攻撃';   // 通常攻撃比の基準アビリティ（データ上の生の名前）
 
@@ -507,6 +628,7 @@ const state = {
   allKits: [],        // 全期間に登場したキット（期間によらずキット表に並べる）
   kitUseNth: {},      // kitUseKey(プレイヤー, キット, 試合) → そのキットの何回目の使用か（期間によらず全期間で数える）
   matchups: {},       // キット → { enemy, ally }（derive.kitMatchups）
+  itemStats: null,    // アイテム別の購入統計（derive.itemStats）
 
   kit: {
     current: null,        // 選択中のキット
@@ -517,7 +639,8 @@ const state = {
     sort: 'avgDmg',       // 使用プレイヤー表のソート列：'count'|'winRate'|'avgDmg'
     view: 'pickWin',      // 全キット比較：'pickWin'|'dmgWin'|'abilityRank'
   },
-  match:  { current:null, selected:null },  // current: 表示中の試合ID / selected: { matchId, pid } アビリティ詳細のプレイヤー
+  item:   { current:null, kind:'common', sort:'rate', kit:null },   // current: 選択中のアイテム名 / kind: 'common'|'upgrade' / sort: 'name'|'kit'|'rate'|'time'|'contrib' / kit: アップグレードの絞り込みキット（null=すべて）
+  match:  { current:null, selected:null, model:null },  // current: 表示中の試合ID / selected: { matchId, pid } 詳細を出しているプレイヤー / model: 表示中の試合の derive.matchPlayers
   player: { current:null, sort:'uses' },    // current: 表示中のプレイヤーID / sort: 'uses'|'winRate'|'perMin'
 };
 
@@ -528,7 +651,7 @@ const fmtInt      = n => Math.round(n).toLocaleString('ja-JP');
 const pct         = n => (n*100).toFixed(1)+'%';        // 0-1 スケール
 const pctFromUnit = v => v.toFixed(1)+'%';              // 0-100 スケール（チャート用）
 const fmtRatio    = v => '×'+v.toFixed(2);
-const fmtClock    = s => s==null ? '-' : `${Math.floor(s/60)}:${String(Math.round(s%60)).padStart(2,'0')}`;
+const fmtClock    = s => { if(s==null) return '-'; const r=Math.round(s); return `${Math.floor(r/60)}:${String(r%60).padStart(2,'0')}`; };   // 先に秒へ丸める（179.5 → 3:00）
 const disp        = uuid => state.names[uuid] || uuid;
 const esc         = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 const maxOf       = arr => arr.length ? Math.max(...arr) : 0;
@@ -627,8 +750,8 @@ function rerenderQuiet(fn){
  * rows ：ダメージ記録            … ダメージ系の集計の分子
  * ダメージ0の出場は rows に現れないので、出場に関わる数は必ず picks から数える */
 
-// Lambda GET の応答（matches / players / damage）から state.matches / picks / rows を組み立てる
-function buildTables({ matches, players, damage }){
+// Lambda GET の応答（matches / players / damage / items）から state.matches / picks / rows と購入履歴を組み立てる
+function buildTables({ matches, players, damage, items = [] }){
   const matchMap=new Map(matches.map(m=>[m.id, m]));
   const pickByKey=new Map();
   const picks=[];
@@ -644,7 +767,18 @@ function buildTables({ matches, players, damage }){
     const p=pickByKey.get(pickKey(d));
     if(p) rows.push({ ...p, ability:d.ability, damage:d.damage });
   });
-  return { matches:matchMap, picks, rows };
+  // 購入履歴：pickKey → [{ time, item }]（時刻順）。記録のある試合 ID も持つ（記録なし／購入なしの区別用）
+  const purchases=new Map(), purchaseMatches=new Set();
+  items.forEach(it=>{
+    if(!pickByKey.has(pickKey(it))) return;
+    purchaseMatches.add(it.matchId);
+    let list=purchases.get(pickKey(it));
+    if(!list) purchases.set(pickKey(it), list=[]);
+    list.push({ time:+it.time, item:it.item });
+  });
+  purchases.forEach(list=>list.sort((a,b)=>a.time-b.time));
+  const itemNames=new Set([...purchases.values()].flat().map(b=>b.item));   // URL の #item= の確認用
+  return { matches:matchMap, picks, rows, purchases, purchaseMatches, itemNames };
 }
 
 const derive = {
@@ -847,6 +981,59 @@ const derive = {
       hasKD: players.some(p=>p.kills!=null || p.deaths!=null),   // キル・デスが記録されている試合か
       team: t => players.filter(p=>p.team===t),
     };
+  },
+
+  // アイテム別の購入統計。購入履歴の記録がある試合の出場だけを母数にする
+  //   購入率：共通アイテムは全出場のうち、アップグレードはそのキットの出場のうち、1回以上買った出場の割合
+  //   アップグレードかどうかは名前（「◯◯ アップグレード」）で判断し、いちばん多く買ったキットをそのキットとする
+  itemStats(picks){
+    const recorded=picks.filter(p=>state.all.purchaseMatches.has(p.matchId));
+    if(!recorded.length) return { items:[], recordedPicks:0, recordedMatches:0, maxDuration:0 };
+    const kitPicks={}, kitWins={}; // キット → 記録のある出場数・その勝利数
+    recorded.forEach(p=>{ kitPicks[p.kit]=(kitPicks[p.kit]||0)+1; if(p.won) kitWins[p.kit]=(kitWins[p.kit]||0)+1; });
+    const allWins=recorded.filter(p=>p.won).length;
+    const byItem={};
+    recorded.forEach(p=>{
+      const list=state.all.purchases.get(pickKey(p)) ?? [];
+      const seen=new Set();
+      list.forEach(b=>{
+        const it = byItem[b.item] ??= { name:b.item, upgrade:isUpgradeItem(b.item), buys:[], buyerKits:{}, buyerWins:0 };
+        it.buys.push({ time:b.time, kit:p.kit, pid:p.playerId, matchId:p.matchId });
+        if(!seen.has(b.item)){
+          seen.add(b.item);
+          it.buyerKits[p.kit]=(it.buyerKits[p.kit]||0)+1;
+          if(p.won) it.buyerWins++;
+        }
+      });
+    });
+    // まだ誰も買っていないキット専用アイテムも 0 件で並べる
+    Object.keys(KIT_OF_ITEM).forEach(n=>{ byItem[n] ??= { name:n, upgrade:true, buys:[], buyerKits:{}, buyerWins:0 }; });
+    const items=Object.values(byItem).map(it=>{
+      const kits=Object.keys(it.buyerKits).sort(byDesc(k=>it.buyerKits[k]));
+      const buyers=kits.reduce((n,k)=>n+it.buyerKits[k], 0);
+      const kit = it.upgrade ? (KIT_OF_ITEM[it.name] ?? kits[0]) : null;   // 一覧にない新アイテムは、いちばん多く買ったキット
+      const denom = (it.upgrade ? kitPicks[kit] : recorded.length) || 0;
+      // 勝率：買った出場 と 買わなかった出場（同じ母数＝共通は全出場・アップグレードはそのキットの出場）
+      const groupWins = it.upgrade ? (kitWins[kit]||0) : allWins;
+      const nonBuyers = denom-buyers;
+      const winRate = buyers ? it.buyerWins/buyers : null;
+      const nonWinRate = nonBuyers>0 ? (groupWins-it.buyerWins)/nonBuyers : null;
+      return {
+        name:it.name, upgrade:it.upgrade, kit, buyers, denom,
+        contrib: winRate!=null && nonWinRate!=null ? (winRate-nonWinRate)*100 : null,   // 勝率寄与率(pt) = 買った人の勝率 − 買わなかった人の勝率
+        winRate, nonBuyers, nonWinRate,
+        lowSample: buyers<ITEM_LOW_SAMPLE || nonBuyers<ITEM_LOW_SAMPLE,   // どちらかが少ないと勝率の比較は参考値
+        count:it.buys.length,
+        rate: denom ? buyers/denom : null,                                  // そのキットの出場がなければ出せない
+        avgTime: it.buys.length ? it.buys.reduce((s,b)=>s+b.time, 0)/it.buys.length : null,
+        buys:it.buys,
+        byKit: Object.keys(kitPicks).map(k=>({ kit:k, buyers:it.buyerKits[k]||0, picks:kitPicks[k], rate:(it.buyerKits[k]||0)/kitPicks[k] }))
+                 .sort((a,b)=>b.rate-a.rate || b.picks-a.picks),
+        topKits: kits.slice(0,3),
+      };
+    });
+    const durations=uniq(recorded.map(p=>p.matchId)).map(id=>state.all.matches.get(id)?.duration || 0);
+    return { items, recordedPicks:recorded.length, recordedMatches:durations.length, maxDuration:maxOf(durations) };
   },
 
   // プレイヤー1人分：キット別成績 と 試合単位の集計
@@ -1293,6 +1480,7 @@ function renderMatch(){
   }
 
   const m=derive.matchPlayers(picks, state.rows.filter(r=>r.matchId===id));
+  state.match.model=m;   // チーム表のクリックから選手を引くため
   const aWon=meta.winTeam==='A';
 
   barChart('chart-match',{
@@ -1303,8 +1491,9 @@ function renderMatch(){
   });
 
   const badge=won=>won ? '<span class="badge badge-win">🏆 WIN</span>' : '<span class="badge badge-lose">LOSE</span>';
-  $('h2-team-a').innerHTML=`チーム A ${badge(aWon)}`;
-  $('h2-team-b').innerHTML=`チーム B ${badge(!aWon)}`;
+  const hint='<span class="click-hint">クリックで詳細</span>';
+  $('h2-team-a').innerHTML=`チーム A ${badge(aWon)}${hint}`;
+  $('h2-team-b').innerHTML=`チーム B ${badge(!aWon)}${hint}`;
   $('col-team-a').classList.toggle('won',aWon);
   $('col-team-b').classList.toggle('won',!aWon);
   $('table-match-a').innerHTML=teamTable(m.team('A'),'a',id,m.hasKD);
@@ -1324,7 +1513,7 @@ function teamTable(players, teamClass, matchId, hasKD){
     + players.map(p=>{
       const n = state.kitUseNth[kitUseKey(p.pid, p.kit, matchId)];
       const nth = n===1 ? '<span class="badge badge-first">初</span>' : n ? `${n}回目` : '-';
-      return `<tr class="team-row team-${teamClass}"><td><strong>${esc(p.name)}</strong> — ${esc(p.kit)}</td>`
+      return `<tr class="team-row team-${teamClass}" data-pid="${esc(p.pid)}" onclick="selectMatchPlayer(this.dataset.pid)"><td><strong>${esc(p.name)}</strong> — ${esc(p.kit)}</td>`
            + (hasKD ? kd(p.kills)+kd(p.deaths) : '<td class="num empty no-record" colspan="2">記録なし</td>')
            + `<td class="num">${nth}</td></tr>`;
     }).join('');
@@ -1334,13 +1523,15 @@ function teamTable(players, teamClass, matchId, hasKD){
 function renderMatchAbility(player, meta, matchId){
   if(!player) return;
   state.match.selected={ matchId, pid:player.pid };
+  document.querySelectorAll('#view-match tr.team-row').forEach(tr=>tr.classList.toggle('selected', tr.dataset.pid===player.pid));
+  renderMatchItems(player, matchId);
 
   const abs=[...player.abilities].sort(byDesc(r=>r.damage));
   const minutes = meta?.duration>0 ? meta.duration/60 : null;
   const maxPerMin = minutes ? maxOf(abs.map(r=>r.damage))/minutes : 0;
 
   $('match-ability-detail').style.display='block';
-  $('match-ability-title').textContent=`${player.name} — ${player.kit} アビリティ別ダメージ`;
+  renderMatchPlayerHead(player, meta, matchId);
   $('table-match-ability').innerHTML =
     `<tr><th>アビリティ</th>${minutes?'<th class="num">ダメージ(毎分)</th>':''}<th class="num">総ダメージ</th></tr>`
     + (abs.length ? '' : `<tr><td class="empty" colspan="${minutes ? 3 : 2}">ダメージなし</td></tr>`)
@@ -1349,12 +1540,295 @@ function renderMatchAbility(player, meta, matchId){
                 + `<td class="num">${fmtInt(r.damage)}</td></tr>`).join('');
 }
 
+// プレイヤー詳細の見出し：名前・キット と、キル・デス・このキットの過去のプレイ数と勝率（この試合より前、全期間）
+function renderMatchPlayerHead(player, meta, matchId){
+  const chip=$('match-player-chip');
+  chip.style.background = chip.style.color = state.kitColors[player.kit] || '#888';
+  $('match-player-name').innerHTML=`${esc(player.name)}<small>${esc(player.kit)}</small>`;
+  const past=state.all.picks.filter(p=>p.playerId===player.pid && p.kit===player.kit && p.matchId!==matchId
+                                     && String(p.date)<String(meta?.date ?? ''));
+  const wins=past.filter(p=>p.won).length;
+  const val=v=>v==null ? '<b class="na">記録なし</b>' : `<b>${v}</b>`;
+  $('match-player-stats').innerHTML =
+      `<span>キル${val(player.kills)}</span><span>デス${val(player.deaths)}</span>`
+    + `<span>${esc(player.kit)}の過去プレイ数<b>${past.length}</b></span>`
+    + `<span>過去の勝率${past.length ? `<b>${pct(wins/past.length)}</b>` : '<b class="na">初使用</b>'}</span>`;
+}
+
+// 選択プレイヤーの購入アイテム：0:00〜試合時間の数直線上に並べる。購入履歴の記録がない試合は「記録なし」
+function renderMatchItems(player, matchId){
+  const list=state.all.purchases.get(matchId+'|'+player.pid) ?? [];
+  const recorded=state.all.purchaseMatches.has(matchId);
+  const el=$('match-items-timeline');
+  if(!recorded || !list.length){
+    el.className='timeline empty';
+    el.textContent = recorded ? '購入なし' : '記録なし';
+    itemTimeline.data=null;
+    return;
+  }
+  el.className='timeline';
+  itemTimeline.data={ list, duration:state.all.matches.get(matchId)?.duration || maxOf(list.map(b=>b.time)) };
+  itemTimeline.draw();
+}
+
+// 数直線の描画。ラベルの段組みは横幅に依存するので、幅が変わったら（タブを開いた・画面の大きさが変わった）描き直す
+const itemTimeline = {
+  data: null,
+  LANE: 50,        // 1段の高さ(px)
+  GAP: 6,          // 同じ段で隣り合うラベルの最小間隔(px)
+  draw(){
+    const el=$('match-items-timeline');
+    if(!this.data || !el.clientWidth) return;
+    const { list, duration }=this.data;
+    const width=el.clientWidth-56;                 // 左右の余白（padding 28px×2）を除いた軸の長さ
+    const x = t => Math.min(1, t/duration)*width;
+
+    // ラベルの幅を測ってから、軸の上下の段に振り分ける（上1段目 → 下1段目 → 上2段目 …の順に空いている段へ）
+    el.innerHTML='<div class="tl-inner"></div>';
+    const inner=el.firstChild;
+    const labels=list.map(b=>{
+      const lb=document.createElement('div');
+      lb.className='tl-label';
+      lb.innerHTML=`<span class="tl-time">${fmtClock(b.time)}</span>${itemLabel(b.item)}`;
+      inner.appendChild(lb);
+      return { b, lb, w:lb.offsetWidth, h:lb.offsetHeight };
+    });
+    const laneEnds=[];                              // 段番号 → その段の右端(px)
+    labels.forEach(l=>{
+      const cx=x(l.b.time);
+      l.left=Math.max(0, Math.min(width-l.w, cx-l.w/2));   // 端では軸からはみ出さないよう寄せる
+      let lane=0;
+      while(laneEnds[lane]!=null && laneEnds[lane]+this.GAP>l.left) lane++;
+      laneEnds[lane]=l.left+l.w;
+      l.lane=lane;
+    });
+    // 段 0,2,4… は軸の上、1,3,5… は軸の下
+    const above=labels.filter(l=>l.lane%2===0), below=labels.filter(l=>l.lane%2===1);
+    const upLanes=above.length ? Math.max(...above.map(l=>l.lane/2))+1 : 0;
+    const downLanes=below.length ? Math.max(...below.map(l=>(l.lane-1)/2))+1 : 0;
+    const axisY=upLanes*this.LANE+18;
+    const TICK_AREA=22;                             // 軸の下の目盛り数字の分
+    inner.style.height=(axisY+TICK_AREA+downLanes*this.LANE+10)+'px';
+
+    let html=`<div class="tl-axis" style="top:${axisY-1}px"></div>`;
+    // 目盛り：1分ごと（長い試合は2分ごと）。最後は試合時間
+    const step = duration>600 ? 120 : 60;
+    for(let t=0; x(t)<width-90; t+=step){          // 右端の「試合時間 試合終了」と重なる目盛りは出さない
+      html+=`<div class="tl-tick" style="left:${x(t)}px;top:${axisY}px"></div>`
+          + `<div class="tl-tick-label" style="left:${x(t)}px;top:${axisY+7}px">${fmtClock(t)}</div>`;
+    }
+    html+=`<div class="tl-end-mark" style="left:${width-1}px;top:${axisY-7}px"></div>`
+        + `<div class="tl-end" style="left:${width+6}px;top:${axisY+7}px">${fmtClock(duration)}<small>試合終了</small></div>`;
+    labels.forEach(l=>{
+      const cx=x(l.b.time);
+      const up=l.lane%2===0, k=up ? l.lane/2 : (l.lane-1)/2;
+      const top = up ? axisY-12-(k+1)*this.LANE+(this.LANE-l.h) : axisY+TICK_AREA+k*this.LANE;
+      const stemTop = up ? top+l.h : axisY, stemBottom = up ? axisY : top;
+      html+=`<div class="tl-stem" style="left:${cx}px;top:${stemTop}px;height:${stemBottom-stemTop}px"></div>`
+          + `<div class="tl-dot" style="left:${cx}px;top:${axisY-4.5}px"></div>`;
+      l.lb.style.left=l.left+'px';
+      l.lb.style.top=top+'px';
+    });
+    inner.insertAdjacentHTML('afterbegin', html);
+  },
+};
+new ResizeObserver(()=>itemTimeline.draw()).observe($('match-items-timeline'));
+
+// 「◯◯ アップグレード B」は「アップグレード B」を小さく2行目に出して幅を抑える
+function itemLabel(name){
+  const m=String(name).match(/^(.*?)\s+(アップグレード.*)$/);
+  return m ? `${esc(m[1])}<small class="item-sub">${esc(m[2])}</small>` : esc(name);
+}
+
+// チーム表の行クリック：その選手の詳細（アビリティ別ダメージ・購入アイテム）を出して、そこまでスクロール
+function selectMatchPlayer(pid){
+  const id=state.match.current, player=state.match.model?.byPid[pid];
+  if(!player) return;
+  renderMatchAbility(player, state.matches.get(id), id);
+  $('match-ability-detail').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
 function selectMatch(id){
   if(state.match.current===id) return;
   state.match.current=id;
   saveHash();
   renderMatch();
   scrollCardIntoView('match-strip', id);
+}
+
+/* ---------- 6-d. アイテムタブ ---------- */
+const isUpgradeItem = name => name in KIT_OF_ITEM || /\sアップグレード/.test(name);   // キット専用アイテムか
+const itemsOfKind = () => (state.itemStats?.items ?? []).filter(it=>it.upgrade===(state.item.kind==='upgrade')
+                                                              && (!it.upgrade || !state.item.kit || it.kit===state.item.kit));
+
+function renderItem(){
+  const st=state.itemStats;
+  const list=itemsOfKind();
+  syncToggle('item-kind-toggle', state.item.kind);
+  renderItemKitFilter();
+  renderItemTable(list);
+  const it=list.find(i=>i.name===state.item.current);
+  $('item-detail').style.display = it ? '' : 'none';
+  $('item-hint').textContent = st?.recordedMatches ? 'クリックで詳細' : '';
+  if(it) renderItemDetail(it);
+}
+
+// アイテム一覧表（見出しクリックでソート。アイテム名は昇順、数値は降順、平均購入時刻は早い順）
+function renderItemTable(list){
+  const sortKey=state.item.sort, upgrade=state.item.kind==='upgrade';
+  const sorted = [...list].sort(
+      sortKey==='name' ? (a,b)=>itemBaseName(a).localeCompare(itemBaseName(b),'ja')
+    : sortKey==='kit'  ? (a,b)=>String(a.kit).localeCompare(String(b.kit),'ja') || b.rate-a.rate   // 同じキット内は購入率順
+    : sortKey==='time' ? (a,b)=>(a.avgTime ?? 1e9)-(b.avgTime ?? 1e9)
+    : byDesc({
+        rate:    i=>i.rate ?? -1,
+        contrib: i=>i.contrib ?? -1e9,    // 値の大きい順（値なしは最後）。人数の少ないものは表で薄く表示して区別する
+      }[sortKey]));
+  const th=(key,label,cls)=>sortableTh(key,label,sortKey,'sortItemList',cls);
+  const maxRate=maxOf(sorted.map(i=>i.rate ?? 0));
+  const head = `<tr>${th('name','アイテム','')}${upgrade ? th('kit','キット','') : ''}${th('rate','購入率')}${th('contrib','勝率寄与率')}${th('time','平均購入時刻')}`
+             + `${upgrade ? '' : '<th>よく買うキット</th>'}</tr>`;
+  if(!sorted.length){
+    $('table-items').innerHTML = head + `<tr><td class="empty" colspan="5">${state.itemStats?.recordedMatches ? 'この種類の購入記録はありません' : 'この期間には購入記録のある試合がありません'}</td></tr>`;
+    return;
+  }
+  $('table-items').innerHTML = head + sorted.map(i=>
+      `<tr class="item-row${i.name===state.item.current?' selected':''}" data-item="${esc(i.name)}" onclick="selectItem(this.dataset.item)">`
+    + `<td>${esc(itemBaseName(i))}</td>`
+    + (upgrade ? `<td>${kitChip(i.kit)}${esc(i.kit)}</td>` : '')
+    + (i.rate==null ? EMPTY_CELL : barCell(i.rate, maxRate, pct(i.rate), i.kit ? state.kitColors[i.kit] : undefined))
+    + contribCell(i)
+    + (i.avgTime==null ? EMPTY_CELL : `<td class="num">${fmtClock(i.avgTime)}</td>`)
+    + (upgrade ? '' : `<td><div class="item-kits">${i.topKits.map(k=>`<span>${kitChip(k)}${esc(k)}</span>`).join('')}</div></td>`)
+    + `</tr>`).join('');
+}
+
+// 勝率の比較は、どちらかの人数が ITEM_LOW_SAMPLE 未満だと偶然のぶれが大きいので薄く表示する
+const ITEM_LOW_SAMPLE = 10;
+
+// 勝率寄与率のセル（プラスは緑・マイナスは赤。どちらかの人数が少ないものは薄く）
+const fmtContrib = v => v==null ? '-' : (v>=0?'+':'')+v.toFixed(1)+'pt';
+function contribCell(i){
+  if(i.contrib==null) return EMPTY_CELL;
+  const cls=['num', i.contrib>0 ? 'pos' : i.contrib<0 ? 'neg' : '', i.lowSample ? 'low-sample' : ''].join(' ');
+  const tip=`買った人の勝率 ${pct(i.winRate)}（のべ ${i.buyers} 人）／買わなかった人の勝率 ${pct(i.nonWinRate)}（のべ ${i.nonBuyers} 人）`;
+  return `<td class="${cls}" title="${esc(tip)}">${fmtContrib(i.contrib)}</td>`;
+}
+
+// アップグレードはキット列があるので「◯◯ アップグレード」の「アップグレード」を省いて表示
+const itemBaseName = i => i.upgrade ? i.name.replace(/\s+アップグレード/, '') : i.name;
+
+function renderItemDetail(it){
+  $('item-detail-name').textContent=it.name;
+  // 見出しは 購入率・勝率寄与率・平均購入時刻 の3つだけ。内訳（人数・それぞれの勝率）はマウスを乗せると出す
+  // 勝率寄与率 = 買った人の勝率 − 買わなかった人の勝率（同じ母数の中で比べる）
+  const diff=it.contrib, low=it.lowSample;
+  const winTip = `買った人の勝率 ${it.winRate!=null ? pct(it.winRate) : '-'}（のべ ${it.buyers} 人）／`
+               + `買わなかった人の勝率 ${it.nonWinRate!=null ? pct(it.nonWinRate) : '-'}（のべ ${it.nonBuyers} 人）`
+               + (low ? '／人数が少ないため参考値' : '');
+  const diffCls = [diff>0 ? 'pos' : diff<0 ? 'neg' : '', low ? 'low-sample' : ''].join(' ');
+  $('item-detail-sub').innerHTML =
+      `<span title="のべ ${it.denom} 人中 ${it.buyers} 人">購入率<b>${it.rate==null ? '-' : pct(it.rate)}</b></span>`
+    + `<span title="${esc(winTip)}">勝率寄与率<b class="${diffCls}">${fmtContrib(diff)}</b></span>`
+    + `<span>平均購入時刻<b>${fmtClock(it.avgTime)}</b></span>`;
+  itemDotStrip.data={ buys:it.buys, avg:it.avgTime, duration:Math.max(state.itemStats.maxDuration, ...it.buys.map(b=>b.time)) };
+  itemDotStrip.draw();
+
+  // キット別の購入率（アップグレードは1キット専用なので出さない）
+  $('item-kit-section').style.display = it.upgrade ? 'none' : '';
+  if(it.upgrade) return;
+  const rows=it.byKit;
+  barChart('chart-item-kits',{
+    labels:rows.map(r=>r.kit),
+    data:  rows.map(r=>r.rate*100),
+    colors:rows.map(r=>state.kitColors[r.kit]),
+    format:pctFromUnit,
+    detail:i=>`のべ ${rows[i].picks} 人中 ${rows[i].buyers} 人`,
+    xTitle:'購入率',
+  });
+}
+
+// 購入時刻の分布（0:00〜記録のある試合の最長時間）。横幅に合わせて点を積み直すので、幅が変わったら描き直す
+const itemDotStrip = {
+  data: null,
+  DOT: 11,         // 点の間隔(px)
+  draw(){
+    const el=$('item-time-dist');
+    if(!this.data || !el.clientWidth) return;
+    const { buys, avg, duration }=this.data;
+    const width=el.clientWidth-56;
+    const x = t => Math.min(1, t/duration)*width;
+    // 近い点は同じ列にまとめて上に積む
+    const cols={};
+    const placed=[...buys].sort((a,b)=>a.time-b.time).map(b=>{
+      const c=Math.round(x(b.time)/this.DOT);
+      const level=cols[c]=(cols[c] ?? -1)+1;
+      return { ...b, cx:c*this.DOT, level };
+    });
+    const maxLevel=Math.max(0, ...placed.map(p=>p.level));
+    const axisY=22+(maxLevel+1)*this.DOT+6;
+    let html=`<div class="tl-inner" style="height:${axisY+30}px">`
+      + `<div class="tl-axis" style="top:${axisY-1}px"></div>`;
+    const step = duration>600 ? 120 : 60;
+    for(let t=0; x(t)<width-50; t+=step){
+      html+=`<div class="tl-tick" style="left:${x(t)}px;top:${axisY}px"></div>`
+          + `<div class="tl-tick-label" style="left:${x(t)}px;top:${axisY+7}px">${fmtClock(t)}</div>`;
+    }
+    html+=`<div class="tl-end-mark" style="left:${width-1}px;top:${axisY-7}px"></div>`
+        + `<div class="tl-end" style="left:${width+6}px;top:${axisY+7}px">${fmtClock(duration)}</div>`
+        + (avg==null ? `<div class="ds-avg-label" style="left:${width/2}px;top:0">まだ購入されていません</div>`
+          : `<div class="ds-avg" style="left:${x(avg)}px;top:14px;height:${axisY-14}px"></div>`
+          + `<div class="ds-avg-label" style="left:${x(avg)}px;top:0">平均<b>${fmtClock(avg)}</b></div>`);
+    placed.forEach(p=>{
+      html+=`<div class="ds-dot" style="left:${p.cx}px;top:${axisY-this.DOT*(p.level+1)}px;background:${state.kitColors[p.kit] ?? '#888'}"`
+          + ` title="${esc(disp(p.pid))} — ${esc(p.kit)}  ${fmtClock(p.time)}"></div>`;
+    });
+    el.innerHTML=html+'</div>';
+  },
+};
+new ResizeObserver(()=>itemDotStrip.draw()).observe($('item-time-dist'));
+
+// アップグレードのキット絞り込みボタン（「すべて」＋アップグレードのあるキット）
+function renderItemKitFilter(){
+  const el=$('item-kit-filter');
+  const upgrade=state.item.kind==='upgrade';
+  el.style.display = upgrade ? '' : 'none';
+  if(!upgrade) return;
+  const kits=uniq((state.itemStats?.items ?? []).filter(i=>i.upgrade).map(i=>i.kit)).sort((a,b)=>a.localeCompare(b,'ja'));
+  const btn=(value,label)=>`<button type="button" data-value="${esc(value)}" class="${(state.item.kit ?? '')===value?'active':''}" onclick="setItemKit(this.dataset.value)">${label}</button>`;
+  el.innerHTML = btn('','すべて') + kits.map(k=>btn(k, `${kitChip(k)}${esc(k)}`)).join('');
+}
+
+function setItemKit(kit){
+  state.item.kit = kit || null;
+  ensureItemSelected();
+  saveHash();
+  renderItem();
+}
+
+function selectItem(name){
+  if(state.item.current===name) return;
+  state.item.current=name;
+  saveHash();
+  renderItem();
+  $('item-detail-header').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function sortItemList(key){
+  state.item.sort=key;
+  renderItemTable(itemsOfKind());
+}
+
+// 共通アイテム／アップグレードの切り替え。選択中のアイテムがその種類になければ先頭（購入率1位）にする
+function setItemKind(kind){
+  state.item.kind=kind;
+  ensureItemSelected();
+  saveHash();
+  renderItem();
+}
+function ensureItemSelected(){
+  const list=itemsOfKind();
+  if(!list.some(i=>i.name===state.item.current)) state.item.current=[...list].sort(byDesc(i=>i.rate ?? -1))[0]?.name ?? null;
 }
 
 /* ---------- 6-c. プレイヤータブ ---------- */
@@ -1437,7 +1911,7 @@ function applyNames(map){
   Object.assign(state.names,map);
   rerenderQuiet(()=>{
     buildPlayerStrip();
-    renderKit(); renderMatch(); renderPlayer();
+    renderKit(); renderItem(); renderMatch(); renderPlayer();
   });
 }
 
@@ -1471,7 +1945,7 @@ async function loadNames(){
  * 読み込み時は ?match=… のようなクエリでも、#tab=match だけでもよい。値は1つだけでも複数でもよい。
  * # 以降はサーバーに送られないので静的ホスティング（github.io）でも動く。
  * replaceState で書き換えるので、ブラウザの履歴は増えない */
-const TAB_KEY = { kit:'kit', match:'match', player:'player' };   // タブ → そのタブの選択を表す URL のキー
+const TAB_KEY = { kit:'kit', item:'item', match:'match', player:'player' };   // タブ → そのタブの選択を表す URL のキー
 const encodeQuery = q => q.toString().replace(/%2F/g,'/');
 
 function saveHash(){
@@ -1504,13 +1978,19 @@ function urlParams(){
 // タブは tab= があればそれ、なければ match → player → kit の順に、値のあるキーのタブを開く
 function readHash(){
   const q=urlParams();
-  const tab = TABS.includes(q.get('tab')) ? q.get('tab') : ['match','player','kit'].find(t=>q.has(TAB_KEY[t]));
+  const tab = TABS.includes(q.get('tab')) ? q.get('tab') : ['match','player','item','kit'].find(t=>q.has(TAB_KEY[t]));
   if(tab) state.tab=tab;
   if(!state.all) return;
   const kit=q.get('kit'), match=q.get('match'), player=q.get('player');
   if(state.allKits.includes(kit)) state.kit.current=kit;
   if(state.all.matches.has(match)) state.match.current=match;
   if(state.all.picks.some(p=>p.playerId===player)) state.player.current=player;
+  const item=q.get('item');
+  if(item && state.all.itemNames.has(item)){   // 種類（共通／アップグレード）も合わせる
+    state.item.current=item;
+    state.item.kind = isUpgradeItem(item) ? 'upgrade' : 'common';
+    state.item.kit = null;
+  }
   let from=q.get('from'), to=q.get('to');
   if(state.dates.includes(from) && state.dates.includes(to)){
     if(from>to) [from,to]=[to,from];
@@ -1526,7 +2006,7 @@ function applyHash(){
   syncPeriodSlider();
   applyPeriod();          // 期間外の選択はここで先頭に切り替わる
   switchTab(state.tab);   // saveHash もここで行われ、無効な値は URL から消える
-  renderKit(); renderMatch(); renderPlayer();
+  renderKit(); renderItem(); renderMatch(); renderPlayer();
   revealCard(state.tab);
 }
 
@@ -1658,6 +2138,7 @@ function applyPeriod(){
   state.kitStats=derive.kitStats(state.picks, state.rows, state.allKits);
   state.abilityRank=derive.abilityRanking(state.rows);
   state.matchups=derive.kitMatchups(state.picks);
+  state.itemStats=derive.itemStats(state.picks);
   state.charts['chart-ability-rank']?.destroy();   // ランキングは未作成のときだけ描くので作り直させる
   delete state.charts['chart-ability-rank'];
 
@@ -1668,6 +2149,7 @@ function applyPeriod(){
   if(!matchList.some(m=>m.id===state.match.current)) state.match.current=matchList[0]?.id ?? null;
   const playerList=buildPlayerStrip();
   if(!playerList.some(p=>p.id===state.player.current)) state.player.current=playerList[0]?.id ?? null;
+  ensureItemSelected();
 
 }
 
@@ -1678,7 +2160,7 @@ function changePeriod(period){
   syncPeriodSlider();
   applyPeriod();
   saveHash();   // 期間外になった選択が先頭に切り替わるので、その後で保存
-  renderKit(); renderMatch(); renderPlayer();
+  renderKit(); renderItem(); renderMatch(); renderPlayer();
 }
 const setPeriod   = (side, value) => changePeriod({ ...state.period, [side]:value });
 const resetPeriod = () => changePeriod(fullPeriod());

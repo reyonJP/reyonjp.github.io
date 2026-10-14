@@ -28,13 +28,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 CSS・HTML・JS をすべて含んだ1ファイル構成。外部依存は cdnjs の Chart.js と chartjs-plugin-datalabels、Google Fonts だけ。JS はファイル冒頭のコメントにある 1〜8 の節（設定 → 状態 → ユーティリティ → データ派生 → チャート → 描画 → 名前解決 → 起動）で並んでいる。
 
 **データ**
-- AWS Lambda の関数 URL（`LAMBDA_URL`）に GET すると `{ matches, players, damage, names }` が返る。プレイヤー名の解決は同じ URL への POST `{ uuids }` で、Lambda 経由で Mojang に問い合わせる。
+- AWS Lambda（ap-northeast-1 の `ForgeWarsAnalyze`、Node.js。コードはこのリポジトリにない）の関数 URL（`LAMBDA_URL`）に GET すると `{ matches, players, damage, items, names }` が返る。元データはゲームが書き込む Google スプレッドシートの `Matches` / `MatchPlayers` / `DamageLog` / `ForgeWarsItem` シート。プレイヤー名の解決は同じ URL への POST `{ uuids }` で、Lambda 経由で Mojang に問い合わせる。
 - `buildTables` が次の3つを作る。
   - `matches`：試合 ID → 試合のメタ情報
   - `picks`：出場（試合×プレイヤー）。ダメージ0の出場も含む
   - `rows`：ダメージ記録（試合×プレイヤー×アビリティ）
 - **出場に関わる数（ピック数・勝率・試合数・毎分ダメージの分母）は必ず `picks` から数える。** `rows` にはダメージ0の出場が現れないため。
 - 毎分ダメージは、ピックごとの平均ではなく `perMin` ヘルパーで「合計ダメージ ÷ 合計試合時間」として出す。
+- 購入履歴は GET の `items`（`{ matchId, playerId, time(試合開始からの秒), item(表示名) }` の配列）。2026/10/10 以降の試合にしかなく、`buildTables` で `state.all.purchases`（pickKey → 時刻順の配列）にする。試合タブの「購入アイテム」（数直線）では期間で絞らずに使い、アイテムタブ（`derive.itemStats`）では期間内の出場のうち購入記録のある試合だけを母数にする。キット専用アイテム（アップグレードとサーマルアーマー）は定数 `KIT_ITEMS` で判断する。
 - `kills` / `deaths` は 2026/09/26 以降の試合にしかない（それ以前は `null`）。記録のない試合は「記録なし」と表示する。
 - 統合版（Bedrock）プレイヤーの UUID は `00000000` で始まり、Mojang API では名前を引けない。そのため「統合版プレイヤー①」のような名前を割り当てる。
 
@@ -48,12 +49,13 @@ CSS・HTML・JS をすべて含んだ1ファイル構成。外部依存は cdnjs
 
 **表示状態**
 - 表示状態は URL の `#` 以降に `history.replaceState` で保存する（`saveHash` / `readHash` / `applyHash`）。
-- 書くのは今のタブで選んでいるもの1つだけで、タブはキーから判断する（例：`#match=19e63642`、`#kit=カルティスト`）。統計期間が全期間でなければ `&from=…&to=…` を足す。
+- 書くのは今のタブで選んでいるもの1つだけで、タブはキーから判断する（例：`#match=19e63642`、`#kit=カルティスト`、`#item=金のリンゴ`）。タブはキット → アイテム → 試合 → プレイヤーの順。統計期間が全期間でなければ `&from=…&to=…` を足す。
 - 読むときは `?match=…` のようなクエリ形式や `#tab=match` だけでも受け付ける。
 - 新しい選択状態を足すときは、`saveHash` と `readHash` の両方に追加する。
 
 **キット**
 - キットの色は `KIT_COLOR` で定義する。新しいキットを追加したときはここにも足す。足さない場合は `FALLBACK_KIT_COLORS` の色が使われる。
+- キット専用アイテム（キット → 表示名）は `KIT_ITEMS` に持つ。ゲームのソース（`ForgeWarsManager/Kit/*` の `EnchantUpgradeAbility` / `EnchantUpgradeUltimateAbility` / `EnchantType.KIT_ONLY`）が正で、アップグレード名は「アビリティ名 + " アップグレード"」。キットやアップグレードが変わったらここも直す。一覧にない「◯◯ アップグレード」は、いちばん多く買ったキットのものとして扱う。
 
 ## 動作確認
 
