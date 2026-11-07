@@ -885,12 +885,17 @@ const derive = {
     }));
   },
 
-  // キット1つ分の習熟カーブ：使用回数の区間ごとの試合数・勝率・毎分ダメージ
+  // キット1つ分の習熟カーブ：使用回数 LEARNING_STEP 回ごとの区間の試合数・勝率・毎分ダメージ
+  // 区間はそのキットの最大使用回数まで（1〜3回目, 4〜6回目, …）
   kitLearning(picks, rows, kit){
-    const buckets=LEARNING_BUCKETS.map(b=>({ ...b, n:0, wins:0, pm:perMin.create() }));
+    const nthOf=(pid, matchId)=>state.kitUseNth[kitUseKey(pid, kit, matchId)];
+    const maxNth=maxOf(picks.map(p=>nthOf(p.playerId, p.matchId) ?? 0));
+    const buckets=Array.from({ length:Math.ceil(maxNth/LEARNING_STEP) }, (_, i)=>({
+      label:`${i*LEARNING_STEP+1}〜${(i+1)*LEARNING_STEP}回目`, n:0, wins:0, pm:perMin.create(),
+    }));
     const bucketOf=(pid, matchId)=>{
-      const nth=state.kitUseNth[kitUseKey(pid, kit, matchId)];
-      return buckets.find(b=>nth>=b.from && (b.to==null || nth<=b.to));
+      const nth=nthOf(pid, matchId);
+      return nth ? buckets[Math.floor((nth-1)/LEARNING_STEP)] : undefined;
     };
     picks.forEach(p=>{
       const b=bucketOf(p.playerId, p.matchId);
@@ -1347,14 +1352,8 @@ function learningChart(canvasId, buckets, color){
   });
 }
 
-// 習熟カーブの区間（何回目の使用か。to が null は上限なし）
-const LEARNING_BUCKETS = [
-  { label:'1回目',       from:1,  to:1 },
-  { label:'2〜3回目',    from:2,  to:3 },
-  { label:'4〜6回目',    from:4,  to:6 },
-  { label:'7〜10回目',   from:7,  to:10 },
-  { label:'11回目以降',  from:11, to:null },
-];
+// 習熟カーブの区間の幅（何回目の使用かを、この回数ごとにまとめる）
+const LEARNING_STEP = 3;
 
 // 相性表の HTML。試合数の少ない組み合わせが上位を占めないよう、
 // TOP5 が埋まる範囲でできるだけ大きい最低試合数で絞り込む

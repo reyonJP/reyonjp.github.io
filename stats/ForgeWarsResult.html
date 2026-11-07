@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SR1ZM40WZ5"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SR1ZM40WZ5');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>フォージウォーズ リザルト</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  /* ================= トークン（統計サイトと同じ） ================= */
+  :root{
+    --bg:#0a0b0d;
+    --bg-soft:#101115;
+    --panel:#181a21;
+    --panel-2:#1e2129;
+    --panel-edge:#363b48;
+    --hairline:#2c303b;
+    --ink:#ecebe5;
+    --ink-dim:#9a988f;
+    --ink-faint:#6c6a63;
+    --ember:#ff8a3d;
+    --ember-hot:#ffc857;
+    --ember-deep:#d4581f;
+    --team-a:#5b9bd5;
+    --team-b:#d95f5f;
+    --jp-font:'Noto Sans JP',sans-serif;
+    --num-font:'Chakra Petch',monospace;
+    --radius:2px;
+  }
+
+  /* ================= ベース ================= */
+  *{box-sizing:border-box;margin:0;padding:0}
+  [hidden]{display:none!important}
+  body{
+    background:
+      radial-gradient(1100px 480px at 78% -8%,rgba(255,138,61,.10),transparent 60%),
+      radial-gradient(900px 500px at -5% 0%,rgba(127,168,201,.06),transparent 55%),
+      var(--bg);
+    background-attachment:fixed;
+    color:var(--ink);
+    font-family:var(--jp-font);
+    font-size:16px;line-height:1.65;min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:var(--jp-font)}
+  .wrap{position:relative;max-width:1400px;margin:0 auto;padding:14px 20px 16px}
+
+  /* ================= 右下の統計サイトボタン ================= */
+  .nav-link{margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:var(--radius);background:var(--ember);color:#15161a;font-size:15px;font-weight:700;text-decoration:none;transition:background .15s,transform .1s}
+  .nav-link:hover{background:var(--ember-hot);transform:translateY(-1px)}
+  .nav-link:focus-visible,.btn:focus-visible{outline:2px solid var(--ember-hot);outline-offset:2px}
+
+  .panel{background:linear-gradient(180deg,var(--panel),var(--bg-soft));border:1px solid var(--panel-edge);border-radius:var(--radius);padding:24px;box-shadow:0 24px 60px -40px rgba(0,0,0,.9)}
+  .board-panel{padding:10px 12px}
+  h2{font-size:14px;font-weight:700;letter-spacing:.06em;margin:0 0 12px;display:flex;align-items:center;gap:9px}
+  h2::before{content:'';width:3px;height:14px;background:linear-gradient(var(--ember),var(--ember-deep));box-shadow:0 0 10px -2px var(--ember)}
+
+  .btn{appearance:none;display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--ember);border:1px solid var(--ember);border-radius:var(--radius);padding:8px 16px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;transition:color .15s,background .15s}
+  .btn:hover{background:var(--ember);color:#1a130c}
+  .btn-solid{background:linear-gradient(160deg,var(--ember-hot),var(--ember));color:#1a130c;border-color:transparent}
+  .btn-solid:hover{background:var(--ember-hot)}
+
+  /* ================= 状態表示 ================= */
+  .status{padding:48px 24px;text-align:center;color:var(--ink-dim)}
+  .status p + p{margin-top:12px}
+  .status .btn{margin-top:18px}
+
+  /* ================= 試合の見出し ================= */
+  .match-head{display:flex;align-items:flex-end;justify-content:space-between;gap:4px 16px;flex-wrap:wrap;margin-bottom:10px}
+  .match-map{font-size:13px;letter-spacing:.12em;color:var(--ink-dim)}
+  .match-win{font-size:26px;font-weight:900;letter-spacing:.06em;line-height:1.25}
+  .match-meta{display:flex;gap:18px;flex-wrap:wrap;color:var(--ink-dim);font-size:14px}
+  .match-meta b{font-family:var(--num-font);color:var(--ink);font-weight:600;margin-left:6px}
+
+  /* ================= MVP ================= */
+  /* 広い画面では MVP カードとトップ○○ を横に並べる */
+  .hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:10px;align-items:stretch;margin-bottom:10px}
+  .hero .titles{grid-template-columns:repeat(2,minmax(0,1fr));align-content:stretch}
+  .hero .title-card{height:100%}
+  @media (max-width:900px){ .hero{grid-template-columns:1fr} }
+
+  .mvp-card{--kit:#9a988f;--glow-x:52px;--glow-y:50%;position:relative;display:flex;gap:18px;align-items:center;height:100%;padding:12px 20px;border-radius:var(--radius);
+    background:
+      radial-gradient(280px 180px at var(--glow-x) var(--glow-y),rgba(255,138,61,.28),transparent 72%),
+      linear-gradient(160deg,#221a14,#121216 70%);
+    border:1px solid rgba(255,138,61,.45);
+    box-shadow:0 0 0 1px rgba(255,200,87,.08) inset,0 20px 60px -30px rgba(255,138,61,.6);overflow:hidden}
+  .mvp-skin{flex-shrink:0;width:64px;display:flex;justify-content:center}
+  .mvp-skin img{width:100%;height:auto;image-rendering:pixelated;filter:drop-shadow(0 8px 18px rgba(255,138,61,.35))}
+  .mvp-body{min-width:0;flex:1}
+  .mvp-label{display:inline-block;font-family:var(--num-font);font-weight:700;font-size:15px;letter-spacing:.3em;padding:2px 10px 2px 12px;color:#1a130c;background:linear-gradient(160deg,var(--ember-hot),var(--ember));border-radius:var(--radius)}
+  .mvp-name{font-size:28px;font-weight:900;line-height:1.25;margin-top:4px;overflow-wrap:anywhere}
+  .mvp-kit{display:flex;align-items:center;gap:8px;color:var(--ink-dim);font-size:14px;margin-top:2px}
+  .kit-dot{width:10px;height:10px;border-radius:50%;background:var(--kit);box-shadow:0 0 8px var(--kit);flex-shrink:0}
+  .mvp-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(86px,1fr));gap:6px 14px;margin-top:8px}
+  .mvp-stats div{min-width:0}
+  .mvp-stats dt{font-size:11px;letter-spacing:.08em;color:var(--ink-dim)}
+  .mvp-stats dd{font-family:var(--num-font);font-weight:600;font-size:18px;font-variant-numeric:tabular-nums}
+  @media (max-width:560px){
+    .mvp-card{--glow-x:50%;--glow-y:70px;flex-direction:column;text-align:center;padding:20px 16px}
+    .mvp-kit{justify-content:center}
+    .mvp-skin{width:96px}
+  }
+
+  /* ================= 称号 ================= */
+  .titles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:10px}
+  .title-card{--kit:#9a988f;display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:var(--radius);background:var(--panel);border:1px solid var(--panel-edge);border-left:3px solid var(--kit);min-width:0}
+  .title-icon{font-size:22px;width:28px;text-align:center;flex-shrink:0}
+  .title-text{min-width:0}
+  .title-label{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--ember-hot)}
+  /* 長い名前も省略せず折り返す */
+  .title-name{font-weight:700;font-size:17px;line-height:1.3;overflow-wrap:anywhere}
+  .title-value{font-family:var(--num-font);font-size:13px;color:var(--ink-dim)}
+
+  /* ================= スコアボード ================= */
+  .board{display:flex;flex-direction:column;gap:8px}
+  .team-block{--team:#9a988f}
+  .team-head{display:flex;align-items:center;gap:12px;padding:5px 12px;border-left:4px solid var(--team);background:linear-gradient(90deg,color-mix(in srgb,var(--team) 16%,transparent),transparent 70%)}
+  .team-name{font-weight:900;font-size:16px;color:var(--team)}
+  .team-result{font-size:13px;font-weight:700;letter-spacing:.1em;padding:1px 10px;border-radius:var(--radius);border:1px solid currentColor}
+  .team-result.win{color:var(--ember-hot)}
+  .team-result.lose{color:var(--ink-faint)}
+  .team-lv{margin-left:auto;font-family:var(--num-font);color:var(--ink-dim);font-size:14px}
+  .table-scroll{overflow-x:auto}
+  /* 青と赤の表で列の位置をそろえるため、列幅を固定する（数値の 5 列は残りを等分） */
+  table{width:100%;border-collapse:collapse;font-size:14px;min-width:760px;table-layout:fixed}
+  col.c-rank{width:44px}
+  col.c-player{width:26%}
+  col.c-kit{width:16%}
+  th{text-align:left;color:var(--ink-dim);font-weight:600;font-size:12px;letter-spacing:.05em;border-bottom:1px solid var(--panel-edge);padding:4px 10px;white-space:nowrap}
+  td{border-bottom:1px solid var(--hairline);padding:3px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  td.num,th.num{text-align:right;font-family:var(--num-font);font-weight:600;font-variant-numeric:tabular-nums}
+  /* 1 位の数値：オレンジの文字に、薄いオレンジの背景（数字の部分だけ）。左右の余白は打ち消して、他の行と数字の位置をそろえる */
+  .hl{display:inline-block;margin:0 -6px;padding:1px 6px;border-radius:var(--radius);color:var(--ember);background:rgba(255,138,61,.2)}
+  .player-cell{display:flex;align-items:center;gap:10px;min-width:0}
+  .player-name{overflow:hidden;text-overflow:ellipsis}
+  .player-cell img{width:22px;height:22px;image-rendering:pixelated;border-radius:var(--radius);flex-shrink:0}
+  .mvp-badge{flex-shrink:0;font-family:var(--num-font);font-size:11px;font-weight:700;letter-spacing:.12em;color:#1a130c;background:var(--ember-hot);padding:0 6px;border-radius:var(--radius)}
+  .kit-cell{display:flex;align-items:center;gap:8px}
+
+  .foot{display:flex;align-items:center;gap:12px;margin-top:8px}
+  .foot .btn{padding:6px 14px}
+
+  @media (max-width:640px){
+    .wrap{padding:12px 16px 24px}
+    .nav-link{padding:6px 12px;font-size:14px}
+    .panel{padding:16px}
+    .board-panel{padding:8px}
+    .match-win{font-size:22px}
+  }
+
+  /* ================= 発表の演出（全画面） ================= */
+  .show{--heat:0;position:fixed;inset:0;z-index:100;overflow:auto;background:#060405}
+  /* 画面の下半分を照らすかまどの火 */
+  .show-glow{position:fixed;inset:0;pointer-events:none;opacity:var(--heat);
+    background:radial-gradient(120% 70% at 50% 108%,rgba(255,140,50,.55),rgba(212,88,31,.22) 40%,transparent 70%)}
+  .show-fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+  .show-flash{position:fixed;inset:0;background:#fff1d6;opacity:0;pointer-events:none;mix-blend-mode:screen}
+  .show-stage{position:relative;min-height:100%;max-width:820px;margin:0 auto;padding:56px 16px 24px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+  .show-ctrl{position:fixed;top:12px;right:12px;display:flex;gap:8px;z-index:2}
+  .show-ctrl button{appearance:none;background:rgba(0,0,0,.45);color:var(--ink);border:1px solid var(--panel-edge);border-radius:var(--radius);padding:6px 12px;font-size:13px;cursor:pointer}
+  .show-ctrl button:hover{border-color:var(--ember);color:var(--ember-hot)}
+  .show-ctrl button:focus-visible{outline:2px solid var(--ember-hot);outline-offset:2px}
+  .show-map{font-size:14px;letter-spacing:.3em;color:var(--ink-dim)}
+  .show-win{font-size:clamp(28px,7vw,52px);font-weight:900;letter-spacing:.08em;line-height:1.2;text-shadow:0 0 30px currentColor}
+  .show-center{flex:1;width:100%;display:grid;grid-template-columns:minmax(0,1fr);place-items:center;min-height:clamp(240px,44vh,420px)}
+  .show-center > *{grid-area:1/1}
+
+  /* 1 人ずつ中央に出すトップ○○ */
+  .spot{--kit:#9a988f;width:min(100%,600px);display:flex;align-items:center;gap:20px;padding:22px 26px;text-align:left;border-radius:var(--radius);
+    background:linear-gradient(160deg,#221a14,#121216 70%);border:1px solid rgba(255,138,61,.45);border-left:4px solid var(--kit);
+    box-shadow:0 20px 60px -24px rgba(255,138,61,.55)}
+  .spot img{width:84px;height:84px;image-rendering:pixelated;flex-shrink:0;filter:brightness(1) drop-shadow(0 6px 14px rgba(255,138,61,.35))}
+  .spot-text{min-width:0;flex:1}
+  .spot-label{font-weight:900;font-size:16px;letter-spacing:.12em;color:var(--ember-hot)}
+  /* 主役は名前（金色に光らせ、打ち込みと火の粉の出どころにする）。数値は控えめに */
+  .spot-name{white-space:nowrap;font-weight:900;font-size:clamp(28px,6vw,40px);line-height:1.2;
+    color:var(--ember-hot);text-shadow:0 0 18px rgba(255,138,61,.7)}
+  .spot-name span{display:inline-block;transform-origin:left center}
+  .spot-value{font-family:var(--num-font);font-weight:700;font-size:clamp(20px,4.5vw,28px);line-height:1.2;color:var(--ink)}
+  .spot-value small{font-family:var(--jp-font);font-size:14px;color:var(--ink-dim);margin-left:8px}
+  @media (max-width:560px){ .spot{gap:14px;padding:16px 18px} .spot img{width:60px;height:60px} }
+
+  /* MVP 発表の前に大きく出す文字。金色のグラデーションは 1 文字ずつ（親にかけると、他の文字が動くたびにちらつく） */
+  .mvp-call{font-family:var(--num-font);font-weight:700;font-size:clamp(84px,24vw,200px);line-height:1;letter-spacing:.06em}
+  .mvp-call span{display:inline-block;color:transparent;will-change:transform,opacity;
+    background-image:linear-gradient(180deg,#fff6d8,#e8c06a 45%,#a8792e 55%,#f3d78a);-webkit-background-clip:text;background-clip:text;
+    filter:drop-shadow(0 0 18px rgba(255,170,70,.6))}
+  .show-mvp{width:100%;text-align:left}
+  /* アニメーション中の MVP のカードは、グラデーションなしの単色 */
+  .show-mvp .mvp-card{background:#1a1614}
+  /* MVP のカードを、登場直後に 1 回だけ横切る光。燃える演出は fx.burnCard（カードの縁から炎が立ちのぼる） */
+  .show-mvp .mvp-card::after{content:'';position:absolute;inset:0;pointer-events:none;transform:translateX(-120%);
+    background:linear-gradient(105deg,transparent 35%,rgba(255,240,200,.35) 50%,transparent 65%);animation:mvp-shine .9s .25s ease-out forwards}
+  @keyframes mvp-shine{to{transform:translateX(120%)}}
+  /* MVP の名前は金色で大きく。大きさは名前の長さで決める（--name-size） */
+  .show-mvp .mvp-name{font-size:min(var(--name-size,58px),11vw);line-height:1.15;margin-top:6px;color:transparent;
+    background-image:linear-gradient(180deg,#fff6d8,#e8c06a 45%,#a8792e 55%,#f3d78a);-webkit-background-clip:text;background-clip:text;
+    filter:drop-shadow(0 0 8px rgba(255,200,87,.5))}
+  /* 発表済みのトップ○○ が収まる列 */
+  .show-row{width:100%;text-align:left;grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr))}
+  .show-row .title-card{padding:8px 10px;gap:8px}
+  .show-row .title-icon{font-size:18px;width:22px}
+  .show-row .title-name{font-size:15px;white-space:nowrap}
+  .show-gate,.show-actions{display:flex;flex-direction:column;align-items:center;gap:10px}
+  .show-actions{min-height:48px}
+  .show-gate .btn,.show-actions .btn{font-size:16px;padding:12px 28px}
+  .show-note{font-size:12px;color:var(--ink-faint)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div id="status" class="status panel">読み込み中…</div>
+
+  <main id="result" hidden>
+    <div class="match-head">
+      <div>
+        <div class="match-map" id="match-map"></div>
+        <div class="match-win" id="match-win"></div>
+      </div>
+      <div class="match-meta" id="match-meta"></div>
+    </div>
+
+    <section class="hero">
+      <div id="hero-mvp"></div>
+      <div class="titles" id="hero-titles"></div>
+    </section>
+
+    <section class="panel board-panel">
+      <div class="board" id="board"></div>
+    </section>
+
+    <div class="foot">
+      <button type="button" class="btn" id="replay">▶ もう一度再生</button>
+      <a class="nav-link" id="stats-link" href="https://reyonjp.github.io/stats/ForgeWars">統計サイト</a>
+    </div>
+  </main>
+</div>
+
+<!-- 発表の演出 -->
+<div class="show" id="show" role="dialog" aria-modal="true" aria-label="リザルト発表" hidden>
+  <div class="show-glow" aria-hidden="true"></div>
+  <canvas class="show-fx" id="show-fx" aria-hidden="true"></canvas>
+  <div class="show-flash" id="show-flash" aria-hidden="true"></div>
+  <div class="show-ctrl">
+    <button type="button" id="show-mute"></button>
+    <button type="button" id="show-skip">スキップ ▶▶</button>
+  </div>
+  <div class="show-stage" id="show-stage">
+    <div class="show-head">
+      <div class="show-map" id="show-map"></div>
+      <div class="show-win" id="show-win"></div>
+    </div>
+    <div class="show-center">
+      <div class="spot" id="show-spot"></div>
+      <div class="mvp-call" id="show-call" aria-hidden="true"><span>M</span><span>V</span><span>P</span></div>
+      <div class="show-mvp" id="show-mvp"></div>
+      <div class="show-gate" id="show-gate">
+        <button type="button" class="btn btn-solid" id="show-start">▶ 結果を表示</button>
+      </div>
+    </div>
+    <div class="show-row titles" id="show-titles"></div>
+    <div class="show-actions">
+      <button type="button" class="btn btn-solid" id="show-done">スコアボードを見る</button>
+    </div>
+  </div>
+  <canvas class="show-fx" id="show-fx-top" aria-hidden="true"></canvas>
+</div>
+
+<script>
+/* ================================================================
+ * フォージウォーズ リザルト
+ *   1. 設定  2. ユーティリティ  3. データ読み込み  4. 集計
+ *   5. ページ描画  6. 効果音  7. 炎とかまど  8. 発表の演出  9. 起動
+ * データは試合の要約（受付 Lambda の GET ?gameId=。ログを受け取ったときに集計済み）。
+ * ================================================================ */
+
+/* ---------- 1. 設定 ---------- */
+const SUMMARY_URL = 'https://fuk7mctrtmxeg6pjrwodbexbly0uegmi.lambda-url.ap-northeast-1.on.aws/';
+const STATS_URL = 'https://2gcjv7f3gcqrygc4ya6gt4z4au0ojrlv.lambda-url.ap-northeast-1.on.aws/';
+// 統計サイト。拡張子なしの相対リンクは手元で開くと切れるので、絶対 URL にする
+const STATS_PAGE = 'https://reyonjp.github.io/stats/ForgeWars';
+
+// MVP を選ぶためのスコアの重み（ページには出さない）
+const SCORE = { kill:200, assist:100, death:0, playerDamage:1, forgeDamage:1, heal:1, ccSecond:30 };
+
+// 統計サイトの KIT_COLOR と同じ
+const KIT_COLOR = {
+  'カルティスト':'#b07ce8', 'レヴィン':'#f2d544', 'スウィフト':'#5fd0e8', 'リジッド':'#7cc46a',
+  'デストロイヤー':'#e5534b', 'ガイザー':'#3f7fe0', 'ヘイル':'#d9e6ee', 'グリード':'#f0913a',
+  'ネクター':'#ec7fb6', 'プラトー':'#b58955', 'ガーディアン':'#3fae95',
+};
+const TEAM = { A:{ name:'青', color:'#5b9bd5' }, B:{ name:'赤', color:'#d95f5f' } };
+const MAP_NAME = { CRAZY_CANNON:'クレイジーキャノン', RUINED_COLONY:'ルインドコロニー', LUMINOUS_FRONT:'ルミナスフロント' };
+
+// 値が 0 の称号は出さない
+const TITLES = [
+  { key:'kills',        label:'トップキル',     icon:'⚔️', unit:'キル' },
+  { key:'assists',      label:'トップアシスト', icon:'🤝', unit:'アシスト' },
+  { key:'playerDamage', label:'トップダメージ', icon:'💥', unit:'ダメージ' },
+  { key:'heal',         label:'トップ回復',     icon:'💚', unit:'回復' },
+  { key:'cc',           label:'トップ妨害',     icon:'⛓️', unit:'秒', decimals:1 },
+];
+
+const MUTE_KEY = 'fw-result-mute';
+
+/* ---------- 2. ユーティリティ ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+const fmtNum = (v, decimals = 0) => Number(v).toLocaleString('ja-JP', { minimumFractionDigits:decimals, maximumFractionDigits:decimals });
+const fmtDuration = s => `${Math.floor(s / 60)}分${String(Math.floor(s % 60)).padStart(2, '0')}秒`;
+const kitColor = kit => KIT_COLOR[kit] ?? '#9a988f';
+const isBedrock = id => String(id).startsWith('00000000');
+const skinUrl = (id, kind, size) => `https://mc-heads.net/${kind}/${isBedrock(id) ? 'MHF_Steve' : id}/${size}`;
+const STEVE = (kind, size) => `https://mc-heads.net/${kind}/MHF_Steve/${size}`;
+const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// localStorage は使えない環境（プライベートモードなど）でも落ちないようにする
+const store = {
+  get(k){ try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v){ try { localStorage.setItem(k, v); } catch {} },
+};
+
+async function fetchJson(url, options){
+  const res = await fetch(url, options);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+/* ---------- 3. データ読み込み ---------- */
+function readMatchId(){
+  const params = new URLSearchParams(location.hash.slice(1) || location.search.slice(1));
+  const id = params.get('match');
+  return id && /^[0-9a-f]{8}$/.test(id) ? id : null;
+}
+
+let statsPromise = null;
+const loadStats = () => statsPromise ??= fetchJson(STATS_URL);
+
+// 見つからなければ null
+async function loadSummary(id){
+  const res = await fetch(`${SUMMARY_URL}?gameId=${id}`);
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+function toMeta({ match, players }){
+  return {
+    map: match.map,
+    date: match.date,
+    winTeam: match.winTeam || null,
+    duration: match.duration,
+    levels: match.levels ?? {},
+    players: players.map(p => ({ ...p, id:p.playerId })),
+  };
+}
+
+async function fillNames(players){
+  players.filter(p => !p.name && isBedrock(p.id)).forEach(p => { p.name = '統合版プレイヤー'; });
+  const ask = players.filter(p => !p.name).map(p => p.id).slice(0, 20);
+  if (ask.length) {
+    try {
+      const res = await fetchJson(STATS_URL, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ uuids:ask }) });
+      players.forEach(p => { if (!p.name && res.data?.[p.id]) p.name = res.data[p.id]; });
+    } catch (e) { console.warn('name lookup failed', e); }
+  }
+  players.forEach(p => { if (!p.name || p.name === p.id) p.name = p.id.slice(0, 8); });
+}
+
+/* ---------- 4. 集計 ----------
+ * キル・アシスト・ダメージなどは要約で集計済み。ここでは MVP と称号だけを決める */
+function analyze(meta){
+  const players = meta.players.map(p => ({ ...p }));
+  const levels = meta.levels;
+  players.forEach(p => {
+    p.score = Math.round(
+      p.kills * SCORE.kill + p.assists * SCORE.assist + p.deaths * SCORE.death +
+      p.playerDamage * SCORE.playerDamage + p.forgeDamage * SCORE.forgeDamage +
+      p.heal * SCORE.heal + p.cc * SCORE.ccSecond);
+  });
+  const byScore = (a, b) => b.score - a.score;
+  players.sort(byScore);
+
+  const candidates = meta.winTeam ? players.filter(p => p.team === meta.winTeam) : players;
+  const mvp = candidates[0] ?? players[0] ?? null;
+  const titles = TITLES.map(t => {
+    const best = [...players].sort((a, b) => (b[t.key] - a[t.key]) || byScore(a, b))[0];
+    return best && best[t.key] > 0 ? { ...t, player:best, value:best[t.key] } : null;
+  }).filter(Boolean);
+
+  return { players, mvp, titles, levels };
+}
+
+/* ---------- 5. ページ描画 ---------- */
+function mvpCardHTML(p){
+  const team = TEAM[p.team];
+  const stat = (label, value, dec = 0) => `<div><dt>${label}</dt><dd>${fmtNum(value, dec)}</dd></div>`;
+  return `
+    <div class="mvp-card" style="--kit:${kitColor(p.kit)}">
+      <div class="mvp-skin"><img src="${skinUrl(p.id, 'body', 240)}" alt="" onerror="this.onerror=null;this.src='${STEVE('body', 240)}'"></div>
+      <div class="mvp-body">
+        <span class="mvp-label">MVP</span>
+        <div class="mvp-name">${esc(p.name)}</div>
+        <div class="mvp-kit"><span class="kit-dot"></span>${esc(p.kit)}${team ? `　<span style="color:${team.color}">${team.name}チーム</span>` : ''}</div>
+        <dl class="mvp-stats">
+          <div><dt>K / A</dt><dd>${p.kills} / ${p.assists}</dd></div>
+          ${stat('ダメージ', p.playerDamage)}
+          ${p.heal > 0 ? stat('回復', p.heal) : ''}
+          ${stat('妨害 (秒)', p.cc, 1)}
+        </dl>
+      </div>
+    </div>`;
+}
+
+function titleCardHTML(t){
+  return `
+    <div class="title-card" style="--kit:${kitColor(t.player.kit)}">
+      <div class="title-icon" aria-hidden="true">${t.icon}</div>
+      <div class="title-text">
+        <div class="title-label">${t.label}</div>
+        <div class="title-name">${esc(t.player.name)}</div>
+        <div class="title-value">${fmtNum(t.value, t.decimals ?? 0)} ${t.unit}</div>
+      </div>
+    </div>`;
+}
+
+// 表で 1 位の数値をオレンジ色にする列。値が 0 の列は誰も色を付けない
+const TOP_COLUMNS = ['kills', 'assists', 'playerDamage', 'heal', 'cc'];
+
+function teamBlockHTML(team, res, meta){
+  const info = TEAM[team];
+  const best = Object.fromEntries(TOP_COLUMNS.map(k => [k, Math.max(...res.players.map(p => p[k]))]));
+  const hl = (p, k, text) => p[k] > 0 && p[k] === best[k] ? `<span class="hl">${text}</span>` : text;
+  const rows = res.players.filter(p => p.team === team);
+  const result = !meta.winTeam ? '' : meta.winTeam === team
+    ? '<span class="team-result win">勝利</span>' : '<span class="team-result lose">敗北</span>';
+  const level = res.levels[team] ? `<span class="team-lv">Lv ${res.levels[team]}</span>` : '';
+  const body = rows.map((p, i) => `
+    <tr>
+      <td class="num">${i + 1}</td>
+      <td><div class="player-cell"><img src="${skinUrl(p.id, 'avatar', 32)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${STEVE('avatar', 32)}'"><span class="player-name" title="${esc(p.name)}">${esc(p.name)}</span>${p === res.mvp ? '<span class="mvp-badge">MVP</span>' : ''}</div></td>
+      <td><div class="kit-cell" style="--kit:${kitColor(p.kit)}"><span class="kit-dot"></span>${esc(p.kit)}</div></td>
+      <td class="num">${hl(p, 'kills', p.kills)}</td>
+      <td class="num">${hl(p, 'assists', p.assists)}</td>
+      <td class="num">${hl(p, 'playerDamage', fmtNum(p.playerDamage))}</td>
+      <td class="num">${hl(p, 'heal', fmtNum(p.heal))}</td>
+      <td class="num">${hl(p, 'cc', fmtNum(p.cc, 1))}</td>
+    </tr>`).join('');
+  return `
+    <div class="team-block" style="--team:${info.color}">
+      <div class="team-head"><span class="team-name">${info.name}チーム</span>${result}${level}</div>
+      <div class="table-scroll"><table>
+        <colgroup><col class="c-rank"><col class="c-player"><col class="c-kit"><col span="5"></colgroup>
+        <thead><tr>
+          <th class="num">#</th><th>プレイヤー</th><th>キット</th>
+          <th class="num">キル</th><th class="num">アシスト</th>
+          <th class="num">ダメージ</th><th class="num">回復</th><th class="num">妨害(秒)</th>
+        </tr></thead>
+        <tbody>${body}</tbody>
+      </table></div>
+    </div>`;
+}
+
+function winText(meta){
+  return meta.winTeam ? `${TEAM[meta.winTeam].name}チームの勝利` : '試合終了';
+}
+
+function renderPage(id, meta, res){
+  $('stats-link').href = `${STATS_PAGE}#match=${id}`;
+  $('match-map').textContent = MAP_NAME[meta.map] ?? meta.map ?? '';
+  $('match-win').textContent = winText(meta);
+  $('match-win').style.color = meta.winTeam ? TEAM[meta.winTeam].color : '';
+  $('match-meta').innerHTML = `<span>日時<b>${esc(meta.date ?? '-')}</b></span><span>試合時間<b>${meta.duration ? fmtDuration(meta.duration) : '-'}</b></span><span>試合ID<b>${id}</b></span>`;
+
+  $('hero-mvp').innerHTML = res.mvp ? mvpCardHTML(res.mvp) : '';
+  $('hero-titles').innerHTML = res.titles.map(titleCardHTML).join('');
+
+  const teams = ['A', 'B'].sort((a, b) => (b === meta.winTeam) - (a === meta.winTeam));
+  $('board').innerHTML = teams.map(t => teamBlockHTML(t, res, meta)).join('');
+
+  document.title = `${winText(meta)} | フォージウォーズ リザルト`;
+  $('status').hidden = true;
+  $('result').hidden = false;
+  fitToScreen();
+  // フォントと画像（MVP のスキンは縦に長い）が読み込まれると高さが変わるので、読み込み後に合わせ直す
+  const loading = [...document.querySelectorAll('#result img')].filter(img => !img.complete)
+    .map(img => new Promise(r => { img.addEventListener('load', r, { once:true }); img.addEventListener('error', r, { once:true }); }));
+  Promise.all([document.fonts.ready, ...loading]).then(fitToScreen);
+  setTimeout(fitToScreen, 1500);
+}
+
+// 広い画面では、縦をいっぱいに使って 1 画面に収める。高さが足りなければ縮め、余っていれば拡大する（0.6〜1.6 倍）。
+// 表が横にはみ出さないよう、拡大は幅に収まる範囲まで
+function fitToScreen(){
+  const wrap = document.querySelector('.wrap');
+  wrap.style.zoom = '';
+  if (innerWidth <= 900 || $('result').hidden) return;
+  const target = innerHeight - 2;
+  const heightAt = k => { wrap.style.zoom = k.toFixed(3); return wrap.getBoundingClientRect().height; };
+  // 倍率を上げると表の幅が狭まって高さが増えるので、収まる最大の倍率を二分探索で求める
+  let lo = 0.6, hi = Math.min(1.6, innerWidth / 860);
+  if (heightAt(hi) <= target) lo = hi;
+  else for (let i = 0; i < 10; i++) {
+    const mid = (lo + hi) / 2;
+    if (heightAt(mid) <= target) lo = mid; else hi = mid;
+  }
+  wrap.style.zoom = Math.abs(lo - 1) < 0.002 ? '' : lo.toFixed(3);
+}
+addEventListener('resize', fitToScreen);
+
+function showStatus(html){
+  $('status').innerHTML = html;
+  $('status').hidden = false;
+  $('result').hidden = true;
+  fitToScreen();
+}
+
+/* ---------- 6. 効果音（Web Audio で合成。音声ファイルなし） ---------- */
+// 重さは、低音・残響・コンプレッサーで出す。音はすべて bus に流し、残響とコンプレッサーを通して鳴らす
+const sfx = {
+  ctx: null, bus: null, noise: null,
+  muted: store.get(MUTE_KEY) === '1',
+
+  // ブラウザはユーザー操作の中でしか音を鳴らせないので、ボタンのクリックで呼ぶ
+  unlock(){
+    if (!this.ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      const ctx = this.ctx = new AC();
+
+      const comp = ctx.createDynamicsCompressor();
+      comp.threshold.value = -16;
+      comp.knee.value = 10;
+      comp.ratio.value = 5;
+      comp.attack.value = 0.002;
+      comp.release.value = 0.3;
+      const master = ctx.createGain();
+      master.gain.value = 0.35;
+      master.connect(comp).connect(ctx.destination);
+
+      // 石造りの広い部屋のような残響
+      const reverb = ctx.createConvolver();
+      reverb.buffer = this.impulse(3.2);
+      const wet = ctx.createGain();
+      wet.gain.value = 0.3;
+      reverb.connect(wet).connect(master);
+
+      this.bus = ctx.createGain();
+      this.bus.connect(master);
+      this.bus.connect(reverb);
+
+      const len = ctx.sampleRate * 2;
+      this.noise = ctx.createBuffer(1, len, ctx.sampleRate);
+      const data = this.noise.getChannelData(0);
+      for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+    }
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+  },
+  ready(){ return this.ctx && !this.muted; },
+
+  // 残響用：減衰するノイズ
+  impulse(seconds){
+    const rate = this.ctx.sampleRate, len = Math.floor(rate * seconds);
+    const buf = this.ctx.createBuffer(2, len, rate);
+    for (let ch = 0; ch < 2; ch++) {
+      const d = buf.getChannelData(ch);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3.2);
+    }
+    return buf;
+  },
+  // 立ち上がって減衰する音量
+  env(at, peak, attack, decay){
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(0.0001, at);
+    g.gain.exponentialRampToValueAtTime(peak, at + attack);
+    g.gain.exponentialRampToValueAtTime(0.0001, at + attack + decay);
+    return g;
+  },
+  osc(type, at, from, to, glide, stopAt){
+    const o = this.ctx.createOscillator();
+    o.type = type;
+    o.frequency.setValueAtTime(from, at);
+    if (to !== from) o.frequency.exponentialRampToValueAtTime(to, at + glide);
+    o.start(at);
+    o.stop(stopAt);
+    return o;
+  },
+  noiseSrc(at, stopAt){
+    const s = this.ctx.createBufferSource();
+    s.buffer = this.noise;
+    s.loop = true;
+    s.start(at, Math.random());
+    s.stop(stopAt);
+    return s;
+  },
+  filter(type, freq, q = 0.7){
+    const f = this.ctx.createBiquadFilter();
+    f.type = type;
+    f.frequency.value = freq;
+    f.Q.value = q;
+    return f;
+  },
+  // 低音に倍音を足して太くする
+  drive(amount){
+    const ws = this.ctx.createWaveShaper();
+    const n = 1024, curve = new Float32Array(n);
+    for (let i = 0; i < n; i++) { const x = i / (n - 1) * 2 - 1; curve[i] = Math.tanh(amount * x) / Math.tanh(amount); }
+    ws.curve = curve;
+    return ws;
+  },
+
+  // かまどが燃え上がる地鳴り
+  rumble(seconds, peak = 0.7){
+    if (!this.ready()) return;
+    const t = this.ctx.currentTime, end = t + seconds;
+    const swell = this.ctx.createGain();
+    swell.gain.setValueAtTime(0.0001, t);
+    swell.gain.exponentialRampToValueAtTime(peak, end - 0.05);
+    swell.gain.exponentialRampToValueAtTime(0.0001, end + 0.12);
+    swell.connect(this.bus);
+
+    // 炎のゴーッ（こもった音から開いていく）
+    const lp = this.filter('lowpass', 70);
+    lp.frequency.setValueAtTime(70, t);
+    lp.frequency.exponentialRampToValueAtTime(900, end);
+    this.noiseSrc(t, end + 0.2).connect(lp).connect(swell);
+
+    // 低いうなり（少しずらした 2 本で揺らす）
+    const subLp = this.filter('lowpass', 140);
+    const sub = this.ctx.createGain();
+    sub.gain.value = 0.55;
+    subLp.connect(this.drive(3)).connect(sub).connect(swell);
+    [36, 36.6].forEach(f => this.osc('sawtooth', t, f, f * 1.45, seconds, end + 0.2).connect(subLp));
+
+    // 薪がはぜる音
+    for (let i = 0; i < 10; i++) this.crackle(t + Math.random() * seconds);
+  },
+  crackle(at){
+    this.noiseSrc(at, at + 0.06)
+      .connect(this.filter('bandpass', 1400 + Math.random() * 1600, 1.2))
+      .connect(this.env(at, 0.25 + Math.random() * 0.3, 0.002, 0.04))
+      .connect(this.bus);
+  },
+
+  // 金床を槌で打つ音（マイクラの金床を参考に）：音程のはっきりした「キン」と、すぐ後の少し高い「キン」で「カキンッ」と跳ねさせる。
+  // 鐘のように伸ばさないよう、どの響きも 0.5 秒以内に消す
+  anvil(strength = 1, pitch = 1, delay = 0){
+    if (!this.ready()) return;
+    const t = this.ctx.currentTime + delay;
+    const ring = (at, f, amp, decay) =>
+      this.osc('sine', at, f, f, 0, at + decay + 0.05).connect(this.env(at, amp * strength, 0.001, decay)).connect(this.bus);
+
+    // 本体の「カン」（低めの金属の胴鳴り。短い）
+    [[1, 0.22, 0.18], [2.02, 0.12, 0.14], [2.76, 0.08, 0.1]].forEach(([r, amp, decay]) => ring(t, 520 * pitch * r, amp, decay));
+    // 音程のはっきりした「キン」（耳に残る音。1 本を強く、倍音を少しだけ）
+    ring(t, 1560 * pitch, 0.32, 0.42);
+    ring(t, 3120 * pitch * 1.006, 0.08, 0.25);
+    ring(t, 2290 * pitch, 0.06, 0.2);
+    // すぐ後の少し高い「キン」
+    ring(t + 0.045, 1750 * pitch, 0.16, 0.26);
+    // 打った瞬間の「カチッ」
+    this.noiseSrc(t, t + 0.04).connect(this.filter('bandpass', 5000, 1)).connect(this.env(t, 0.45 * strength, 0.0006, 0.02)).connect(this.bus);
+    // 槌の重み
+    this.osc('sine', t, 150, 70, 0.1, t + 0.25).connect(this.env(t, 0.5 * strength, 0.002, 0.14)).connect(this.bus);
+  },
+
+  // ふいごで風を送る音
+  bellows(delay = 0, length = 0.45){
+    if (!this.ready()) return;
+    const t = this.ctx.currentTime + delay;
+    const lp = this.filter('lowpass', 300, 0.8);
+    lp.frequency.setValueAtTime(300, t);
+    lp.frequency.linearRampToValueAtTime(900, t + length * 0.6);
+    lp.frequency.linearRampToValueAtTime(400, t + length);
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.5, t + length * 0.4);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + length);
+    this.noiseSrc(t, t + length + 0.05).connect(lp).connect(g).connect(this.bus);
+  },
+
+  // MVP が出る瞬間：腹に響く爆発と、低い金管のようなうなり
+  impact(){
+    if (!this.ready()) return;
+    const t = this.ctx.currentTime;
+    // 爆発の低音（長く沈んでいく）
+    this.osc('sine', t, 110, 24, 1.4, t + 3.2).connect(this.env(t, 1.0, 0.004, 2.8)).connect(this.bus);
+    this.osc('sine', t, 48, 28, 2.0, t + 3.6).connect(this.env(t, 0.8, 0.02, 3.2)).connect(this.bus);
+    // 歪ませた低いノイズの塊
+    const thudLp = this.filter('lowpass', 260);
+    thudLp.frequency.setValueAtTime(260, t);
+    thudLp.frequency.exponentialRampToValueAtTime(60, t + 1.2);
+    this.noiseSrc(t, t + 1.6).connect(thudLp).connect(this.drive(4)).connect(this.env(t, 0.9, 0.003, 1.3)).connect(this.bus);
+    // 打撃の立ち上がり（金属ではなく、こもった衝撃）
+    this.noiseSrc(t, t + 0.2).connect(this.filter('bandpass', 420, 0.8)).connect(this.env(t, 0.7, 0.001, 0.16)).connect(this.bus);
+    // 低い金管のうなり（ラとミを 2 本ずつずらして重ねる）
+    const brassLp = this.filter('lowpass', 120, 1.4);
+    brassLp.frequency.setValueAtTime(120, t);
+    brassLp.frequency.exponentialRampToValueAtTime(950, t + 0.18);
+    brassLp.frequency.exponentialRampToValueAtTime(160, t + 2.6);
+    const brass = this.env(t, 0.42, 0.06, 2.6);
+    brassLp.connect(this.drive(2.5)).connect(brass).connect(this.bus);
+    [55, 82.4, 110].forEach(f => [0.996, 1.004].forEach(d =>
+      this.osc('sawtooth', t, f * d, f * d * 0.97, 2.6, t + 2.8).connect(brassLp)));
+  },
+
+  // トップ○○ の名前を打ち込む音（毎回同じ音程）
+  stamp(){
+    this.anvil(0.9);
+  },
+};
+
+/* ---------- 7. 炎と火花 ---------- */
+// 炎は細かいマス目の上で、熱を 1 マスずつ上へ運んで描く（fx.stepFire）。
+// 熱の出どころは画面の下端（かまど。heat 0〜1 で勢いが変わる）と、MVP のカードの縁。
+// マス目を拡大して描くので、輪郭がやわらかく揺れる炎の舌になる
+const FIRE_CELL = 5;        // 1 マスの大きさ（px）
+const FIRE_STEP = 1 / 50;   // 熱を運ぶ間隔（秒）。リフレッシュレートが違っても同じ速さで立ちのぼる
+const FIRE_COOL = 0.025;    // 1 マス上がるごとに冷める量の平均。炎の高さ（マス）≒ 出どころの熱 ÷ これ
+const FIRE_CARD = 0.7;      // カードの縁の熱。白に近い黄色まで上げず、オレンジ〜黄色で燃やす
+// 熱（0〜1）を色にする表。冷めた先端ほど暗い赤になり、透明に近づく
+const FIRE_PALETTE = (() => {
+  const stops = [[0, 60, 8, 0, 0], [0.1, 130, 22, 6, 0.45], [0.25, 225, 80, 22, 0.9], [0.4, 255, 128, 40, 1],
+    [0.6, 255, 180, 72, 1], [0.8, 255, 220, 125, 1], [1, 255, 242, 190, 1]];
+  const out = new Uint32Array(256);
+  for (let i = 0; i < 256; i++) {
+    const t = i / 255;
+    let j = 1;
+    while (stops[j][0] < t) j++;
+    const [t0, ...a] = stops[j - 1], [t1, ...b] = stops[j], k = (t - t0) / (t1 - t0);
+    const [r, g, bl, al] = a.map((v, n) => v + (b[n] - v) * k);
+    out[i] = ((Math.round(al * 255) << 24) | (Math.round(bl) << 16) | (Math.round(g) << 8) | Math.round(r)) >>> 0;
+  }
+  return out;
+})();
+// 冷ます量の斑模様（上下左右につながるので、ずらして使っても継ぎ目が出ない）。細かい斑と大きな斑を混ぜる
+function fireCoolMap(w, h){
+  const blur = (src, r) => {
+    const tmp = new Float32Array(w * h), out = new Float32Array(w * h), n = 2 * r + 1;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      let s = 0;
+      for (let k = -r; k <= r; k++) s += src[y * w + (x + k + w) % w];
+      tmp[y * w + x] = s / n;
+    }
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      let s = 0;
+      for (let k = -r; k <= r; k++) s += tmp[((y + k + h) % h) * w + x];
+      out[y * w + x] = s / n;
+    }
+    return out;
+  };
+  const octave = r => {
+    const a = blur(blur(Float32Array.from({ length:w * h }, () => Math.random()), r), r);
+    let lo = Infinity, hi = -Infinity;
+    for (const v of a) { if (v < lo) lo = v; if (v > hi) hi = v; }
+    return a.map(v => (v - lo) / (hi - lo));
+  };
+  const fine = octave(2), coarse = octave(5);
+  return fine.map((v, i) => { const n = 0.6 * v + 0.4 * coarse[i]; return FIRE_COOL * 3 * n * n; });
+}
+const SPARK_COLOR = k => k < 0.15 ? '#fff3c4' : k < 0.4 ? '#ffc857' : k < 0.7 ? '#ff8a3d' : '#d4581f';
+
+const fx = {
+  // ctx：カードの後ろ（炎と立ちのぼる火の粉）／ctxTop：カードの上（飛び散る火花・降る火の粉・衝撃の輪）
+  canvas: null, ctx: null, canvasTop: null, ctxTop: null,
+  parts: [], over: [], rings: [], raf: 0, last: 0, heat: 0, emberCarry: 0,
+  burn: null, burnRect: null, burnAge: 0, burnEmberCarry: 0,   // burn：縁から燃やす要素（MVP のカード）
+  // 炎のマス目：cur が今の熱、next が次の熱（交互に使う）。grid はマス目を拡大して描くための小さな canvas
+  gw: 0, gh: 0, cur: null, next: null, grid: null, gridCtx: null, gridImg: null, gridPx: null, stepCarry: 0, time: 0,
+  cool: null, coolH: 0, coolOff: 0,
+
+  start(){
+    this.burn = null;
+    this.canvas = $('show-fx');
+    this.ctx = this.canvas.getContext('2d');
+    this.canvasTop = $('show-fx-top');
+    this.ctxTop = this.canvasTop.getContext('2d');
+    this.grid ??= document.createElement('canvas');
+    this.gridCtx ??= this.grid.getContext('2d');
+    this.resize();
+    this.stepCarry = 0;
+    this.last = performance.now();
+    cancelAnimationFrame(this.raf);
+    this.raf = requestAnimationFrame(t => this.frame(t));
+  },
+  stop(){
+    cancelAnimationFrame(this.raf);
+    this.raf = 0;
+    this.burn = null;
+    this.parts = [];
+    this.over = [];
+    this.rings = [];
+    this.ctx?.clearRect(0, 0, innerWidth, innerHeight);
+    this.ctxTop?.clearRect(0, 0, innerWidth, innerHeight);
+  },
+  resize(){
+    if (!this.canvas) return;
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    for (const [canvas, ctx] of [[this.canvas, this.ctx], [this.canvasTop, this.ctxTop]]) {
+      canvas.width = innerWidth * dpr;
+      canvas.height = innerHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    // 炎のマス目は画面を覆う大きさで作り直す（燃えている途中なら、一瞬消えて燃え直す）
+    this.gw = Math.ceil(innerWidth / FIRE_CELL);
+    this.gh = Math.ceil(innerHeight / FIRE_CELL);
+    this.cur = new Float32Array(this.gw * this.gh);
+    this.next = new Float32Array(this.gw * this.gh);
+    this.grid.width = this.gw;
+    this.grid.height = this.gh;
+    this.gridImg = this.gridCtx.createImageData(this.gw, this.gh);
+    this.gridPx = new Uint32Array(this.gridImg.data.buffer);
+    this.coolH = this.gh * 2;
+    this.cool = fireCoolMap(this.gw, this.coolH);
+    this.coolOff = 0;
+  },
+
+  // 熱を 1 マス上へ運び、出どころに熱を足す。
+  // 各マスは、下と左右下と自分の熱の平均を受け取る（熱がなめらかに残るので、上下につながった炎になる）。
+  // 冷ます量は cool の斑模様を炎と同じ速さで上へずらして使う（冷めにくい筋が、そのまま縦に伸びた炎の舌になる）
+  stepFire(){
+    const { gw, gh, cur, next, cool, coolH } = this;
+    const t = this.time += FIRE_STEP;
+    const off = this.coolOff = (this.coolOff + 1) % coolH;
+    // 炎全体をゆっくり左右に揺らす（風）。左下と右下のどちらの熱を多く受け取るかを変える
+    const wind = 0.35 * Math.sin(t * 0.8) + 0.2 * Math.sin(t * 2.1);
+    const wl = 1 + wind, wr = 1 - wind, last = gh - 1;
+    for (let y = 0; y < last; y++) {
+      const row = y * gw, r1 = row + gw, r2 = Math.min(y + 2, last) * gw, crow = ((y + off) % coolH) * gw;
+      for (let x = 0; x < gw; x++) {
+        const xl = x > 0 ? x - 1 : 0, xr = x < gw - 1 ? x + 1 : x;
+        const v = (cur[r1 + xl] * wl + cur[r1 + xr] * wr + cur[row + x] + cur[r2 + x]) * 0.25 - cool[crow + x];
+        next[row + x] = v > 0 ? v : 0;
+      }
+    }
+
+    // 下端（かまど）。場所ごとの強弱をゆっくり動かして、炎の固まりを作る
+    const base = last * gw;
+    const floor = this.heat > 0 ? (0.1 + 1.25 * this.heat ** 1.2) * Math.min(1.6, Math.max(0.8, innerHeight / 720)) : 0;
+    for (let x = 0; x < gw; x++) {
+      const n = (0.5 + 0.5 * Math.sin(x * 0.09 + t * 1.3)) * (0.5 + 0.5 * Math.sin(x * 0.031 - t * 0.7 + 2));
+      next[base + x] = floor * (0.45 + 0.55 * n) * (0.88 + 0.12 * Math.random());
+    }
+
+    // カードの縁。上の辺は場所ごとに強弱をつけて、炎の舌がそろわないようにする
+    const rect = this.burnRect;
+    if (rect) {
+      const s = FIRE_CARD * Math.min(1, this.burnAge / 0.4);
+      const x0 = Math.floor(rect.left / FIRE_CELL), x1 = Math.floor(rect.right / FIRE_CELL);
+      const y0 = Math.floor(rect.top / FIRE_CELL), y1 = Math.floor(rect.bottom / FIRE_CELL);
+      const put = (x, y, v) => {
+        if (x < 0 || x >= gw || y < 0 || y >= gh) return;
+        const i = y * gw + x;
+        if (next[i] < v) next[i] = v;
+      };
+      for (let x = x0; x <= x1; x++) {
+        const n = 0.5 + 0.5 * Math.sin(x * 0.4 + t * 3.1) * Math.sin(x * 0.13 - t * 1.7);
+        put(x, y0, s * (0.6 + 0.4 * n) * (0.85 + 0.15 * Math.random()));
+        put(x, y1, s * (0.8 + 0.2 * Math.random()));
+      }
+      for (let y = y0; y <= y1; y++) {
+        for (const x of [x0 - 1, x0, x1, x1 + 1]) put(x, y, s * (0.55 + 0.45 * Math.random()));
+      }
+    }
+    this.cur = next;
+    this.next = cur;
+  },
+  // マス目の熱を色にして、画面の大きさに拡大して描く
+  drawFire(ctx){
+    const { cur, gridPx, gw, gh } = this;
+    for (let i = 0; i < cur.length; i++) {
+      const v = cur[i];
+      gridPx[i] = v <= 0 ? 0 : FIRE_PALETTE[v >= 1 ? 255 : (v * 255) | 0];
+    }
+    this.gridCtx.putImageData(this.gridImg, 0, 0);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(this.grid, 0, 0, gw * FIRE_CELL, gh * FIRE_CELL);
+  },
+  // 1 点から飛び散る火花
+  sparks(x, y, count, power = 1){
+    for (let i = 0; i < count; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const v = (120 + Math.random() * 520) * power;
+      this.over.push({ x, y, vx:Math.cos(a) * v, vy:Math.sin(a) * v - 120 * power, g:520, life:0, max:0.4 + Math.random() * 1.1, size:2 + Math.random() * 3.5, wobble:0 });
+    }
+  },
+  // size は広がる大きさ（1 で画面の半分ほど）
+  ring(x, y, size = 1){ this.rings.push({ x, y, size, life:0 }); },
+  // 要素の縁から炎を立ちのぼらせる（炎はカードの後ろから出るので、カードの文字は隠れない）
+  burnCard(el){ this.burn = el; this.burnAge = 0; this.burnEmberCarry = 0; },
+  // 画面の上から降る火の粉
+  shower(count){
+    for (let i = 0; i < count; i++) {
+      this.over.push({ x: Math.random() * innerWidth, y: -10 - Math.random() * innerHeight * 0.3, vx: (Math.random() - 0.5) * 40, vy: 60 + Math.random() * 160,
+        g: 120, life: 0, max: 1.6 + Math.random() * 1.4, size: 2 + Math.random() * 2.5, wobble: Math.random() * 6.28 });
+    }
+  },
+
+  // 火の粉を動かして描き、燃え尽きていないものを返す
+  drawParts(ctx, list, dt){
+    list = list.filter(p => (p.life += dt) < p.max);
+    for (const p of list) {
+      p.vy += p.g * dt;
+      p.wobble += dt * 4;
+      p.x += (p.vx + Math.sin(p.wobble) * 12) * dt;
+      p.y += p.vy * dt;
+      const k = p.life / p.max;
+      ctx.fillStyle = SPARK_COLOR(k);
+      ctx.globalAlpha = 1 - k;
+      const s = p.size * (1 - k * 0.5);
+      ctx.fillRect(p.x - s / 2, p.y - s / 2, s, s);
+    }
+    return list;
+  },
+
+  frame(now){
+    const dt = Math.min(0.05, (now - this.last) / 1000);
+    this.last = now;
+    const ctx = this.ctx, w = innerWidth, h = innerHeight, heat = this.heat;
+    $('show').style.setProperty('--heat', heat.toFixed(3));
+
+    // 炎を進める（カードの縁は 0.4 秒かけて勢いを上げる）
+    this.burnRect = this.burn ? this.burn.getBoundingClientRect() : null;
+    if (this.burn) this.burnAge += dt;
+    this.stepCarry += dt;
+    while (this.stepCarry >= FIRE_STEP) {
+      this.stepCarry -= FIRE_STEP;
+      this.stepFire();
+    }
+    // 燃えているカードの上の辺から、火の粉を上げる
+    if (this.burnRect) {
+      const r = this.burnRect;
+      this.burnEmberCarry += 16 * dt;
+      while (this.burnEmberCarry >= 1) {
+        this.burnEmberCarry--;
+        this.parts.push({ x: r.left + Math.random() * r.width, y: r.top - Math.random() * 20, vx: (Math.random() - 0.5) * 50, vy: -(60 + Math.random() * 110),
+          g: -40, life: 0, max: 0.8 + Math.random() * 1.2, size: 1.5 + Math.random() * 2.5, wobble: Math.random() * 6.28 });
+      }
+    }
+    // 熱いときだけ火の粉を上げる（ゆるい火のときに出すと、下の列のカードの上でちらついて見えるため）
+    if (heat > 0.45) {
+      this.emberCarry += (heat - 0.45) * 60 * dt;
+      while (this.emberCarry >= 1) {
+        this.emberCarry--;
+        this.parts.push({ x: Math.random() * w, y: h - Math.random() * h * 0.2, vx: (Math.random() - 0.5) * 40, vy: -(70 + Math.random() * 140) * (0.5 + heat),
+          g: -30, life: 0, max: 1 + Math.random() * 1.6, size: 2 + Math.random() * 3, wobble: Math.random() * 6.28 });
+      }
+    }
+
+    ctx.clearRect(0, 0, w, h);
+    this.drawFire(ctx);
+    ctx.globalCompositeOperation = 'lighter';
+    this.parts = this.drawParts(ctx, this.parts, dt);
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
+
+    // カードの上
+    const top = this.ctxTop;
+    top.clearRect(0, 0, w, h);
+    top.globalCompositeOperation = 'lighter';
+    this.over = this.drawParts(top, this.over, dt);
+    this.rings = this.rings.filter(r => (r.life += dt) < 0.7);
+    for (const r of this.rings) {
+      const k = r.life / 0.7;
+      top.globalAlpha = (1 - k) * 0.7;
+      top.strokeStyle = '#ffc857';
+      top.lineWidth = 6 * (1 - k) + 1;
+      top.beginPath();
+      top.arc(r.x, r.y, 30 + k * Math.max(w, h) * 0.5 * r.size, 0, Math.PI * 2);
+      top.stroke();
+    }
+    top.globalAlpha = 1;
+    top.globalCompositeOperation = 'source-over';
+    this.raf = requestAnimationFrame(t => this.frame(t));
+  },
+};
+addEventListener('resize', () => fx.resize());
+
+/* ---------- 8. 発表の演出 ---------- */
+// 流れ：火が灯る → トップ○○ を 1 人ずつ中央で打ち出して下の列へ → 大きな「MVP」の文字を出して炎が燃え上がる溜め
+//       → 一撃と同時に、MVP・勝利チーム・成績をまとめて表示する（少しずつ見せない）
+const SKIP = Symbol('skip');
+const show = { data: null, running: false, closing: false, pending: new Set() };
+
+// 演出中の待ち時間。スキップされたら SKIP で中断する
+function step(ms){
+  return new Promise((resolve, reject) => {
+    const entry = { reject };
+    entry.timer = setTimeout(() => { show.pending.delete(entry); resolve(); }, ms);
+    show.pending.add(entry);
+  });
+}
+
+function tweenHeat(from, to, ms){
+  const t0 = performance.now();
+  return new Promise(resolve => {
+    const tick = now => {
+      const k = Math.min(1, (now - t0) / ms);
+      fx.heat = from + (to - from) * (k * k * (3 - 2 * k));
+      if (k < 1 && show.running) requestAnimationFrame(tick); else resolve();
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+const REVEAL = {
+  fade:   [[{ opacity:0, transform:'translateY(10px)' }, { opacity:1, transform:'none' }], { duration:500, easing:'ease-out' }],
+  land:   [[{ opacity:0, transform:'scale(1.08)', filter:'brightness(2)' }, { opacity:1, transform:'none', filter:'none' }], { duration:260, easing:'ease-out' }],
+};
+function reveal(el, kind){
+  el.style.visibility = '';
+  const [frames, opts] = REVEAL[kind];
+  el.animate(frames, { ...opts, fill:'backwards' });
+}
+const conceal = el => { el.style.visibility = 'hidden'; };
+const centerOf = el => { const r = el.getBoundingClientRect(); return { x:r.left + r.width / 2, y:r.top + r.height / 2 }; };
+const SHAKE_SMALL = [{ transform:'translate(0,0)' }, { transform:'translate(-4px,2px)' }, { transform:'translate(3px,-2px)' }, { transform:'translate(0,0)' }];
+const SHAKE_BIG = [{ transform:'translate(0,0)' }, { transform:'translate(-10px,6px)' }, { transform:'translate(8px,-6px)' }, { transform:'translate(-6px,-3px)' }, { transform:'translate(4px,4px)' }, { transform:'translate(0,0)' }];
+
+function setMuteLabel(){ $('show-mute').textContent = sfx.muted ? '🔇 音なし' : '🔊 音あり'; }
+
+// 名前を 1 行に収める。入りきらなければ文字を 1px ずつ小さくする（最小 minPx）
+function fitOneLine(el, minPx){
+  el.style.fontSize = '';
+  let size = parseFloat(getComputedStyle(el).fontSize);
+  while (el.scrollWidth > el.clientWidth && size > minPx) {
+    size -= 1;
+    el.style.fontSize = `${size}px`;
+  }
+}
+
+function spotHTML(t){
+  return `
+    <img src="${skinUrl(t.player.id, 'avatar', 96)}" alt="" onerror="this.onerror=null;this.src='${STEVE('avatar', 96)}'">
+    <div class="spot-text">
+      <div class="spot-label">${t.icon} ${t.label}</div>
+      <div class="spot-name"><span>${esc(t.player.name)}</span></div>
+      <div class="spot-value">${fmtNum(t.value, t.decimals ?? 0)}<small>${t.unit}</small></div>
+    </div>`;
+}
+
+// 演出を開く。gate が true なら「結果を表示」ボタンを押すまで待つ（ページを開いたとき）。火もボタンを押すまで灯さない
+function openShow(gate){
+  const { meta, res } = show.data;
+  $('show-map').textContent = MAP_NAME[meta.map] ?? meta.map ?? '';
+  $('show-win').textContent = winText(meta);
+  $('show-win').style.color = meta.winTeam ? TEAM[meta.winTeam].color : 'var(--ember-hot)';
+  $('show-mvp').innerHTML = res.mvp ? mvpCardHTML(res.mvp) : '';
+  if (res.mvp) {
+    // 長い名前ほど小さくする
+    const len = [...res.mvp.name].length;
+    $('show-mvp').querySelector('.mvp-name').style.setProperty('--name-size', `${Math.max(34, Math.min(84, Math.floor(620 / (len * 0.62))))}px`);
+    // 一撃の瞬間にスキンが欠けて出ないよう、先に読み込んでおく
+    new Image().src = skinUrl(res.mvp.id, 'body', 240);
+  }
+  $('show-titles').innerHTML = res.titles.map(titleCardHTML).join('');
+  // 発表中に顔が遅れて出ないよう、先に読み込んでおく
+  res.titles.forEach(t => { new Image().src = skinUrl(t.player.id, 'avatar', 96); });
+
+  ['show-map', 'show-win', 'show-done'].forEach(id => conceal($(id)));
+  // 下の列は最初から場所だけ取っておく（打ち出したカードの行き先にするため）
+  [...$('show-titles').children].forEach(conceal);
+  ['show-spot', 'show-call', 'show-mvp'].forEach(id => {
+    $(id).getAnimations({ subtree:true }).forEach(a => a.cancel());
+    $(id).hidden = true;
+  });
+  $('show-gate').hidden = !gate;
+  setMuteLabel();
+
+  $('show').hidden = false;
+  $('show-titles').querySelectorAll('.title-name').forEach(el => fitOneLine(el, 10));
+  $('show').scrollTop = 0;
+  document.documentElement.style.overflow = 'hidden';
+  fx.heat = 0;
+  if (gate) $('show-start').focus({ preventScroll:true }); else runShow();
+}
+
+function closeShow(){
+  if ($('show').hidden || show.closing) return;
+  show.closing = true;
+  show.running = false;
+  show.pending.forEach(e => { clearTimeout(e.timer); e.reject(SKIP); });
+  show.pending.clear();
+  const el = $('show');
+  el.animate([{ opacity:1 }, { opacity:0 }], { duration:280, easing:'ease-in' });
+  // 裏のタブではアニメーションが進まず onfinish が来ないので、タイマーで閉じる
+  setTimeout(() => {
+    el.hidden = true;
+    show.closing = false;
+    fx.stop();
+    document.documentElement.style.overflow = '';
+    $('replay').focus({ preventScroll:true });
+  }, 280);
+}
+
+// スキンの色の変化（真っ黒 → 本来の色）。filter の関数の並びをそろえて、間をなめらかにつなぐ
+const SKIN_BLACK = 'brightness(0) drop-shadow(0 6px 14px rgba(255,138,61,.35))';
+const SKIN_COLOR = 'brightness(1) drop-shadow(0 6px 14px rgba(255,138,61,.35))';
+
+// トップ○○ を 1 人分発表する（約 1.05 秒）。
+// 見出しと数値、スキンの場所の黒い四角を先に出す。名前を打ち込むと同時に、スキンが短いグラデーションで明るくなる。
+// 出し終えたら、下の列の自分の場所へ飛ばす
+async function announceTitle(t, slot){
+  const spot = $('show-spot');
+  spot.style.setProperty('--kit', kitColor(t.player.kit));
+  spot.innerHTML = spotHTML(t);
+  spot.hidden = false;
+  const skin = spot.querySelector('img');
+  const nameBox = spot.querySelector('.spot-name');
+  fitOneLine(nameBox, 16);
+  conceal(nameBox);               // 名前は発表のあとまで出さない（場所だけ取っておく）
+  skin.style.filter = SKIN_BLACK;     // スキンは名前と同時に明るくするまで、黒い四角で見せておく
+  spot.animate([{ opacity:0, transform:'scale(.7)' }, { opacity:1, transform:'scale(1.04)', offset:.7 }, { opacity:1, transform:'scale(1)' }], { duration:170, easing:'ease-out' });
+  await step(340);                // カードが出て（0.17 秒）、見出しと数値だけを見せる
+
+  // 名前を打ち込む。スキンも同時に、黒から本来の色へ短いグラデーションで明るくする
+  nameBox.style.visibility = '';
+  skin.animate([{ filter:SKIN_BLACK }, { filter:SKIN_COLOR }], { duration:220, easing:'ease-out', fill:'forwards' });
+  const name = nameBox.querySelector('span');
+  // 火花の出どころは拡大をかける前に測る（後だと 1.8 倍の大きさで測り、中心が右にずれる）
+  const c = centerOf(name);
+  name.animate([{ opacity:0, transform:'scale(1.8)' }, { opacity:1, transform:'scale(1)' }], { duration:120, easing:'cubic-bezier(.3,1.4,.5,1)', fill:'backwards' });
+  fx.sparks(c.x, c.y, 110, 0.9);
+  fx.ring(c.x, c.y, 0.35);
+  sfx.stamp();
+  spot.animate(SHAKE_SMALL, { duration:180 });
+  await step(570);
+  skin.getAnimations().forEach(a => a.cancel());
+  skin.style.filter = '';
+
+  // 下の列へ飛ばす。飛んでいく軌跡が見えるよう、終わりは減速させ、薄くするのは最後の 3 割だけ
+  const from = spot.getBoundingClientRect(), to = slot.getBoundingClientRect();
+  const dx = (to.left + to.width / 2) - (from.left + from.width / 2);
+  const dy = (to.top + to.height / 2) - (from.top + from.height / 2);
+  spot.animate([{ transform:'none', opacity:1 }, { opacity:1, offset:.7 }, { transform:`translate(${dx}px,${dy}px) scale(${to.width / from.width})`, opacity:0.2 }],
+    { duration:140, easing:'cubic-bezier(.5,0,.2,1)', fill:'forwards' });
+  await step(140);
+  spot.hidden = true;
+  spot.getAnimations().forEach(a => a.cancel());
+  reveal(slot, 'land');
+}
+
+async function runShow(){
+  sfx.unlock();
+  show.running = true;
+  $('show-gate').hidden = true;
+  fx.start();
+  const { res } = show.data;
+  try {
+    // 火が灯る
+    sfx.rumble(0.7, 0.35);
+    sfx.bellows(0.05);
+    await Promise.all([tweenHeat(fx.heat, 0.4, 500), step(500)]);
+
+    // トップ○○ を 1 人ずつ。発表のたびに火が少し強まる
+    const slots = [...$('show-titles').children];
+    for (const [i, t] of res.titles.entries()) {
+      await announceTitle(t, slots[i]);
+      tweenHeat(fx.heat, Math.min(0.75, fx.heat + 0.08), 300);
+      // 着地を見せてから次を出す。MVP の前は長めに間をおく
+      await step(i < res.titles.length - 1 ? 100 : 400);
+    }
+
+    // ここから MVP の発表だと大きく示す。文字は最初からはっきり出し、溜めの間は炎だけが燃え上がる
+    // 「M」「V」「P」を 1 文字ずつ、1 文字ごとに 1 回打って出す（音は 3 音、少しずつ高く）。
+    // 上から落ちて収まる動きにして滑らかに見せる。親要素は動かさない（動かすと他の文字がちらつく）
+    const call = $('show-call');
+    const letters = [...call.children];
+    letters.forEach(conceal);
+    call.hidden = false;
+    for (const [i, letter] of letters.entries()) {
+      letter.style.visibility = '';
+      letter.animate(
+        [{ opacity:0, transform:'translateY(-34px) scale(1.4)' }, { opacity:1, transform:'translateY(0) scale(1)', offset:.7 }, { opacity:1, transform:'translateY(0) scale(1)' }],
+        { duration:320, easing:'cubic-bezier(.22,.9,.3,1)', fill:'backwards' });
+      await step(110);   // 落ちて着地する頃に打つ
+      const lc = centerOf(letter);
+      fx.sparks(lc.x, lc.y, 60, 0.6);
+      sfx.anvil(1.2 + i * 0.1, [0.84, 0.94, 1.06][i]);
+      $('show-stage').animate(SHAKE_SMALL, { duration:140 });
+      await step(i < 2 ? 90 : 150);
+    }
+    // 溜め（1.25 秒）
+    sfx.rumble(1.25, 0.5);
+    sfx.bellows(0.05);
+    sfx.bellows(0.65);
+    call.animate([{ transform:'scale(1)' }, { transform:'scale(1.06)' }], { duration:1250, easing:'ease-out', fill:'forwards' });
+    $('show-stage').animate(SHAKE_SMALL, { duration:110, iterations:7, delay:450 });
+    await Promise.all([tweenHeat(fx.heat, 1, 1250), step(1250)]);
+    call.hidden = true;
+    call.getAnimations().forEach(a => a.cancel());
+
+    // 一撃と同時に、MVP・勝利チーム・成績をまとめて表示する
+    const card = $('show-mvp');
+    card.hidden = false;
+    ['show-map', 'show-win'].forEach(id => { $(id).style.visibility = ''; });
+    // カードは最初から全部見せたまま、少し大きめに出して定位置に収める
+    card.querySelector('.mvp-card').animate(
+      [{ transform:'scale(1.18)', filter:'brightness(1.4)' }, { transform:'scale(.98)', filter:'brightness(1.1)', offset:.6 }, { transform:'scale(1)', filter:'none' }],
+      { duration:420, easing:'cubic-bezier(.2,.8,.2,1)' });
+    // カードの縁から炎が立ちのぼる（画面下の炎と同じ描き方）
+    fx.burnCard(card.querySelector('.mvp-card'));
+    const n = centerOf(card.querySelector('.mvp-name'));
+    fx.sparks(n.x, n.y, 240, 1);
+    fx.ring(n.x, n.y);
+    fx.shower(140);
+    sfx.impact();
+    $('show-flash').animate([{ opacity:0.4 }, { opacity:0 }], { duration:300, easing:'ease-out' });
+    $('show-stage').animate(SHAKE_BIG, { duration:420, easing:'ease-out' });
+    tweenHeat(1, 0.3, 1400);
+    await step(900);
+
+    reveal($('show-done'), 'fade');
+    $('show-done').focus({ preventScroll:true });
+  } catch (e) {
+    if (e !== SKIP) throw e;
+  }
+}
+
+/* ---------- 9. 起動 ---------- */
+async function init(){
+  let id = readMatchId();
+  try {
+    if (!id) {
+      // 試合の指定がなければ最新の試合
+      const stats = await loadStats();
+      const latest = [...stats.matches].sort((a, b) => String(b.date).localeCompare(String(a.date)))[0];
+      if (!latest) { showStatus('<p>試合がまだありません。</p>'); return; }
+      id = latest.id;
+      history.replaceState(null, '', `#match=${id}`);
+    }
+
+    const summary = await loadSummary(id);
+    if (!summary) {
+      showStatus(`<p>試合 <b>${id}</b> の記録が見つかりません。</p><p>試合直後は反映まで数秒かかることがあります。表示できるのは試合ログのある試合（2026/10/31 以降）だけです。</p>
+        <button type="button" class="btn" onclick="location.reload()">再読み込み</button>`);
+      return;
+    }
+    const meta = toMeta(summary);
+    await fillNames(meta.players);
+    const res = analyze(meta);
+    show.data = { id, meta, res };
+    renderPage(id, meta, res);
+
+    if (res.mvp && !reducedMotion()) openShow(true);
+  } catch (e) {
+    console.error(e);
+    showStatus(`<p>読み込みに失敗しました。</p><p>${esc(e.message)}</p><button type="button" class="btn" onclick="location.reload()">再読み込み</button>`);
+  }
+}
+
+$('show-start').addEventListener('click', () => runShow());
+$('show-done').addEventListener('click', closeShow);
+$('show-skip').addEventListener('click', closeShow);
+$('show-mute').addEventListener('click', () => {
+  sfx.muted = !sfx.muted;
+  store.set(MUTE_KEY, sfx.muted ? '1' : '0');
+  setMuteLabel();
+});
+$('replay').addEventListener('click', () => { if (show.data?.res.mvp) openShow(false); });
+addEventListener('keydown', e => { if (e.key === 'Escape' && !$('show').hidden) closeShow(); });
+addEventListener('hashchange', () => location.reload());
+
+init();
+</script>
+</body>
+</html>
